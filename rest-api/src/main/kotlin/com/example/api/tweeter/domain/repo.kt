@@ -2,14 +2,13 @@ package com.example.api.tweeter.domain
 
 
 import com.example.api.tweeter.domain.db.Tweets
+import com.example.util.exposed.toInstantJava
+import com.example.util.exposed.toJodaDateTime
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.statements.UpdateBuilder
-import org.joda.time.DateTime
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 import java.util.*
-
 
 data class Tweet(
         val id: UUID,
@@ -25,15 +24,22 @@ data class Tweet(
 class TweetRepository {
 
     fun insert(tweet: Tweet): Tweet {
-        Tweets.insert(toRow(tweet))
+        Tweets.insert({
+            it[id] = tweet.id
+            it[createdAt] = tweet.createdAt.toJodaDateTime()
+            it[modifiedAt] = tweet.modifiedAt.toJodaDateTime()
+            it[version] = tweet.version
+            it[message] = tweet.message
+            it[comment] = tweet.comment
+        })
         return tweet
     }
 
     fun update(tweet: Tweet): Tweet {
         Tweets.update({ Tweets.id eq tweet.id }) {
             //it[id] = tweet.id
-            it[createdAt] = DateTime.now() //tweet.createdAt.toJodaDateTime()
-            it[modifiedAt] = DateTime.now() //tweet.modifiedAt.toJodaDateTime()
+            it[createdAt] = tweet.createdAt.toJodaDateTime()
+            it[modifiedAt] = tweet.modifiedAt.toJodaDateTime()
             it[version] = tweet.version
             it[message] = tweet.message
             it[comment] = tweet.comment
@@ -56,15 +62,6 @@ class TweetRepository {
             = getOneById(id) ?: throw EntityNotFoundException("TweetRecord NOT FOUND ! (id=$id)")
 
 
-    private fun toRow(tweet: Tweet): Tweets.(UpdateBuilder<*>) -> Unit = {
-        it[id] = tweet.id
-        it[createdAt] = DateTime.now() //tweet.createdAt.toJodaDateTime()
-        it[modifiedAt] = DateTime.now()//tweet.modifiedAt.toJodaDateTime()
-        it[version] = tweet.version
-        it[message] = tweet.message
-        it[comment] = tweet.comment
-    }
-
     private fun fromRow(r: ResultRow) =
             Tweet(
                     id = r[Tweets.id],
@@ -77,5 +74,3 @@ class TweetRepository {
 
 }
 
-private fun DateTime.toInstantJava() = Instant.ofEpochMilli(this.millis)
-private fun Instant.toJodaDateTime() = DateTime(this)

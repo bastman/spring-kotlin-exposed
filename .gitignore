@@ -1,0 +1,16 @@
+### osx
+.DS_STORE
+
+### idea, gradle
+.idea/
+*.iml
+
+.gradle/
+**/build/**
+**/out/**
+
+
+### custom
+**/version.txt
+
+

@@ -32,8 +32,8 @@ class TweetRepository {
     fun update(tweet: Tweet): Tweet {
         Tweets.update({ Tweets.id eq tweet.id }) {
             //it[id] = tweet.id
-            it[createdAt] = tweet.createdAt.toJodaDateTime()
-            it[modifiedAt] = tweet.modifiedAt.toJodaDateTime()
+            it[createdAt] = DateTime.now() //tweet.createdAt.toJodaDateTime()
+            it[modifiedAt] = DateTime.now() //tweet.modifiedAt.toJodaDateTime()
             it[version] = tweet.version
             it[message] = tweet.message
             it[comment] = tweet.comment
@@ -58,8 +58,8 @@ class TweetRepository {
 
     private fun toRow(tweet: Tweet): Tweets.(UpdateBuilder<*>) -> Unit = {
         it[id] = tweet.id
-        it[createdAt] = tweet.createdAt.toJodaDateTime()
-        it[modifiedAt] = tweet.modifiedAt.toJodaDateTime()
+        it[createdAt] = DateTime.now() //tweet.createdAt.toJodaDateTime()
+        it[modifiedAt] = DateTime.now()//tweet.modifiedAt.toJodaDateTime()
         it[version] = tweet.version
         it[message] = tweet.message
         it[comment] = tweet.comment

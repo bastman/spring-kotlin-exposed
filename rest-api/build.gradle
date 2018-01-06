@@ -56,9 +56,12 @@ dependencies {
     compile "net.logstash.logback:logstash-logback-encoder:$logstashLogbackEncoderVersion"
     compile "io.github.microutils:kotlin-logging:$kotlinLoggingVersion"
     // spring
-
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-actuator")
+
+    compile("org.springframework.boot:spring-boot-starter-jdbc")
+    compile("org.springframework.boot:spring-boot-devtools")
+
 
     // jackson json
     compile "com.fasterxml.jackson.module:jackson-modules-java8:$jacksonVersion"
@@ -79,7 +82,7 @@ dependencies {
 
     // exposed
     compile "org.jetbrains.exposed:exposed:$exposedVersion"
-
+    compile "org.jetbrains.exposed:spring-transaction:$exposedVersion"
 
 }
 

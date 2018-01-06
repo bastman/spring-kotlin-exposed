@@ -1,0 +1,10 @@
+spring:
+  profiles: local
+  datasource:
+    #url: jdbc:postgresql://localhost:5432/app
+    url: jdbc:postgresql://localhost:5432/app
+    username: app_rw
+    password: app_rw
+    driver-class-name: org.postgresql.Driver
+
+

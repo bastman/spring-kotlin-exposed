@@ -1,0 +1,17 @@
+---
+spring:
+  profiles:
+    active: local
+  datasource:
+    driver-class-name: org.postgresql.Driver
+
+
+
+logging:
+  level:
+    org.springframework.web.servlet: INFO
+    Exposed: DEBUG
+
+app:
+  appName: "spring-kotlin-exposed"
+---

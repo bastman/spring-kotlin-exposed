@@ -1,9 +1,6 @@
 package com.example.api.tweeter.domain
 
-
 import com.example.api.tweeter.domain.db.Tweets
-import com.example.util.exposed.toInstantJava
-import com.example.util.exposed.toJodaDateTime
 import org.jetbrains.exposed.sql.*
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -26,8 +23,8 @@ class TweetRepository {
     fun insert(tweet: Tweet): Tweet {
         Tweets.insert({
             it[id] = tweet.id
-            it[createdAt] = tweet.createdAt.toJodaDateTime()
-            it[modifiedAt] = tweet.modifiedAt.toJodaDateTime()
+            it[createdAt] = tweet.createdAt
+            it[modifiedAt] = tweet.modifiedAt
             it[version] = tweet.version
             it[message] = tweet.message
             it[comment] = tweet.comment
@@ -38,8 +35,8 @@ class TweetRepository {
     fun update(tweet: Tweet): Tweet {
         Tweets.update({ Tweets.id eq tweet.id }) {
             //it[id] = tweet.id
-            it[createdAt] = tweet.createdAt.toJodaDateTime()
-            it[modifiedAt] = tweet.modifiedAt.toJodaDateTime()
+            it[createdAt] = tweet.createdAt
+            it[modifiedAt] = tweet.modifiedAt
             it[version] = tweet.version
             it[message] = tweet.message
             it[comment] = tweet.comment
@@ -65,8 +62,8 @@ class TweetRepository {
     private fun fromRow(r: ResultRow) =
             Tweet(
                     id = r[Tweets.id],
-                    createdAt = r[Tweets.createdAt].toInstantJava(),
-                    modifiedAt = r[Tweets.modifiedAt].toInstantJava(),
+                    createdAt = r[Tweets.createdAt],
+                    modifiedAt = r[Tweets.modifiedAt],
                     version = r[Tweets.version],
                     message = r[Tweets.message],
                     comment = r[Tweets.comment]

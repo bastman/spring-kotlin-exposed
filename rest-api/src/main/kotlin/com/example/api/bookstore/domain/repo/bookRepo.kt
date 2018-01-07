@@ -19,6 +19,7 @@ class BookRepository {
     fun insert(book: BookRecord): BookRecord {
         BookTable.insert({
             it[id] = book.id
+            it[authorId] = book.authorId
             it[createdAt] = book.createdAt
             it[modifiedAt] = book.modifiedAt
             it[version] = book.version

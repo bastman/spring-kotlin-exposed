@@ -2,11 +2,9 @@ package com.example.api.bookstore
 
 import com.example.api.bookstore.domain.db.AuthorRecord
 import com.example.api.bookstore.domain.db.BookRecord
-import com.example.api.bookstore.domain.db.BookStatus
 import com.example.api.bookstore.domain.repo.AuthorRepository
 import com.example.api.bookstore.domain.repo.BookRepository
 import org.springframework.web.bind.annotation.*
-import java.math.BigDecimal
 import java.time.Instant
 import java.util.*
 
@@ -36,7 +34,7 @@ class BookStoreApiController(
     }
 
     @GetMapping("/api/bookstore/book")
-    fun booksFindAll() = bookRepo.findAll()
+    fun booksFindAll() = bookRepo.findAllBooksJoinAuthor().map { it.toBookDto() }
 
     @GetMapping("/api/bookstore/book/{id}")
     fun booksGetOne(@PathVariable id: UUID) =
@@ -56,33 +54,3 @@ class BookStoreApiController(
 }
 
 
-data class AuthorCreateRequest(val name: String)
-data class AuthorUpdateRequest(val name: String)
-
-private fun AuthorCreateRequest.toRecord(): AuthorRecord {
-    val now = Instant.now()
-    return AuthorRecord(
-            id = UUID.randomUUID(),
-            version = 0,
-            createdAt = now,
-            modifiedAt = now,
-            name = name
-    )
-}
-
-data class BookCreateRequest(val authorId: UUID, val title: String, val status: BookStatus, val price: BigDecimal)
-data class BookUpdateRequest(val title: String, val status: BookStatus, val price: BigDecimal)
-
-private fun BookCreateRequest.toRecord(): BookRecord {
-    val now = Instant.now()
-    return BookRecord(
-            id = UUID.randomUUID(),
-            version = 0,
-            createdAt = now,
-            modifiedAt = now,
-            authorId = authorId,
-            title = title,
-            status = status,
-            price = price
-    )
-}

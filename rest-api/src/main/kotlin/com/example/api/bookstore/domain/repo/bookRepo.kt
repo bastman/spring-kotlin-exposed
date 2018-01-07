@@ -1,8 +1,6 @@
 package com.example.api.bookstore.domain.repo
 
-import com.example.api.bookstore.domain.db.BookRecord
-import com.example.api.bookstore.domain.db.BookTable
-import com.example.api.bookstore.domain.db.toBookRecord
+import com.example.api.bookstore.domain.db.*
 import com.example.api.common.EntityNotFoundException
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -54,4 +52,13 @@ class BookRepository {
                     .firstOrNull()
 
     fun findAll() = BookTable.selectAll().map { it.toBookRecord() }
+
+    fun findAllBooksJoinAuthor() =
+            (AuthorTable innerJoin BookTable)
+                    .selectAll()
+                    .map { BookRecordJoinAuthorRecord(bookRecord = it.toBookRecord(), authorRecord = it.toAuthorRecord()) }
+
+
 }
+
+data class BookRecordJoinAuthorRecord(val bookRecord: BookRecord, val authorRecord: AuthorRecord)

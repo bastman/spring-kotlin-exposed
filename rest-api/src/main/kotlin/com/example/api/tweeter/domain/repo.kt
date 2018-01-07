@@ -1,5 +1,6 @@
 package com.example.api.tweeter.domain
 
+import com.example.api.common.EntityNotFoundException
 import com.example.api.tweeter.domain.db.Tweets
 import org.jetbrains.exposed.sql.*
 import org.springframework.stereotype.Repository

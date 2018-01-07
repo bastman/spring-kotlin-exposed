@@ -11,5 +11,3 @@ object Tweets : Table("tweet") {
     val message = text("message")
     val comment = text("comment").nullable()
 }
-
-

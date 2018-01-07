@@ -2,6 +2,7 @@ package com.example.api.bookstore.domain.repo
 
 import com.example.api.bookstore.domain.db.AuthorRecord
 import com.example.api.bookstore.domain.db.AuthorTable
+import com.example.api.bookstore.domain.db.toAuthorRecord
 import com.example.api.common.EntityNotFoundException
 import org.jetbrains.exposed.sql.*
 import org.springframework.stereotype.Repository
@@ -42,17 +43,9 @@ class AuthorRepository {
     fun getOneById(id: UUID): AuthorRecord? =
             AuthorTable.select { AuthorTable.id eq id }
                     .limit(1)
-                    .map { it.toAuthor() }
+                    .map { it.toAuthorRecord() }
                     .firstOrNull()
 
-    fun findAll() = AuthorTable.selectAll().map { it.toAuthor() }
+    fun findAll() = AuthorTable.selectAll().map { it.toAuthorRecord() }
 
-    private fun ResultRow.toAuthor() =
-            AuthorRecord(
-                    id = this[AuthorTable.id],
-                    createdAt = this[AuthorTable.createdAt],
-                    modifiedAt = this[AuthorTable.modifiedAt],
-                    version = this[AuthorTable.version],
-                    name = this[AuthorTable.name]
-            )
 }

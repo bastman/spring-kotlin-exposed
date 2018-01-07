@@ -1,6 +1,7 @@
 package com.example.api.bookstore.domain.db
 
 import com.example.util.exposed.instant
+import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
 import java.time.Instant
 import java.util.*
@@ -21,14 +22,11 @@ data class AuthorRecord(
         val name: String
 )
 
-object BookTable : Table("book") {
-    val id = uuid("id").primaryKey()
-    val createdAt = instant("created_at")
-    val modifiedAt = instant("updated_at")
-    val version = integer("version")
-    val authorId = (uuid("author_id") references AuthorTable.id)
-    val title = varchar("title", 255)
-    val status = enumerationByName("status", 255, BookStatus::class.java)
-}
-
-enum class BookStatus { NEW, PUBLISHED; }
+fun ResultRow.toAuthorRecord() =
+        AuthorRecord(
+                id = this[AuthorTable.id],
+                createdAt = this[AuthorTable.createdAt],
+                modifiedAt = this[AuthorTable.modifiedAt],
+                version = this[AuthorTable.version],
+                name = this[AuthorTable.name]
+        )

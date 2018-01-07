@@ -1,26 +1,19 @@
 package com.example.api.bookstore.domain.repo
 
+import com.example.api.bookstore.domain.db.AuthorRecord
 import com.example.api.bookstore.domain.db.AuthorTable
 import com.example.api.common.EntityNotFoundException
 import org.jetbrains.exposed.sql.*
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
-import java.time.Instant
 import java.util.*
 
-data class Author(
-        val id: UUID,
-        val createdAt: Instant,
-        val modifiedAt: Instant,
-        val version: Int,
-        val name: String
-)
 
 @Repository
 @Transactional // Should be at @Service level in real applications
 class AuthorRepository {
 
-    fun insert(author: Author): Author {
+    fun insert(author: AuthorRecord): AuthorRecord {
         AuthorTable.insert({
             it[id] = author.id
             it[createdAt] = author.createdAt
@@ -32,7 +25,7 @@ class AuthorRepository {
         return requireOneById(author.id)
     }
 
-    fun update(author: Author): Author {
+    fun update(author: AuthorRecord): AuthorRecord {
         AuthorTable.update({ AuthorTable.id eq author.id }) {
             it[createdAt] = author.createdAt
             it[modifiedAt] = author.modifiedAt
@@ -43,10 +36,10 @@ class AuthorRepository {
         return requireOneById(author.id)
     }
 
-    fun requireOneById(id: UUID): Author
+    fun requireOneById(id: UUID): AuthorRecord
             = getOneById(id) ?: throw EntityNotFoundException("AuthorRecord NOT FOUND ! (id=$id)")
 
-    fun getOneById(id: UUID): Author? =
+    fun getOneById(id: UUID): AuthorRecord? =
             AuthorTable.select { AuthorTable.id eq id }
                     .limit(1)
                     .map { it.toAuthor() }
@@ -55,7 +48,7 @@ class AuthorRepository {
     fun findAll() = AuthorTable.selectAll().map { it.toAuthor() }
 
     private fun ResultRow.toAuthor() =
-            Author(
+            AuthorRecord(
                     id = this[AuthorTable.id],
                     createdAt = this[AuthorTable.createdAt],
                     modifiedAt = this[AuthorTable.modifiedAt],

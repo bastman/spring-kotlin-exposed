@@ -1,6 +1,6 @@
 package com.example.api.bookstore
 
-import com.example.api.bookstore.domain.repo.Author
+import com.example.api.bookstore.domain.db.AuthorRecord
 import com.example.api.bookstore.domain.repo.AuthorRepository
 import org.springframework.web.bind.annotation.*
 import java.time.Instant
@@ -17,11 +17,11 @@ class BookStoreApiController(private val authorRepo: AuthorRepository) {
             authorRepo.requireOneById(id)
 
     @PutMapping("/api/bookstore/author")
-    fun authorsCreateOne(@RequestBody req: CreateAuthorRequest): Author =
+    fun authorsCreateOne(@RequestBody req: CreateAuthorRequest): AuthorRecord =
             authorRepo.insert(req.toRecord())
 
     @PostMapping("/api/bookstore/author/{id}")
-    fun updateOne(@PathVariable id: UUID, @RequestBody req: UpdateAuthorRequest): Author {
+    fun updateOne(@PathVariable id: UUID, @RequestBody req: UpdateAuthorRequest): AuthorRecord {
         val record = authorRepo.requireOneById(id)
                 .copy(modifiedAt = Instant.now(), name = req.name)
 
@@ -33,9 +33,9 @@ class BookStoreApiController(private val authorRepo: AuthorRepository) {
 data class CreateAuthorRequest(val name: String)
 data class UpdateAuthorRequest(val name: String)
 
-private fun CreateAuthorRequest.toRecord(): Author {
+private fun CreateAuthorRequest.toRecord(): AuthorRecord {
     val now = Instant.now()
-    return Author(
+    return AuthorRecord(
             id = UUID.randomUUID(),
             version = 0,
             createdAt = now,

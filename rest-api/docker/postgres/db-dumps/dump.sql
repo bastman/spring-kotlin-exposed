@@ -65,7 +65,9 @@ CREATE TABLE book (
     version integer NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    title text NOT NULL
+    title text NOT NULL,
+    status character varying(255) NOT NULL,
+    price numeric(15,2) NOT NULL
 );
 ALTER TABLE book OWNER TO app_rw;
 ALTER TABLE ONLY book

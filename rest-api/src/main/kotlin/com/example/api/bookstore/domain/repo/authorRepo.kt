@@ -4,7 +4,10 @@ import com.example.api.bookstore.domain.db.AuthorRecord
 import com.example.api.bookstore.domain.db.AuthorTable
 import com.example.api.bookstore.domain.db.toAuthorRecord
 import com.example.api.common.EntityNotFoundException
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.update
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.util.*

@@ -13,7 +13,7 @@ import java.util.*
 @RestController
 class BookStoreApiController(
         private val authorRepo: AuthorRepository,
-        private val bookRepo:BookRepository
+        private val bookRepo: BookRepository
 ) {
 
     @GetMapping("/api/bookstore/author")
@@ -70,8 +70,8 @@ private fun AuthorCreateRequest.toRecord(): AuthorRecord {
     )
 }
 
-data class BookCreateRequest(val authorId:UUID, val title: String, val status:BookStatus, val price:BigDecimal)
-data class BookUpdateRequest(val title: String, val status:BookStatus, val price:BigDecimal)
+data class BookCreateRequest(val authorId: UUID, val title: String, val status: BookStatus, val price: BigDecimal)
+data class BookUpdateRequest(val title: String, val status: BookStatus, val price: BigDecimal)
 
 private fun BookCreateRequest.toRecord(): BookRecord {
     val now = Instant.now()

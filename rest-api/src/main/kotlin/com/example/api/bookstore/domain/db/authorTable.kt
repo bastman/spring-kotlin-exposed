@@ -22,6 +22,7 @@ data class AuthorRecord(
         val name: String
 )
 
+
 fun ResultRow.toAuthorRecord() =
         AuthorRecord(
                 id = this[AuthorTable.id],

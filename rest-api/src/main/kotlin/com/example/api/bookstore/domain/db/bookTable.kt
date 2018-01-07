@@ -8,7 +8,6 @@ import java.time.Instant
 import java.util.*
 
 
-
 object BookTable : Table("book") {
     val id = uuid("id").primaryKey()
     val createdAt = instant("created_at")
@@ -17,7 +16,7 @@ object BookTable : Table("book") {
     val authorId = (uuid("author_id") references AuthorTable.id)
     val title = varchar("title", 255)
     val status = enumerationByName("status", 255, BookStatus::class.java)
-    val price = decimal("price",15,2)
+    val price = decimal("price", 15, 2)
 }
 
 data class BookRecord(

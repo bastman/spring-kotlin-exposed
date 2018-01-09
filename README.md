@@ -17,7 +17,7 @@ playground for spring-boot, kotlin , jetbrains exposed
 ```
 
 
-## things to read ...
+## This example project is based on ...
 - https://github.com/making/spring-boot-db-samples
 - https://github.com/sdeleuze/geospatial-messenger
 

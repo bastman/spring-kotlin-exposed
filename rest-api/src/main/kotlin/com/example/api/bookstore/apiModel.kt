@@ -10,6 +10,20 @@ import java.util.*
 
 data class AuthorCreateRequest(val name: String)
 data class AuthorUpdateRequest(val name: String)
+data class BookCreateRequest(val authorId: UUID, val title: String, val status: BookStatus, val price: BigDecimal)
+data class BookUpdateRequest(val title: String, val status: BookStatus, val price: BigDecimal)
+
+data class BookDto(
+        val id: UUID,
+        val createdAt: Instant,
+        val modifiedAt: Instant,
+        val title: String,
+        val status: BookStatus,
+        val price: BigDecimal,
+        val author: AuthorDto
+)
+
+data class AuthorDto(val id: UUID, val createdAt: Instant, val modifiedAt: Instant, val name: String)
 
 fun AuthorCreateRequest.toRecord(): AuthorRecord {
     val now = Instant.now()
@@ -22,8 +36,6 @@ fun AuthorCreateRequest.toRecord(): AuthorRecord {
     )
 }
 
-data class BookCreateRequest(val authorId: UUID, val title: String, val status: BookStatus, val price: BigDecimal)
-data class BookUpdateRequest(val title: String, val status: BookStatus, val price: BigDecimal)
 
 fun BookCreateRequest.toRecord(): BookRecord {
     val now = Instant.now()
@@ -39,20 +51,6 @@ fun BookCreateRequest.toRecord(): BookRecord {
     )
 }
 
-
-data class BookDto(
-        val id: UUID,
-        val createdAt: Instant,
-        val modifiedAt: Instant,
-        val title: String,
-        val status: BookStatus,
-        val price: BigDecimal,
-        val author: AuthorDto
-)
-
-data class AuthorDto(
-        val id: UUID, val createdAt: Instant, val modifiedAt: Instant, val name: String
-)
 
 private fun AuthorRecord.toAuthorDto() =
         AuthorDto(id = id, createdAt = createdAt, modifiedAt = modifiedAt, name = name)

@@ -1,6 +1,10 @@
 # spring-kotlin-exposed
-playground for spring-boot, kotlin , jetbrains exposed
+playground for spring-boot 2.*, kotlin, jetbrains-exposed
 
+
+Yes, we can talk to a sql db - without hibernate/jpa in the java spaceship enterprise ;)
+
+It's easy. No ORM magic required.
 
 ## build
 

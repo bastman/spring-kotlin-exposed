@@ -1,13 +1,17 @@
 # spring-kotlin-exposed
-playground for spring-boot 2.*, kotlin, jetbrains-exposed
+playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres, docker
 
 
-Yes, we can talk to a sql db - without hibernate/jpa in the java spaceship enterprise ;)
+- Yes, we can talk to a sql db.
 
-It's easy. No ORM magic required.
+- It's easy. No ORM magic required. No hibernate / jpa.
+
+- Ready for starship java "enterprise" deployments.
 
 ```
-    Example: the beauty of exposed-dsl ... it's typesafe
+    # The beauty of exposed-dsl... Simple. Readable. Typesafe.
+    
+    # Example: query db
  
     fun findAllBooksJoinAuthor() =
             (AuthorTable innerJoin BookTable)
@@ -18,6 +22,48 @@ It's easy. No ORM magic required.
                             authorRecord = it.toAuthorRecord()
                         ) 
                     }
+    
+    # Example: db schema 
+    
+    object AuthorTable : Table("author") {
+        val id = uuid("id").primaryKey()
+        val createdAt = instant("created_at")
+        val modifiedAt = instant("updated_at")
+        val version = integer("version")
+        val name = text("name")
+    }
+                    
+    object BookTable : Table("book") {
+        val id = uuid("id").primaryKey()
+        val createdAt = instant("created_at")
+        val modifiedAt = instant("updated_at")
+        val version = integer("version")
+        val authorId = (uuid("author_id") references AuthorTable.id)
+        val title = varchar("title", 255)
+        val status = enumerationByName("status", 255, BookStatus::class.java)
+        val price = decimal("price", 15, 2)
+    } 
+    
+    # Example: Table Record Structures as immutable data classes
+    
+    data class AuthorRecord(
+            val id: UUID,
+            val createdAt: Instant,
+            val modifiedAt: Instant,
+            val version: Int,
+            val name: String
+    )   
+    
+    data class BookRecord(
+            val id: UUID,
+            val createdAt: Instant,
+            val modifiedAt: Instant,
+            val version: Int,
+            val authorId: UUID,
+            val title: String,
+            val status: BookStatus,
+            val price: BigDecimal
+    )            
 
 ```
 

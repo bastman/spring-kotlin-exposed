@@ -6,6 +6,22 @@ Yes, we can talk to a sql db - without hibernate/jpa in the java spaceship enter
 
 It's easy. No ORM magic required.
 
+```
+    Example: the beauty of exposed-dsl ... it's typesafe
+ 
+    fun findAllBooksJoinAuthor() =
+            (AuthorTable innerJoin BookTable)
+                    .selectAll()
+                    .map { 
+                        BookRecordJoinAuthorRecord(
+                            bookRecord = it.toBookRecord(), 
+                            authorRecord = it.toAuthorRecord()
+                        ) 
+                    }
+
+```
+
+
 ## build
 
 ```

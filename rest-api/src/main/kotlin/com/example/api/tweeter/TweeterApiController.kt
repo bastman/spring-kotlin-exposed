@@ -10,7 +10,7 @@ import java.util.*
 class TweeterApiController(private val repo: TweetsRepo) {
 
     @GetMapping("/api/tweeter")
-    fun findAll() = repo.findAll().map { it.toTweetsDto() }
+    fun findAll():List<TweetDto> = repo.findAll().map { it.toTweetsDto() }
 
     @GetMapping("/api/tweeter/{id}")
     fun getOne(@PathVariable id: UUID): TweetDto =

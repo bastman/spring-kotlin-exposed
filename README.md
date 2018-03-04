@@ -1,5 +1,5 @@
 # spring-kotlin-exposed
-playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres, docker
+playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres, jsonb, docker
 
 
 - Yes, we can talk to a sql db.
@@ -86,6 +86,8 @@ playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres, docker
 ## This example project is based on ...
 - https://github.com/making/spring-boot-db-samples
 - https://github.com/sdeleuze/geospatial-messenger
+- jsonb: https://www.compose.com/articles/faster-operations-with-the-jsonb-data-type-in-postgresql/
+- jsonb: https://gist.github.com/quangIO/a623b5caa53c703e252d858f7a806919
 
 ## Whats wrong with orm, jpa, hibernate and in-memory h2-db these days ?
 

@@ -87,6 +87,19 @@ CREATE TABLE documents (
 ALTER TABLE documents OWNER TO app_rw;
 ALTER TABLE ONLY documents
     ADD CONSTRAINT documents_pkey PRIMARY KEY (id);
+
+CREATE TABLE bookz (
+      id uuid NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+  data jsonb NOT NULL
+);
+ALTER TABLE bookz OWNER TO app_rw;
+ALTER TABLE ONLY bookz
+    ADD CONSTRAINT bookz_pkey PRIMARY KEY (id);
+
+
+
 --
 -- PostgreSQL database dump complete
 --

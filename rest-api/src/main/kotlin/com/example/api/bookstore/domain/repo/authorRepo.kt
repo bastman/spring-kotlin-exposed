@@ -40,8 +40,8 @@ class AuthorRepository {
         return requireOneById(author.id)
     }
 
-    fun requireOneById(id: UUID): AuthorRecord
-            = getOneById(id) ?: throw EntityNotFoundException("AuthorRecord NOT FOUND ! (id=$id)")
+    fun requireOneById(id: UUID): AuthorRecord = getOneById(id)
+            ?: throw EntityNotFoundException("AuthorRecord NOT FOUND ! (id=$id)")
 
     fun getOneById(id: UUID): AuthorRecord? =
             AuthorTable.select { AuthorTable.id eq id }

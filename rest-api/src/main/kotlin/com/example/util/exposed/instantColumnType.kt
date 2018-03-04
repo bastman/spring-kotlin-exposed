@@ -7,8 +7,7 @@ import org.jetbrains.exposed.sql.Table
 import org.joda.time.DateTime as JodaDateTime
 import java.time.Instant as JavaInstant
 
-fun Table.instant(name: String): Column<java.time.Instant>
-        = registerColumn(name, InstantColumnType(true))
+fun Table.instant(name: String): Column<java.time.Instant> = registerColumn(name, InstantColumnType(true))
 
 private fun JodaDateTime.toInstantJava() = JavaInstant.ofEpochMilli(this.millis)
 private fun JavaInstant.toJodaDateTime() = JodaDateTime(this.toEpochMilli())

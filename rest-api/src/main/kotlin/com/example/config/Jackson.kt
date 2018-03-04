@@ -14,8 +14,7 @@ class Jackson {
     fun objectMapper(): ObjectMapper = defaultMapper()
 
     companion object {
-        fun defaultMapper(): ObjectMapper
-                = jacksonObjectMapper()
+        fun defaultMapper(): ObjectMapper = jacksonObjectMapper()
                 .findAndRegisterModules()
 
                 // toJson()

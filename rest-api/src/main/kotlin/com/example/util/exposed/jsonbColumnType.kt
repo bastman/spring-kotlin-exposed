@@ -13,8 +13,7 @@ import java.sql.PreparedStatement
  * Created by quangio.
  */
 
-fun <T : Any> Table.jsonb(name: String, klass: Class<T>, jsonMapper: ObjectMapper): Column<T>
-        = registerColumn(name, JsonB(klass, jsonMapper))
+fun <T : Any> Table.jsonb(name: String, klass: Class<T>, jsonMapper: ObjectMapper): Column<T> = registerColumn(name, JsonB(klass, jsonMapper))
 
 
 private class JsonB<out T : Any>(private val klass: Class<T>, private val jsonMapper: ObjectMapper) : ColumnType() {

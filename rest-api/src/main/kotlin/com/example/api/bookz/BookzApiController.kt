@@ -34,7 +34,7 @@ class BookzApiController(private val repo: BookzRepo) {
                     .also { logger.info { "UPDATE DB ENTITY: $it" } }
                     .toBookzDto()
 
-    companion object:KLogging() {
-        const val API_NAME="bookz-jsonb"
+    companion object : KLogging() {
+        const val API_NAME = "bookz-jsonb"
     }
 }

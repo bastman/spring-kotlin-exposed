@@ -13,16 +13,14 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2
 class Swagger(private val apiConfig: ApiConfig) {
 
     @Bean
-    fun mainApi(): Docket
-            = apiConfig.toDocket()
+    fun mainApi(): Docket = apiConfig.toDocket()
             .groupName("Main")
             .select()
             .apis(RequestHandlerSelectors.basePackage(apiConfig.getBasePackageName()))
             .build()
 
     @Bean
-    fun monitoringApi(): Docket
-            = apiConfig.toDocket()
+    fun monitoringApi(): Docket = apiConfig.toDocket()
             .groupName("Monitoring")
             .useDefaultResponseMessages(true)
             .select()

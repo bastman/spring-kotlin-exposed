@@ -42,8 +42,8 @@ class AuthorDAORepository {
     fun getOneById(id: UUID): AuthorRecord? =
             AuthorDAO.findById(id)?.toAuthorRecord()
 
-    fun requireOneById(id: UUID): AuthorRecord
-            = getOneById(id) ?: throw EntityNotFoundException("AuthorRecord NOT FOUND ! (id=$id)")
+    fun requireOneById(id: UUID): AuthorRecord = getOneById(id)
+            ?: throw EntityNotFoundException("AuthorRecord NOT FOUND ! (id=$id)")
 
     fun findAll() = AuthorDAO.all().map { it.toAuthorRecord() }
 

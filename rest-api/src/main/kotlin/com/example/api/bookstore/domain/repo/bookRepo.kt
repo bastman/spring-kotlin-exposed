@@ -42,8 +42,8 @@ class BookRepository {
         return requireOneById(book.id)
     }
 
-    fun requireOneById(id: UUID): BookRecord
-            = getOneById(id) ?: throw EntityNotFoundException("BookRecord NOT FOUND ! (id=$id)")
+    fun requireOneById(id: UUID): BookRecord = getOneById(id)
+            ?: throw EntityNotFoundException("BookRecord NOT FOUND ! (id=$id)")
 
     fun getOneById(id: UUID): BookRecord? =
             BookTable.select { BookTable.id eq id }

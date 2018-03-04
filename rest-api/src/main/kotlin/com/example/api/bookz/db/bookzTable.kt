@@ -22,7 +22,7 @@ data class BookzRecord(
 
 data class BookzData(val title: String, val genres: List<String>, val published: Boolean)
 
-fun BookzTable.rowToBookzRecord(row: ResultRow):BookzRecord = BookzRecord(
+fun BookzTable.rowToBookzRecord(row: ResultRow): BookzRecord = BookzRecord(
         id = row[id],
         createdAt = row[createdAt],
         modifiedAt = row[modifiedAt],

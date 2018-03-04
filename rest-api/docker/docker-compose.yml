@@ -4,10 +4,8 @@ services:
     image: local/spring-kotlin-exposed-db:latest
     ports:
       - "5432:5432"
-    tmpfs:
-      - /tmp
-      - /var/run/postgresql
-      - /var/lib/postgresql/data
+    volumes:
+      - spring-kotlin-exposed-db-local-volume:/var/lib/postgresql/data
   spring-kotlin-exposed-db-ci:
     image: local/spring-kotlin-exposed-db:latest
     ports:
@@ -17,3 +15,6 @@ services:
       - /tmp
       - /var/run/postgresql
       - /var/lib/postgresql/data
+
+volumes:
+  spring-kotlin-exposed-db-local-volume: {}

@@ -10,11 +10,11 @@ import java.util.*
 class TweeterApiController(private val repo: TweetsRepo) {
 
     @GetMapping("/api/tweeter")
-    fun findAll():List<TweetDto> = repo.findAll().map { it.toTweetsDto() }
+    fun findAll(): List<TweetDto> = repo.findAll().map { it.toTweetsDto() }
 
     @GetMapping("/api/tweeter/{id}")
     fun getOne(@PathVariable id: UUID): TweetDto =
-            repo.requireOneById(id).toTweetsDto()
+            repo[id].toTweetsDto()
 
     @PutMapping("/api/tweeter")
     fun createOne(@RequestBody req: CreateTweetRequest): TweetDto =
@@ -25,7 +25,7 @@ class TweeterApiController(private val repo: TweetsRepo) {
 
     @PostMapping("/api/tweeter/{id}")
     fun updateOne(@PathVariable id: UUID, @RequestBody req: UpdateTweetRequest): TweetDto =
-            repo.requireOneById(id)
+            repo[id]
                     .copy(modifiedAt = Instant.now(), message = req.message, comment = req.comment)
                     .let { repo.update(it) }
                     .also { logger.info { "UPDATE DB ENTITY: $it" } }

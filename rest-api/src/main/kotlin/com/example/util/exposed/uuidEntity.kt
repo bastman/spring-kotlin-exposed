@@ -1,4 +1,4 @@
-package com.example.api.bookstore.domain.db.dao
+package com.example.util.exposed
 
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass

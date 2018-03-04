@@ -1,4 +1,4 @@
-package com.example.api.bookstore.domain.db
+package com.example.api.bookstore.db
 
 import com.example.util.exposed.instant
 import org.jetbrains.exposed.sql.ResultRow
@@ -15,19 +15,15 @@ object AuthorTable : Table("author") {
 }
 
 data class AuthorRecord(
-        val id: UUID,
-        val createdAt: Instant,
-        val modifiedAt: Instant,
-        val version: Int,
+        val id: UUID, val createdAt: Instant, val modifiedAt: Instant, val version: Int,
         val name: String
 )
 
-
-fun ResultRow.toAuthorRecord() =
+fun AuthorTable.rowToAuthorRecord(row: ResultRow): AuthorRecord =
         AuthorRecord(
-                id = this[AuthorTable.id],
-                createdAt = this[AuthorTable.createdAt],
-                modifiedAt = this[AuthorTable.modifiedAt],
-                version = this[AuthorTable.version],
-                name = this[AuthorTable.name]
+                id = row[id],
+                createdAt = row[createdAt],
+                modifiedAt = row[modifiedAt],
+                version = row[version],
+                name = row[name]
         )

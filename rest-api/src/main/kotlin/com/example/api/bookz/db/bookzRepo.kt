@@ -17,7 +17,7 @@ class BookzRepo {
             it[modifiedAt] = record.modifiedAt
             it[data] = record.data
         })
-        return requireOneById(record.id)
+        return this[record.id]
     }
 
     fun update(record: BookzRecord): BookzRecord {
@@ -26,14 +26,13 @@ class BookzRepo {
             it[modifiedAt] = record.modifiedAt
             it[data] = record.data
         }
-
-        return requireOneById(record.id)
+        return this[record.id]
     }
 
-    fun requireOneById(id: UUID): BookzRecord = getOneById(id)
+    operator fun get(id: UUID): BookzRecord = findOneById(id)
             ?: throw EntityNotFoundException("BookzRecord NOT FOUND ! (id=$id)")
 
-    fun getOneById(id: UUID): BookzRecord? =
+    fun findOneById(id: UUID): BookzRecord? =
             BookzTable.select { BookzTable.id eq id }
                     .limit(1)
                     .map { it.toBookzRecord() }

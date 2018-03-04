@@ -24,11 +24,11 @@ class BookzApiController(private val repo: BookzRepo) {
 
     @GetMapping("/api/$API_NAME/books/{id}")
     fun booksGetOne(@PathVariable id: UUID): BookzDto =
-            repo.requireOneById(id).toBookzDto()
+            repo[id].toBookzDto()
 
     @PostMapping("/api/$API_NAME/books/{id}")
     fun booksUpdateOne(@PathVariable id: UUID, @RequestBody req: BookzUpdateRequest): BookzDto =
-            repo.requireOneById(id)
+            repo[id]
                     .copy(modifiedAt = Instant.now(), data = req.data)
                     .let { repo.update(record = it) }
                     .also { logger.info { "UPDATE DB ENTITY: $it" } }

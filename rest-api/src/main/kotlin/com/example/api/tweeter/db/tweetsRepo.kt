@@ -36,13 +36,13 @@ class TweetsRepo {
 
     fun findAll() = TweetsTable.selectAll().map { it.toTweetsRecord() }
 
-    fun getOneById(id: UUID): TweetsRecord? =
+    fun findOneById(id: UUID): TweetsRecord? =
             TweetsTable.select { TweetsTable.id eq id }
                     .limit(1)
                     .map { it.toTweetsRecord() }
                     .firstOrNull()
 
-    fun requireOneById(id: UUID): TweetsRecord = getOneById(id)
+    operator fun get(id: UUID): TweetsRecord = findOneById(id)
             ?: throw EntityNotFoundException("TweetRecord NOT FOUND ! (id=$id)")
 
 }

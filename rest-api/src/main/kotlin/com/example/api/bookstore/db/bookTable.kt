@@ -1,4 +1,4 @@
-package com.example.api.bookstore.domain.db
+package com.example.api.bookstore.db
 
 import com.example.util.exposed.instant
 import org.jetbrains.exposed.sql.ResultRow
@@ -6,7 +6,6 @@ import org.jetbrains.exposed.sql.Table
 import java.math.BigDecimal
 import java.time.Instant
 import java.util.*
-
 
 object BookTable : Table("book") {
     val id = uuid("id").primaryKey()
@@ -20,26 +19,16 @@ object BookTable : Table("book") {
 }
 
 data class BookRecord(
-        val id: UUID,
-        val createdAt: Instant,
-        val modifiedAt: Instant,
-        val version: Int,
+        val id: UUID, val createdAt: Instant, val modifiedAt: Instant, val version: Int,
         val authorId: UUID,
-        val title: String,
-        val status: BookStatus,
-        val price: BigDecimal
+        val title: String, val status: BookStatus, val price: BigDecimal
 )
 
 enum class BookStatus { NEW, PUBLISHED; }
 
-fun ResultRow.toBookRecord() =
+fun BookTable.rowToBookRecord(row: ResultRow): BookRecord =
         BookRecord(
-                id = this[BookTable.id],
-                createdAt = this[BookTable.createdAt],
-                modifiedAt = this[BookTable.modifiedAt],
-                version = this[BookTable.version],
-                title = this[BookTable.title],
-                status = this[BookTable.status],
-                authorId = this[BookTable.authorId],
-                price = this[BookTable.price]
+                id = row[id], createdAt = row[createdAt], modifiedAt = row[modifiedAt], version = row[version],
+                authorId = row[authorId],
+                title = row[title], status = row[status], price = row[price]
         )

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
-
 @Repository
 @Transactional // Should be at @Service level in real applications
 class BookzRepo {
@@ -40,16 +39,11 @@ class BookzRepo {
                     .map { it.toBookzRecord() }
                     .firstOrNull()
 
-    fun findAll() = BookzTable.selectAll().map { it.toBookzRecord() }
+    fun findAll() =
+            BookzTable.selectAll().map { it.toBookzRecord() }
 
 
 }
 
+private fun ResultRow.toBookzRecord() = BookzTable.rowToBookzRecord(this)
 
-private fun ResultRow.toBookzRecord() =
-        BookzRecord(
-                id = this[BookzTable.id],
-                createdAt = this[BookzTable.createdAt],
-                modifiedAt = this[BookzTable.modifiedAt],
-                data = this[BookzTable.data]
-        )

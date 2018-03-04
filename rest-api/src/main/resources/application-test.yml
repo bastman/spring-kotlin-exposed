@@ -1,9 +1,9 @@
 spring:
-  profiles: local
+  profiles: test
   datasource:
     url: jdbc:postgresql://localhost:5432/app
     username: app_rw
     password: app_rw
 
 app:
-  envName: local
+  envName: test

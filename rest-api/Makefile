@@ -12,6 +12,7 @@ DOCKER_COMPOSE_FILE="docker/docker-compose.yml"
 DOCKER_COMPOSE_SVC_DB_LOCAL="spring-kotlin-exposed-db-local"
 DOCKER_COMPOSE_SVC_DB_CI="spring-kotlin-exposed-db-ci"
 
+DOCKER_COMPOSE_PLAYGROUND_FILE="docker/docker-compose-playground.yml"
 
 GRADLE_CMD=../gradlew
 
@@ -67,5 +68,14 @@ app.compose.down: guard-SERVICE_VERSION
 	docker ps
 	export SERVICE_VERSION=$(SERVICE_VERSION) && export SERVICE_NAME=$(SERVICE_NAME) && docker-compose -f $(DOCKER_COMPOSE_FILE) down -v
 
+playground.up: app.build playground.start
 
-
+playground.start: guard-SERVICE_VERSION
+	docker ps
+	export SERVICE_VERSION=$(SERVICE_VERSION) && export SERVICE_NAME=$(SERVICE_NAME) && docker-compose -f $(DOCKER_COMPOSE_PLAYGROUND_FILE) up
+playground.down: guard-SERVICE_VERSION
+	docker ps
+	export SERVICE_VERSION=$(SERVICE_VERSION) && export SERVICE_NAME=$(SERVICE_NAME) && docker-compose -f $(DOCKER_COMPOSE_PLAYGROUND_FILE) down
+playground.down.v: guard-SERVICE_VERSION
+	docker ps
+	export SERVICE_VERSION=$(SERVICE_VERSION) && export SERVICE_NAME=$(SERVICE_NAME) && docker-compose -f $(DOCKER_COMPOSE_PLAYGROUND_FILE) down -v

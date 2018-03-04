@@ -1,0 +1,21 @@
+version: '3'
+services:
+  spring-kotlin-exposed-playground-db:
+    image: local/spring-kotlin-exposed-db:latest
+    ports:
+      - "5432:5432"
+    volumes:
+      - spring-kotlin-exposed-playground-db-volume:/var/lib/postgresql/data
+
+  spring-kotlin-exposed-playground-web:
+    image: local/spring-kotlin-exposed-rest-api:${SERVICE_VERSION}
+    ports:
+      - "8080:8080"
+    environment:
+      - "DB_URL=spring-kotlin-exposed-playground-db:5432/app"
+    command: ["java","-jar","-Dspring.profiles.active=playground", "-Xms32m", "-Xmx256m", "/opt/app/app.jar"]
+    depends_on:
+      - spring-kotlin-exposed-playground-db
+
+volumes:
+  spring-kotlin-exposed-playground-db-volume: {}

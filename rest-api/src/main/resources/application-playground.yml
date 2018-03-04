@@ -1,7 +1,7 @@
 spring:
   profiles: playground
   datasource:
-    url: jdbc:postgresql://localhost:5432/app
+    url: jdbc:postgresql://${DB_URL}
     username: app_rw
     password: app_rw
 

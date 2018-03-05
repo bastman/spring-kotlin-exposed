@@ -33,6 +33,9 @@ class AuthorRepository {
         return this[record.id]
     }
 
+    fun findAll() = AuthorTable.selectAll().map { it.toAuthorRecord() }
+    fun requireIdExists(id: UUID): UUID = this[id].id
+
     operator fun get(id: UUID): AuthorRecord = findOneById(id)
             ?: throw EntityNotFoundException("AuthorRecord NOT FOUND ! (id=$id)")
 
@@ -42,9 +45,6 @@ class AuthorRepository {
                     .map { it.toAuthorRecord() }
                     .firstOrNull()
 
-    fun findAll() = AuthorTable.selectAll().map { it.toAuthorRecord() }
-
-    fun requireIdExists(id: UUID): UUID = this[id].id
 }
 
 private fun ResultRow.toAuthorRecord() = AuthorTable.rowToAuthorRecord(this)

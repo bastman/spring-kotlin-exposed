@@ -12,9 +12,11 @@ playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres, jsonb, dock
     - DAO Api: ORM-/ActiveRecord-style (mutable entities)
 - highlights: 
     - integrates with spring transaction manager
-    - supports multiple datasources within 1 application
+    - supports multiple datasources within one application
         (e.g.: source-db-1, source-db2, sink-db)
-    - writing custom db column types is simple    
+    - writing custom db column types is simple
+    - speeds up startup of spring-boot
+    - low memory footprint   
     
     
 ## Exposed DSL Api: examples

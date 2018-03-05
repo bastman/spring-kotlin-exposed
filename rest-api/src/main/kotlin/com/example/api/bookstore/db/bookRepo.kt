@@ -46,7 +46,15 @@ class BookRepository {
                     .map { it.toBookRecord() }
                     .firstOrNull()
 
+    fun findByIdList(ids: List<UUID>): List<BookRecord> =
+            BookTable.select { BookTable.id inList ids.distinct() }
+                    .map { it.toBookRecord() }
+
     fun findAll(): List<BookRecord> = BookTable.selectAll().map { it.toBookRecord() }
+
+    fun findAllByAuthorIdList(ids: List<UUID>): List<BookRecord> =
+            BookTable.select { BookTable.authorId inList ids.distinct() }
+                    .map { it.toBookRecord() }
 
     fun findAllBooksJoinAuthor() =
             (AuthorTable innerJoin BookTable)
@@ -72,6 +80,8 @@ class BookRepository {
 
     fun requireOneJoinAuthor(id: UUID): BookRecordJoinAuthorRecord =
             findOneJoinAuthor(id) ?: throw EntityNotFoundException("BookRecord NOT FOUND ! (id=$id)")
+
+
 }
 
 data class BookRecordJoinAuthorRecord(val bookRecord: BookRecord, val authorRecord: AuthorRecord)

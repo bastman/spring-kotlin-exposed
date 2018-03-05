@@ -25,6 +25,14 @@ class BookStoreApiController(private val authorRepo: AuthorRepository, private v
             .also { logger.info { "INSERT DB ENTITY: $it" } }
             .toAuthorDto()
 
+    @GetMapping("/$API_AUTHORS/{id}/books")
+    fun authorsGetOneWithBooks(@PathVariable id: UUID): AuthorWithBooksDto =
+            authorRepo[id].let { authorRecord ->
+                authorRecord.toAuthorWithBooksDto(
+                        books = bookRepo.findAllByAuthorIdList(listOf(authorRecord.id))
+                )
+            }
+
     @PostMapping("/$API_AUTHORS/{id}")
     fun authorsUpdateOne(@PathVariable id: UUID, @RequestBody req: AuthorUpdateRequest): AuthorDto =
             authorRepo[id]

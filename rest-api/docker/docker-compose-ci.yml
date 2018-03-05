@@ -1,0 +1,11 @@
+version: '3'
+services:
+  spring-kotlin-exposed-db-ci:
+    image: local/spring-kotlin-exposed-db:latest
+    ports:
+      - "5435:5432"
+    restart: always
+    tmpfs:
+      - /tmp
+      - /var/run/postgresql
+      - /var/lib/postgresql/data

@@ -1,0 +1,11 @@
+version: '3'
+services:
+  spring-kotlin-exposed-local-db:
+    image: local/spring-kotlin-exposed-db:latest
+    ports:
+      - "5432:5432"
+    volumes:
+      - spring-kotlin-exposed-local-db-volume:/var/lib/postgresql/data
+
+volumes:
+  spring-kotlin-exposed-local-db-volume: {}

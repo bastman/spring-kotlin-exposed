@@ -1,11 +1,24 @@
 # spring-kotlin-exposed
 playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres, jsonb, docker
 
+- Yes, we can talk to a sql db. It's easy. No rocket science.
+- There is a life besides the "dark art of hibernate / jpa".
+- Alternatives: JDBI, Requery, rxjava-jdbc, Jooq, Querydsl, ...
 
-- Yes, we can talk to a sql db.
-
-- It's easy. No ORM magic required. No hibernate / jpa.
-
+## jetbrains exposed (overview)
+- Wiki: https://github.com/JetBrains/Exposed/wiki
+- flavours: 
+    - DSL Api: typesafe sql (immutable data structures)
+    - DAO Api: ORM-/ActiveRecord-style (mutable entities)
+- highlights: 
+    - integrates with spring transaction manager
+    - supports multiple datasources within 1 application
+        (e.g.: source-db-1, source-db2, sink-db)
+    - writing custom db column types is simple    
+    
+    
+## Exposed DSL Api: examples
+- It's easy. No ORM magic. WYSIWYG.
 - Ready for starship java "enterprise" deployments.
 
 ```
@@ -88,7 +101,7 @@ playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres, jsonb, dock
 ## run local db (docker)
 
 ```
-    $ make -C rest-api db.local.up
+    $ make -C rest-api db-local.up
 
 ```
 

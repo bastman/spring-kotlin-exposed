@@ -1,22 +1,25 @@
 # spring-kotlin-exposed
-playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres, jsonb, docker
+playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres, jsonb, flyway, docker
 
 - Yes, we can talk to a sql db. It's easy. No rocket science.
 - There is a life besides the "dark art of hibernate / jpa".
-- Alternatives: JDBI, Requery, rxjava-jdbc, Jooq, Querydsl, ...
+- Alternatives: JDBI, Requery, rxjava-jdbc, Jooq, Querydsl ...
 
 ## jetbrains exposed (overview)
-- Wiki: https://github.com/JetBrains/Exposed/wiki
+- wiki: https://github.com/JetBrains/Exposed/wiki
 - flavours: 
     - DSL Api: typesafe sql (immutable data structures)
     - DAO Api: ORM-/ActiveRecord-style (mutable entities)
 - highlights: 
     - integrates with spring transaction manager
+    - works with flyway db migrations
     - supports multiple datasources within one application
         (e.g.: source-db-1, source-db2, sink-db)
-    - writing custom db column types is simple
     - speeds up startup of spring-boot
-    - low memory footprint   
+    - low memory footprint (playground runs on 256M)
+    - precise and typesafe sql queries (WYSISWG)
+    - no runtime reflection magic  
+    - writing add-ons is simple, e.g. custom db-column-types 
     
     
 ## Exposed DSL Api: examples

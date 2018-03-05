@@ -1,20 +1,21 @@
 version '0.0.1'
 
-
-
 buildscript {
     ext {
+        // kotlin
         kotlinVersion = '1.2.21'
         kotlinLoggingVersion = '1.5.3'
+        // spring
         logstashLogbackEncoderVersion='5.0'//''4.8'
         springBootVersion ='2.0.0.RELEASE'
         springGradlePluginVersion = '1.0.4.RELEASE'
         jacksonVersion = '2.9.4'
         swaggerVersion = '2.8.0'
-
+        // db
         postgresDriverVersion = '42.2.1'
         exposedVersion = '0.10.1'
-
+        flywayVersion = '5.0.7'
+        // tests
         junitGradlePluginVersion = '1.1.0'
         mockitoVersion = '2.15.0'
         kluentVersion = '1.35'
@@ -91,12 +92,15 @@ dependencies {
     compile "io.springfox:springfox-swagger2:$swaggerVersion"
     compile "io.springfox:springfox-swagger-ui:$swaggerVersion"
 
-    // postgres
-    compile "org.postgresql:postgresql:${postgresDriverVersion}"
+    // postgres driver
+    compile "org.postgresql:postgresql:$postgresDriverVersion"
 
-    // exposed
+    // exposed sql client
     compile "org.jetbrains.exposed:exposed:$exposedVersion"
     compile "org.jetbrains.exposed:spring-transaction:$exposedVersion"
+
+    // flyway db migrations
+    compile "org.flywaydb:flyway-core:$flywayVersion"
 
     // test
     testCompile('org.springframework.boot:spring-boot-starter-test') {

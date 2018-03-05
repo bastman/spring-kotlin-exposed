@@ -107,6 +107,11 @@ playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres, jsonb, dock
 
 ```
 
+## examples:
+
+- api tweeter: simple crud (tables: tweet)
+- api bookstore: crud-ish (joined tables: author, book)
+- api bookz: jsonb examples (tables: bookz)
 
 ## This example project is based on ...
 - https://github.com/making/spring-boot-db-samples

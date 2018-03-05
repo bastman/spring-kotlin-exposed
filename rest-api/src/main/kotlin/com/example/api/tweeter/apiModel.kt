@@ -19,10 +19,6 @@ fun TweetsRecord.toTweetsDto() = TweetDto(
 
 fun CreateTweetRequest.toRecord(id: UUID, now: Instant): TweetsRecord =
         TweetsRecord(
-                id = UUID.randomUUID(),
-                version = 0,
-                createdAt = now,
-                modifiedAt = now,
-                message = message,
-                comment = comment
+                id = id, version = 0, createdAt = now, modifiedAt = now,
+                message = message, comment = comment
         )

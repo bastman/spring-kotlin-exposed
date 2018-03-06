@@ -2,7 +2,6 @@ package com.example
 
 import com.example.api.ApiConfig
 import mu.KLogging
-import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.ApplicationListener
@@ -25,8 +24,4 @@ class RestApiApplication(private val apiConfig: ApiConfig) : ApplicationListener
     }
 
     companion object : KLogging()
-}
-
-fun main(args: Array<String>) {
-    SpringApplication.run(RestApiApplication::class.java, *args)
 }

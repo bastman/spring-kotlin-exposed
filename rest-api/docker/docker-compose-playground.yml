@@ -1,4 +1,4 @@
-version: '3'
+version: '3.4'
 services:
   spring-kotlin-exposed-playground-db:
     image: local/spring-kotlin-exposed-db:latest
@@ -16,6 +16,12 @@ services:
     command: ["java","-jar","-Dspring.profiles.active=playground", "-Xms32m", "-Xmx256m", "/opt/app/app.jar"]
     depends_on:
       - spring-kotlin-exposed-playground-db
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
 volumes:
   spring-kotlin-exposed-playground-db-volume: {}

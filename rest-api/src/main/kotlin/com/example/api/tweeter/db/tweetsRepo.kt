@@ -12,14 +12,22 @@ import java.util.*
 class TweetsRepo {
 
     fun insert(record: TweetsRecord): TweetsRecord {
-        TweetsTable.insert({
-            it[id] = record.id
-            it[createdAt] = record.createdAt
-            it[modifiedAt] = record.modifiedAt
-            it[version] = record.version
-            it[message] = record.message
-            it[comment] = record.comment
-        })
+        try {
+            TweetsTable.insert({
+                it[id] = record.id
+                it[createdAt] = record.createdAt
+                it[modifiedAt] = record.modifiedAt
+                it[deletedAt] = record.deletedAt
+                it[version] = record.version
+                it[message] = record.message
+                it[comment] = record.comment
+                it[status] = record.status
+            })
+        } catch (all: Throwable) {
+            all.printStackTrace()
+
+            throw all
+        }
         return record
     }
 

@@ -1,5 +1,6 @@
 package com.example.api.tweeter.db
 
+import com.example.util.exposed.enumerationByNameAndSqlType
 import com.example.util.exposed.instant
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
@@ -14,11 +15,16 @@ object TweetsTable : Table("tweet") {
     val version = integer("version")
     val message = varchar("message", 255)
     val comment = text("comment").nullable()
+    val status = enumerationByNameAndSqlType(
+            name = "status", sqlType = "TweetStatusType", klass = TweetStatus::class.java
+    ).default(TweetStatus.DRAFT)
 }
+
+enum class TweetStatus { DRAFT, PENDING, PUBLISHED; }
 
 data class TweetsRecord(
         val id: UUID, val createdAt: Instant, val modifiedAt: Instant, val deletedAt: Instant, val version: Int,
-        val message: String, val comment: String?
+        val message: String, val comment: String?, val status: TweetStatus
 )
 
 fun TweetsTable.rowToTweetsRecord(row: ResultRow): TweetsRecord =
@@ -29,5 +35,6 @@ fun TweetsTable.rowToTweetsRecord(row: ResultRow): TweetsRecord =
                 deletedAt = row[deletedAt],
                 version = row[version],
                 message = row[message],
-                comment = row[comment]
+                comment = row[comment],
+                status = row[status]
         )

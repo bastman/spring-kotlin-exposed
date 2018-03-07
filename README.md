@@ -116,12 +116,24 @@ playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres, jsonb, flyw
 
 ```
 # Highlights: postgres enum types
+ 
+sql ..
+ 
 CREATE TYPE TweetStatusType AS ENUM ('DRAFT', 'PENDING', 'PUBLISHED');
 
 CREATE TABLE Tweet (
   (...)
   status TweetStatusType NOT NULL DEFAULT 'DRAFT'
 );
+ 
+kotlin ...
+ 
+object TweetsTable : Table("tweet") {
+    (...)
+    val status = enumerationByNameAndSqlType(
+            name = "status", sqlType = "TweetStatusType", klass = TweetStatus::class.java
+    )
+}
 
 ```
 - api bookstore: crud-ish (joined tables: author, book)

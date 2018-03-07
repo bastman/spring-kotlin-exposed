@@ -112,7 +112,18 @@ playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres, jsonb, flyw
 
 ## examples:
 
-- api tweeter: simple crud (tables: tweet)
+- api tweeter: simple crud (tables: tweet). 
+
+```
+# Highlights: postgres enum types
+CREATE TYPE TweetStatusType AS ENUM ('DRAFT', 'PENDING', 'PUBLISHED');
+
+CREATE TABLE Tweet (
+  (...)
+  status TweetStatusType NOT NULL DEFAULT 'DRAFT'
+);
+
+```
 - api bookstore: crud-ish (joined tables: author, book)
 - api bookz: jsonb examples (tables: bookz)
 

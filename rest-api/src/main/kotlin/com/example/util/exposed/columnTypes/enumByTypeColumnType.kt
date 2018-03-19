@@ -1,4 +1,4 @@
-package com.example.util.exposed
+package com.example.util.exposed.columnTypes
 
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ColumnType

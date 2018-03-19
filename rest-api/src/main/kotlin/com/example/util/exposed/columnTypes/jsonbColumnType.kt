@@ -1,4 +1,4 @@
-package com.example.util.exposed
+package com.example.util.exposed.columnTypes
 
 // see: https://gist.github.com/quangIO/a623b5caa53c703e252d858f7a806919
 

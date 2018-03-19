@@ -1,7 +1,7 @@
 package com.example.api.bookz.db
 
-import com.example.util.exposed.instant
-import com.example.util.exposed.jsonb
+import com.example.util.exposed.columnTypes.instant
+import com.example.util.exposed.columnTypes.jsonb
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table

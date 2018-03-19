@@ -1,7 +1,7 @@
 package com.example.api.tweeter.db
 
-import com.example.util.exposed.enumerationByNameAndSqlType
-import com.example.util.exposed.instant
+import com.example.util.exposed.columnTypes.enumerationByNameAndSqlType
+import com.example.util.exposed.columnTypes.instant
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
 import java.time.Instant

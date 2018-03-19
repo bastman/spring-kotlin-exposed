@@ -5,6 +5,7 @@ import com.example.api.bookz.handler.bulkSave.BookzBulkSaveRequest
 import com.example.api.bookz.handler.bulkSave.BulkSaveHandler
 import com.example.api.bookz.handler.createOne.BookzCreateHandler
 import com.example.api.bookz.handler.createOne.BookzCreateRequest
+import com.example.api.bookz.handler.findAll.BookzFindAllHandler
 import com.example.api.bookz.handler.updateOneById.BookzUpdateOneByIdHandler
 import com.example.api.bookz.handler.updateOneById.BookzUpdateOneByIdRequest
 import com.example.api.bookz.handler.updateOneById.BookzUpdateOnePayload
@@ -18,6 +19,7 @@ class BookzApiController(
         private val repo: BookzRepo,
         private val createOne: BookzCreateHandler,
         private val updateOne: BookzUpdateOneByIdHandler,
+        private val findAll: BookzFindAllHandler,
         private val bulkSaveHandler: BulkSaveHandler
 ) {
 
@@ -30,8 +32,7 @@ class BookzApiController(
 
     @GetMapping("/api/$API_NAME/books")
     @Transactional(readOnly = true)
-    fun booksFindAll(): List<BookzDto> =
-            repo.findAll().map { it.toBookzDto() }
+    fun booksFindAll(): List<BookzDto> = findAll.handle()
 
     @GetMapping("/api/$API_NAME/books/{id}")
     @Transactional(readOnly = true)

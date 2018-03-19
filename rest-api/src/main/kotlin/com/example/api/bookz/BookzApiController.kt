@@ -1,13 +1,19 @@
 package com.example.api.bookz
 
+import com.example.api.bookz.db.BookzData
+import com.example.api.bookz.db.BookzRecord
 import com.example.api.bookz.db.BookzRepo
+import com.example.api.bookz.handler.bulkSave.BulkSaveHandler
 import mu.KLogging
 import org.springframework.web.bind.annotation.*
 import java.time.Instant
 import java.util.*
 
 @RestController
-class BookzApiController(private val repo: BookzRepo) {
+class BookzApiController(
+        private val repo: BookzRepo,
+        private val bulkSaveHandler: BulkSaveHandler
+) {
 
     // jsonb examples: see: https://www.compose.com/articles/faster-operations-with-the-jsonb-data-type-in-postgresql/
 
@@ -33,6 +39,9 @@ class BookzApiController(private val repo: BookzRepo) {
                     .let { repo.update(record = it) }
                     .also { logger.info { "UPDATE DB ENTITY: $it" } }
                     .toBookzDto()
+
+    @PostMapping("/api/$API_NAME/books/bulk-save")
+    fun bulkSave():List<BookzDto> = bulkSaveHandler.handle(limit = 2)
 
     companion object : KLogging() {
         const val API_NAME = "bookz-jsonb"

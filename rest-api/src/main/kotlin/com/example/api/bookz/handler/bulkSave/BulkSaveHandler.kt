@@ -1,15 +1,18 @@
 package com.example.api.bookz.handler.bulkSave
 
-import com.example.api.bookz.BookzApiController
 import com.example.api.bookz.BookzDto
 import com.example.api.bookz.db.BookzData
 import com.example.api.bookz.db.BookzRecord
 import com.example.api.bookz.db.BookzRepo
 import com.example.api.bookz.toBookzDto
+import mu.KLogging
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 import java.util.*
+
+private typealias Request = BookzBulkSaveRequest
+private typealias Response = List<BookzDto>
 
 @Component
 class BulkSaveHandler(private val repo: BookzRepo) {
@@ -20,40 +23,53 @@ class BulkSaveHandler(private val repo: BookzRepo) {
     ).map { UUID.fromString(it) }
 
     @Transactional
-    fun handle(limit: Int): List<BookzDto> = execBulk(limit = limit)
-            .map { it.toBookzDto() }
+    fun handle(req: Request): Response = req
+            .let { insertOrUpdateDb(it) }
+            .let { mapToResponse(it) }
 
-    private fun execBulk(limit: Int): List<BookzRecord> {
-        val newRecords = (0..limit)
+    private fun mapToResponse(records: List<BookzRecord>): Response =
+            records.map { it.toBookzDto() }
+
+    private fun insertOrUpdateDb(req: Request): List<BookzRecord> {
+        val newRecords = (0..req.limit)
                 .map {
                     val id = UUID.randomUUID()
-                    val now = Instant.now()
-                    val data = BookzData(published = true, title = "Some Title $id", genres = listOf("genreA", "genreB"))
-                    BookzRecord(id = id, createdAt = now, modifiedAt = now, data = data)
+                    repo.newRecord(
+                            id = id, now = Instant.now(),
+                            data = BookzData(
+                                    published = true, title = "Some Title $id",
+                                    genres = listOf("genreA", "genreB")
+                            )
+                    )
                 }
-                .also { BookzApiController.logger.info { "INSERT DB ENTITY ...: $it" } }
+                .also { logger.info { "INSERT DB ENTITY ...: $it" } }
                 .map { repo.insert(it) }
-                .also { BookzApiController.logger.info { "INSERTED DB ENTITY: $it" } }
+                .also { logger.info { "INSERTED DB ENTITY: $it" } }
 
         val oldRecords = ids.map {
-            val record = repo.findOneById(it)
+            val record = repo.findOne(it)
             when (record) {
                 null -> {
                     val id = UUID.randomUUID()
-                    val now = Instant.now()
-                    val data = BookzData(published = true, title = "Some Title $id", genres = listOf("genreA", "genreB"))
-                    val newRecord = BookzRecord(id = id, createdAt = now, modifiedAt = now, data = data)
-                            .also { BookzApiController.logger.info { "INSERT DB ENTITY ...: $it" } }
-                    repo.insert(newRecord)
+                    repo.newRecord(
+                            id = id, now = Instant.now(),
+                            data = BookzData(
+                                    published = true, title = "Some Title $id",
+                                    genres = listOf("genreA", "genreB")
+                            )
+                    )
+                            .also { logger.info { "INSERT DB ENTITY ...: $it" } }
+                            .let { repo.insert(it) }
+                            .also { logger.info { "INSERTED DB ENTITY: $it" } }
                 }
                 else -> {
                     val now = Instant.now()
                     val id = record.id
-                    val updateRecord = record.copy(
-                            modifiedAt = now,
-                            data = record.data.copy("Some Title $id - updatedAt: $now")
-                    )
-                    repo.update(updateRecord)
+                    repo.updateOne(id) {
+                        it[modifiedAt] = now
+                        it[data] = record.data.copy("Some Title $id - updatedAt: $now")
+                    }
+                            .also { logger.info { "UPDATED DB ENTITY: $it" } }
                 }
             }
         }
@@ -62,4 +78,6 @@ class BulkSaveHandler(private val repo: BookzRepo) {
 
         return allRecords
     }
+
+    companion object : KLogging()
 }

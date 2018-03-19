@@ -1,17 +1,23 @@
 package com.example.api.bookz
 
-import com.example.api.bookz.db.BookzData
-import com.example.api.bookz.db.BookzRecord
 import com.example.api.bookz.db.BookzRepo
+import com.example.api.bookz.handler.bulkSave.BookzBulkSaveRequest
 import com.example.api.bookz.handler.bulkSave.BulkSaveHandler
+import com.example.api.bookz.handler.createOne.BookzCreateHandler
+import com.example.api.bookz.handler.createOne.BookzCreateRequest
+import com.example.api.bookz.handler.updateOneById.BookzUpdateOneByIdHandler
+import com.example.api.bookz.handler.updateOneById.BookzUpdateOneByIdRequest
+import com.example.api.bookz.handler.updateOneById.BookzUpdateOnePayload
 import mu.KLogging
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
-import java.time.Instant
 import java.util.*
 
 @RestController
 class BookzApiController(
         private val repo: BookzRepo,
+        private val createOne: BookzCreateHandler,
+        private val updateOne: BookzUpdateOneByIdHandler,
         private val bulkSaveHandler: BulkSaveHandler
 ) {
 
@@ -19,29 +25,28 @@ class BookzApiController(
 
     @PutMapping("/api/$API_NAME/books")
     fun booksCreateOne(@RequestBody req: BookzCreateRequest): BookzDto =
-            req.toBookzRecord(id = UUID.randomUUID(), now = Instant.now())
-                    .let { repo.insert(record = it) }
-                    .also { logger.info { "INSERT DB ENTITY: $it" } }
-                    .toBookzDto()
+            BookzCreateRequest(data = req.data)
+                    .let { createOne.handle(it) }
 
     @GetMapping("/api/$API_NAME/books")
+    @Transactional(readOnly = true)
     fun booksFindAll(): List<BookzDto> =
             repo.findAll().map { it.toBookzDto() }
 
     @GetMapping("/api/$API_NAME/books/{id}")
+    @Transactional(readOnly = true)
     fun booksGetOne(@PathVariable id: UUID): BookzDto =
             repo[id].toBookzDto()
 
     @PostMapping("/api/$API_NAME/books/{id}")
-    fun booksUpdateOne(@PathVariable id: UUID, @RequestBody req: BookzUpdateRequest): BookzDto =
-            repo[id]
-                    .copy(modifiedAt = Instant.now(), data = req.data)
-                    .let { repo.update(record = it) }
-                    .also { logger.info { "UPDATE DB ENTITY: $it" } }
-                    .toBookzDto()
+    fun booksUpdateOne(@PathVariable id: UUID, @RequestBody payload: BookzUpdateOnePayload): BookzDto =
+            BookzUpdateOneByIdRequest(id = id, data = payload.data)
+                    .let { updateOne.handle(it) }
 
     @PostMapping("/api/$API_NAME/books/bulk-save")
-    fun bulkSave():List<BookzDto> = bulkSaveHandler.handle(limit = 2)
+    fun bulkSave(): List<BookzDto> =
+            BookzBulkSaveRequest(limit = 2)
+                    .let { bulkSaveHandler.handle(it) }
 
     companion object : KLogging() {
         const val API_NAME = "bookz-jsonb"

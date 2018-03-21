@@ -6,7 +6,7 @@ import org.jetbrains.exposed.sql.Table
 import org.postgresql.util.PGobject
 import java.sql.PreparedStatement
 
-fun <T : Enum<T>> Table.enumerationByNameAndSqlType(
+fun <T : Enum<T>> Table.enumerationBySqlType(
         name: String,
         sqlType: String,
         klass: Class<T>,
@@ -34,19 +34,25 @@ private class EnumBySqlType<T : Enum<T>>(
         is Enum<*> -> try {
             serialize(value as T)
         } catch (all: Exception) {
-            error("$value of ${value::class.qualifiedName} is not valid for enum ${klass.name} . details: ${all.message}")
+            error(
+                    "SERIALIZE FAILED! $value of ${value::class.qualifiedName} is not valid for enum ${klass.name} ."
+                            + " details: ${all.message}"
+            )
         }
-        else -> error("$value of ${value::class.qualifiedName} is not valid for enum ${klass.name}")
+        else -> error("SERIALIZE FAILED! $value of ${value::class.qualifiedName} is not valid for enum ${klass.name}")
     }
 
     override fun valueFromDB(value: Any): Any = when (value) {
         is String -> try {
             unserialize(value, klass)
         } catch (all: Exception) {
-            error("$value of ${value::class.qualifiedName} is not valid for enum ${klass.name} . details: ${all.message}")
+            error(
+                    "UNSERIALIZE FAILED! $value of ${value::class.qualifiedName} is not valid for enum ${klass.name} ."
+                            + " details: ${all.message}"
+            )
         }
     //is Enum<*> -> value
-        else -> error("$value of ${value::class.qualifiedName} is not valid for enum ${klass.name}")
+        else -> error("UNSERIALIZE FAILED! $value of ${value::class.qualifiedName} is not valid for enum ${klass.name}")
     }
 
     override fun setParameter(stmt: PreparedStatement, index: Int, value: Any?) {

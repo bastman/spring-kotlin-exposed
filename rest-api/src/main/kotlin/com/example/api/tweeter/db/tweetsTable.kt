@@ -16,8 +16,7 @@ object TweetsTable : Table("tweet") {
     val message = varchar("message", 255)
     val comment = text("comment").nullable()
     val status = enumerationByNameAndSqlType(
-            name = "status", sqlType = "TweetStatusType",
-            klass = TweetStatus::class.java,
+            name = "status", sqlType = "TweetStatusType", klass = TweetStatus::class.java,
             serialize = { it.dbValue },
             unserialize = { fromDb, toKlass ->
                 toKlass.enumConstants.first { it.dbValue == fromDb };

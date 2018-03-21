@@ -22,7 +22,10 @@ private class JsonB<out T : Any>(private val klass: Class<T>, private val jsonMa
     override fun setParameter(stmt: PreparedStatement, index: Int, value: Any?) {
         val obj = PGobject()
         obj.type = "jsonb"
-        obj.value = value as String
+        obj.value = when(value) {
+            null->null
+            else->value as String
+        }
         stmt.setObject(index, obj)
     }
 

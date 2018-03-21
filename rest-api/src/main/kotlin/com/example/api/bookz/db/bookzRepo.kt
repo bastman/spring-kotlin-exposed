@@ -31,9 +31,7 @@ class BookzRepo : UUIDCrudRepo<UUIDCrudTable, CrudRecord>() {
                     data = data
             )
 
-    fun updateOne(id: UUID, body: CrudTable.(UpdateStatement) -> Unit) =
-            table.updateRowById(id, body = body)
-                    .let { this[id] }
+
 
     fun insert(record: BookzRecord): BookzRecord {
         BookzTable.insert({
@@ -45,15 +43,17 @@ class BookzRepo : UUIDCrudRepo<UUIDCrudTable, CrudRecord>() {
         return this[record.crudRecordId()]
     }
 
-    fun update(record: BookzRecord): BookzRecord {
-        BookzTable.update({ BookzTable.id eq record.id }) {
-            it[createdAt] = record.createdAt
-            it[modifiedAt] = record.modifiedAt
-            it[data] = record.data
-        }
-        return this[record.id]
-    }
+    fun updateOne(id: UUID, body: CrudTable.(UpdateStatement) -> Unit) =
+            table.updateRowById(id, body = body)
+                    .let { this[id] }
 
+    fun insertOrUpdate(insertRecord: CrudRecord, updateStatement: CrudTable.(UpdateStatement) -> Unit): CrudRecord {
+        val oldRecordId = findOne(insertRecord.crudRecordId())?.crudRecordId()
+        return when (oldRecordId) {
+            null -> insert(record = insertRecord)
+            else -> updateOne(oldRecordId, updateStatement)
+        }
+    }
 
     fun findAll() =
             table.selectAll().map { mapr(it) }

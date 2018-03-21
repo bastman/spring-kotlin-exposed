@@ -10,28 +10,30 @@ fun <T : Enum<T>> Table.enumerationByNameAndSqlType(
         name: String,
         sqlType: String,
         klass: Class<T>,
-        serialize: (toDb: T)->String = { it.name },
-        unserialize: (fromDb:String)->T = {fromDb-> klass.enumConstants.first { it.name == fromDb }}
+        serialize: (toDb: T) -> String = { it.name },
+        unserialize: (fromDb: String, toKlass: Class<T>) -> T = { fromDb, toKlass ->
+            toKlass.enumConstants.first { it.name == fromDb }
+        }
 ): Column<T> =
         registerColumn(
-                name=name,
+                name = name,
                 type = EnumBySqlType(sqlType, klass, serialize, unserialize)
         )
 
 private class EnumBySqlType<T : Enum<T>>(
         private val sqlType: String,
         private val klass: Class<T>,
-        private val serialize: (toDb: T)->String,
-        private val unserialize: (fromDb:String)->T
+        private val serialize: (toDb: T) -> String,
+        private val unserialize: (fromDb: String, toKlass: Class<T>) -> T
 ) : ColumnType() {
     override fun sqlType() = sqlType
 
     @Suppress("UNCHECKED_CAST")
     override fun notNullValueToDB(value: Any): Any = when (value) {
-       // is String -> value
+    // is String -> value
         is Enum<*> -> try {
             serialize(value as T)
-        } catch (all:Exception) {
+        } catch (all: Exception) {
             error("$value of ${value::class.qualifiedName} is not valid for enum ${klass.name} . details: ${all.message}")
         }
         else -> error("$value of ${value::class.qualifiedName} is not valid for enum ${klass.name}")
@@ -39,11 +41,11 @@ private class EnumBySqlType<T : Enum<T>>(
 
     override fun valueFromDB(value: Any): Any = when (value) {
         is String -> try {
-            unserialize(value)
-        }catch (all:Exception) {
+            unserialize(value, klass)
+        } catch (all: Exception) {
             error("$value of ${value::class.qualifiedName} is not valid for enum ${klass.name} . details: ${all.message}")
         }
-        //is Enum<*> -> value
+    //is Enum<*> -> value
         else -> error("$value of ${value::class.qualifiedName} is not valid for enum ${klass.name}")
     }
 

@@ -18,12 +18,14 @@ object TweetsTable : Table("tweet") {
     val status = enumerationByNameAndSqlType(
             name = "status", sqlType = "TweetStatusType",
             klass = TweetStatus::class.java,
-            serialize = {it.dbValue},
-            unserialize = {fromDb: String -> TweetStatus.values().first { it.dbValue==fromDb }; }
+            serialize = { it.dbValue },
+            unserialize = { fromDb, toKlass ->
+                toKlass.enumConstants.first { it.dbValue == fromDb };
+            }
     ).default(TweetStatus.DRAFT)
 }
 
-enum class TweetStatus(val dbValue:String) { DRAFT("DRAFT"), PENDING("PENDING"), PUBLISHED("PUBLISHED"); }
+enum class TweetStatus(val dbValue: String) { DRAFT("DRAFT"), PENDING("PENDING"), PUBLISHED("PUBLISHED"); }
 
 data class TweetsRecord(
         val id: UUID, val createdAt: Instant, val modifiedAt: Instant, val deletedAt: Instant, val version: Int,

@@ -10,25 +10,27 @@ fun <T : Enum<T>> Table.enumerationByNameAndSqlType(
         name: String,
         sqlType: String,
         klass: Class<T>,
-        serialize: (toDb: Enum<*>)->String = { it.name },
-        unserialize: (fromDb:String)->Enum<*> = {fromDb-> klass.enumConstants!!.first { it.name == fromDb }}
+        serialize: (toDb: T)->String = { it.name },
+        unserialize: (fromDb:String)->T = {fromDb-> klass.enumConstants.first { it.name == fromDb }}
 ): Column<T> =
-        registerColumn(name,
-                EnumBySqlType(sqlType, klass, serialize, unserialize)
+        registerColumn(
+                name=name,
+                type = EnumBySqlType(sqlType, klass, serialize, unserialize)
         )
 
 private class EnumBySqlType<T : Enum<T>>(
         private val sqlType: String,
         private val klass: Class<T>,
-        private val serialize: (toDb: Enum<*>)->String,
-        private val unserialize: (fromDb:String)->Enum<*>
+        private val serialize: (toDb: T)->String,
+        private val unserialize: (fromDb:String)->T
 ) : ColumnType() {
     override fun sqlType() = sqlType
 
+    @Suppress("UNCHECKED_CAST")
     override fun notNullValueToDB(value: Any): Any = when (value) {
        // is String -> value
         is Enum<*> -> try {
-            serialize(value)
+            serialize(value as T)
         } catch (all:Exception) {
             error("$value of ${value::class.qualifiedName} is not valid for enum ${klass.name} . details: ${all.message}")
         }
@@ -52,3 +54,16 @@ private class EnumBySqlType<T : Enum<T>>(
         stmt.setObject(index, obj)
     }
 }
+
+/*
+private inline fun <reified T : Enum<T>> EnumBySqlType<T>.fromDb(value: Any, unserialize: (fromDb:String)->T):T  = when (value) {
+    is String -> try {
+        unserialize(value)
+    }catch (all:Exception) {
+        error("$value of ${value::class.qualifiedName} is not valid for enum ${T::class.java.name} . details: ${all.message}")
+    }
+//is Enum<*> -> value
+    else -> error("$value of ${value::class.qualifiedName} is not valid for enum ${T::class.java.name}")
+}
+*/
+

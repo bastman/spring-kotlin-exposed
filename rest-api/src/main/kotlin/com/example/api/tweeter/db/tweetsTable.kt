@@ -18,7 +18,7 @@ object TweetsTable : Table("tweet") {
     val status = enumerationByNameAndSqlType(
             name = "status", sqlType = "TweetStatusType",
             klass = TweetStatus::class.java,
-            serialize = {toDb -> (toDb as TweetStatus).dbValue},
+            serialize = {it.dbValue},
             unserialize = {fromDb: String -> TweetStatus.values().first { it.dbValue==fromDb }; }
     ).default(TweetStatus.DRAFT)
 }

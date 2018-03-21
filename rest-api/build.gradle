@@ -3,7 +3,7 @@ version '0.0.1'
 buildscript {
     ext {
         // kotlin
-        kotlinVersion = '1.2.21'
+        kotlinVersion = '1.2.30'
         kotlinLoggingVersion = '1.5.3'
         // spring
         logstashLogbackEncoderVersion='5.0'//''4.8'

@@ -14,6 +14,7 @@ object BookzTable : UUIDCrudTable("bookz") {
     val id = uuid("id").primaryKey()
     val createdAt = instant("created_at")
     val modifiedAt = instant("updated_at")
+    val isActive = bool("is_active")
     val data = jsonb("data", BookzData::class.java, jacksonObjectMapper())
 
     override val crudIdColumn: () -> Column<UUID> = { id }
@@ -21,6 +22,7 @@ object BookzTable : UUIDCrudTable("bookz") {
 
 data class BookzRecord(
         val id: UUID, val createdAt: Instant, val modifiedAt: Instant,
+        val isActive:Boolean,
         val data: BookzData
 )
 
@@ -32,6 +34,7 @@ fun BookzTable.rowToBookzRecord(row: ResultRow): BookzRecord = BookzRecord(
         id = row[id],
         createdAt = row[createdAt],
         modifiedAt = row[modifiedAt],
+        isActive = row[isActive],
         data = row[data]
 )
 

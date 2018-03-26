@@ -3,11 +3,8 @@ package com.example.api.bookz.db
 import com.example.util.exposed.crud.UUIDCrudRepo
 import com.example.util.exposed.crud.UUIDCrudTable
 import com.example.util.exposed.crud.updateRowById
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.UpdateStatement
-import org.jetbrains.exposed.sql.update
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
@@ -28,6 +25,7 @@ class BookzRepo : UUIDCrudRepo<UUIDCrudTable, CrudRecord>() {
                     id = id,
                     createdAt = now,
                     modifiedAt = now,
+                    isActive = true,
                     data = data
             )
 
@@ -38,6 +36,7 @@ class BookzRepo : UUIDCrudRepo<UUIDCrudTable, CrudRecord>() {
             it[id] = record.crudRecordId()
             it[createdAt] = record.createdAt
             it[modifiedAt] = record.modifiedAt
+            it[isActive] = record.isActive
             it[data] = record.data
         })
         return this[record.crudRecordId()]
@@ -57,5 +56,8 @@ class BookzRepo : UUIDCrudRepo<UUIDCrudTable, CrudRecord>() {
 
     fun findAll() =
             table.selectAll().map { mapr(it) }
+
+    fun findAllActive() =
+            table.select{ table.isActive eq true}.map { mapr(it) }
 
 }

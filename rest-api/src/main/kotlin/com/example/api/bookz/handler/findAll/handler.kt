@@ -21,6 +21,6 @@ class BookzFindAllHandler(
     private fun mapToResponse(items: List<BookzRecord>) = items
             .map { it.toBookzDto() }
 
-    private fun loadFromDb(): List<BookzRecord> = repo.findAll()
+    private fun loadFromDb(): List<BookzRecord> = repo.findAllActive()
 
 }

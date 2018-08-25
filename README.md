@@ -158,6 +158,7 @@ It hardly fits into a modern world of:
 Make up your mind ...
 
 - How hibernate ruined Monica's career: https://www.toptal.com/java/how-hibernate-ruined-my-career
+- A guide to accessing databases in Java: https://www.marcobehler.com/guides/a-guide-to-accessing-databases-in-java/
 - Why do I hate hibernate: https://de.slideshare.net/alimenkou/why-do-i-hate-hibernate-12998784
 - ORM is an antipattern: http://seldo.com/weblog/2011/08/11/orm_is_an_antipattern
 - Opinionated JPA: https://leanpub.com/opinionatedjpa/read

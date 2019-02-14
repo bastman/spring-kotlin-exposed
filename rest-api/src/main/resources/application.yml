@@ -1,5 +1,7 @@
 ---
+server.http2.enabled: true
 spring:
+  main.banner-mode: "off"
   profiles:
     active: local
 

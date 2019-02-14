@@ -89,7 +89,7 @@ playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres, jsonb, flyw
 
 ```
     # build db + app and start everything using docker-compose
-     
+       
     $ make -C rest-api playground.up
     
     browse to: http://localhost:8080/swagger-ui.html
@@ -99,6 +99,7 @@ playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres, jsonb, flyw
 ## build
 
 ```
+    $ make -C rest-api help
     $ make -C rest-api app.build
 
 ```
@@ -144,6 +145,7 @@ object TweetsTable : Table("tweet") {
 - https://github.com/sdeleuze/geospatial-messenger
 - jsonb: https://www.compose.com/articles/faster-operations-with-the-jsonb-data-type-in-postgresql/
 - jsonb: https://gist.github.com/quangIO/a623b5caa53c703e252d858f7a806919
+- https://github.com/ilya40umov/KotLink
 
 ## Awesome Kotlin + Exposed
 

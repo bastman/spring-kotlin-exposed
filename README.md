@@ -145,6 +145,17 @@ object TweetsTable : Table("tweet") {
 - jsonb: https://www.compose.com/articles/faster-operations-with-the-jsonb-data-type-in-postgresql/
 - jsonb: https://gist.github.com/quangIO/a623b5caa53c703e252d858f7a806919
 
+## Awesome Kotlin + Exposed
+
+- Andrey Tarashevskiy : https://github.com/JetBrains/Exposed
+- Sébastien Deleuze : 
+    - https://spring.io/blog/2016/03/20/a-geospatial-messenger-with-kotlin-spring-boot-and-postgresql
+    - https://github.com/sdeleuze/geospatial-messenger
+- Piotr Jagielski: 
+    - https://medium.com/@pjagielski/how-we-use-kotlin-with-exposed-at-touk-eacaae4565b5
+    - https://github.com/TouK/kotlin-exposed-realworld
+- Illia Sorokoumov: https://github.com/ilya40umov/KotLink
+
 ## Whats wrong with orm, jpa, hibernate and in-memory h2-db these days ?
 
 There is no silver bullet. 

@@ -47,8 +47,8 @@ app.build: app.clean app.version guard-SERVICE_VERSION db.build
 	@echo "build complete: service $(SERVICE_NAME) version $(SERVICE_VERSION)"
 	@echo "Note: this build is not tested"
 
-## app.build   : clean , build, test (jar, docker)
-app.test: app.clean app.version guard-SERVICE_VERSION db.build
+## app.test   : clean , build, test (jar, docker)
+app.test: db-ci.down.v app.clean app.version guard-SERVICE_VERSION db.build
 	@echo "build + test service $(SERVICE_NAME) version $(SERVICE_VERSION)"
 	mkdir -p src/main/resources/public/ && cp -rf version.txt src/main/resources/public/version.txt
 	$(GRADLE_CMD) clean build test  projectReport dependencyCheckAggregate --info --full-stacktrace --no-daemon --profile projectReport dependencyCheckAggregate --info --full-stacktrace --no-daemon --profile

@@ -14,7 +14,7 @@ object BookTable : Table("book") {
     val version = integer("version")
     val authorId = (uuid("author_id") references AuthorTable.id)
     val title = varchar("title", 255)
-    val status = enumerationByName("status", 255, BookStatus::class.java)
+    val status = enumerationByName("status", 255, BookStatus::class)
     val price = decimal("price", 15, 2)
 }
 

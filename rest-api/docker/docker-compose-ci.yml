@@ -4,8 +4,11 @@ services:
     image: local/spring-kotlin-exposed-db:latest
     ports:
       - "5435:5432"
-    restart: always
+    networks:
+      - spring-kotlin-exposed-ci-network
     tmpfs:
       - /tmp
       - /var/run/postgresql
       - /var/lib/postgresql/data
+networks:
+  spring-kotlin-exposed-ci-network: {}

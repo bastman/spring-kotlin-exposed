@@ -24,13 +24,10 @@ class TweeterSearchHandler {
     fun handle(req: Request): Response {
         val startedAt: Instant = Instant.now()
         return req
-                .let(::execute)
+                .let(::query)
+                .let(::mapToResponse)
                 .also { logSuccess(startedAt) }
     }
-
-    private fun execute(req: Request): Response = req
-            .let(::query)
-            .let(::mapToResponse)
 
     private fun mapToResponse(records: List<TweetsRecord>): Response =
             Response(items = records.map { it.toTweetsDto() })

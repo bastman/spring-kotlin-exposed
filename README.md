@@ -119,7 +119,11 @@ playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres, jsonb, flyw
 ## run local db (docker)
 
 ```
+    # db-local
     $ make -C rest-api db-local.up
+    
+    # db-ci (to be used for gradle test)
+    $ make -C rest-api db-ci.up
 
 ```
 

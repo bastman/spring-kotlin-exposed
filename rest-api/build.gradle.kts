@@ -68,6 +68,7 @@ dependencies {
     }
     implementation("org.springframework.boot:spring-boot-starter-undertow")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation ("org.springframework.boot:spring-boot-starter-jdbc") {
         exclude(group= "com.zaxxer", module= "HikariCP")
     }
@@ -86,6 +87,12 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
     testImplementation("org.amshove.kluent:kluent:1.47")
     testImplementation("io.mockk:mockk:1.9")
+
+    // test: spring
+    testImplementation("org.springframework.boot:spring-boot-starter-test") {
+        exclude(module= "junit")
+        exclude(group="com.vaadin.external.google", module="android-json")
+    }
 
     /*
     testCompile("org.mockito:mockito-core:2.23.4") {

@@ -44,6 +44,7 @@ class TweeterSearchHandler {
 
         val startedAt: Instant = Instant.now()
         return tweetsTable
+                .slice(tweetsTable.columns)
                 .select {
                     Op.TRUE and
                             when (filterPredicates.isEmpty()) {

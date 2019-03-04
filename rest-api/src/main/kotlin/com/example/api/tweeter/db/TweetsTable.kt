@@ -22,6 +22,8 @@ object TweetsTable : Table("tweet") {
                 toKlass.enumConstants.first { it.dbValue == fromDb };
             }
     ).default(TweetStatus.DRAFT)
+
+    fun ResultRow.toTweetsRecord() = TweetsTable.rowToTweetsRecord(this)
 }
 
 enum class TweetStatus(val dbValue: String) { DRAFT("DRAFT"), PENDING("PENDING"), PUBLISHED("PUBLISHED"); }

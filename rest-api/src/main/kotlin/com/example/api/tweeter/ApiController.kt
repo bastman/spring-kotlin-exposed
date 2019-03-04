@@ -1,13 +1,19 @@
 package com.example.api.tweeter
 
 import com.example.api.tweeter.db.TweetsRepo
+import com.example.api.tweeter.search.TweeterSearchHandler
+import com.example.api.tweeter.search.TweeterSearchRequest
+import com.example.api.tweeter.search.TweeterSearchResponse
 import mu.KLogging
 import org.springframework.web.bind.annotation.*
 import java.time.Instant
 import java.util.*
 
 @RestController
-class TweeterApiController(private val repo: TweetsRepo) {
+class TweeterApiController(
+        private val repo: TweetsRepo,
+        private val search: TweeterSearchHandler
+) {
 
     @GetMapping("/api/tweeter")
     fun findAll(): List<TweetDto> = repo.findAll().map { it.toTweetsDto() }
@@ -30,6 +36,10 @@ class TweeterApiController(private val repo: TweetsRepo) {
                     .let { repo.update(it) }
                     .also { logger.info { "UPDATE DB ENTITY: $it" } }
                     .toTweetsDto()
+
+    @PostMapping("/api/tweeter/search")
+    fun search(@RequestBody payload: TweeterSearchRequest): TweeterSearchResponse = payload
+            .let(search::handle)
 
     companion object : KLogging()
 }

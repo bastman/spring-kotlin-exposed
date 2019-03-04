@@ -42,12 +42,14 @@ class TweetsRepo {
         return record
     }
 
-    fun findAll() = TweetsTable.selectAll().map { it.toTweetsRecord() }
+    fun findAll() = TweetsTable
+            .selectAll()
+            .map { with(TweetsTable) {it.toTweetsRecord()} }
 
     fun findOneById(id: UUID): TweetsRecord? =
             TweetsTable.select { TweetsTable.id eq id }
                     .limit(1)
-                    .map { it.toTweetsRecord() }
+                    .map { with(TweetsTable) {it.toTweetsRecord()} }
                     .firstOrNull()
 
     operator fun get(id: UUID): TweetsRecord = findOneById(id)
@@ -55,6 +57,6 @@ class TweetsRepo {
 
 }
 
-private fun ResultRow.toTweetsRecord() = TweetsTable.rowToTweetsRecord(this)
+
 
 

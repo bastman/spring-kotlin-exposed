@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonValue
 import io.swagger.annotations.ApiModel
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.SortOrder
+import java.time.Instant
 import java.util.*
 
 private const val SWAGGER_API_MODEL_PREFIX = "TweeterSearchRequest"
@@ -24,7 +25,9 @@ data class TweeterSearchRequest(
         CREATED_AT_DESC("createdAt-DESC", TweetsTable.createdAt, SortOrder.DESC),
         CREATED_AT_ASC("createdAt-ASC", TweetsTable.createdAt, SortOrder.ASC),
         MODIFIED_AT_DESC("modifiedAt-DESC", TweetsTable.modifiedAt, SortOrder.DESC),
-        MODIFIED_AT_ASC("modifiedAt-ASC", TweetsTable.modifiedAt, SortOrder.ASC)
+        MODIFIED_AT_ASC("modifiedAt-ASC", TweetsTable.modifiedAt, SortOrder.ASC),
+        VERSION_DESC("version-DESC", TweetsTable.version, SortOrder.DESC),
+        VERSION_ASC("version-ASC", TweetsTable.version, SortOrder.ASC)
         ;
     }
 
@@ -32,7 +35,14 @@ data class TweeterSearchRequest(
     data class Filter(
             // SQL: AND, e.g: ( id IN ("123","456") AND status IN(DRAFT, PENDING)   )
             @JsonProperty("id-IN") val idIN: Set<UUID>?,
-            @JsonProperty("status-IN") val statusIN: Set<TweetStatus>?
+            @JsonProperty("status-IN") val statusIN: Set<TweetStatus>?,
+            @JsonProperty("createdAt-GTE") val createdAtGTE: Instant?,
+            @JsonProperty("createdAt-LOE") val createdAtLOE: Instant?,
+            @JsonProperty("modifiedAt-GTE") val modifiedAtGTE: Instant?,
+            @JsonProperty("modifiedAt-LOE") val modifiedAtLOE: Instant?,
+            @JsonProperty("version-GTE") val versionGTE: Int?,
+            @JsonProperty("version-LOE") val versionLOE: Int?,
+            @JsonProperty("version-EQ") val versionEQ: Int?
     )
 
     @ApiModel("${SWAGGER_API_MODEL_PREFIX}_Payload_Match")

@@ -131,7 +131,7 @@ playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres, jsonb, flyw
 
 - simple crud api endpoint (tables: tweet)
 - api endpoint to insert some random data into db
-- api endpoint to search in db ( poc for the spring-data-rest fans.)
+- api endpoint to search in db ( poc for the spring-data fans)
 
 ```
 # generate 50 records in table "tweet"

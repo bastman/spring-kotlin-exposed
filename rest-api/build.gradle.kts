@@ -1,5 +1,6 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 // copy-pasta from Ilya ;) (https://github.com/ilya40umov/KotLink/blob/master/build.gradle.kts)
@@ -22,6 +23,7 @@ plugins {
     id("io.spring.dependency-management") version "1.0.6.RELEASE"
     id("io.gitlab.arturbosch.detekt") version "1.0.0-RC14"
     id("org.owasp.dependencycheck") version "4.0.2"
+    id("com.avast.gradle.docker-compose") version "0.8.8"
 }
 
 version = "0.0.1"
@@ -125,9 +127,27 @@ tasks {
             //systemProperty("spring.redis.url", "redis://localhost:46379")
         }
         testLogging.apply {
-            events("passed", "skipped", "failed")
+            events("started", "passed", "skipped", "failed")
             exceptionFormat = TestExceptionFormat.FULL
+            showCauses = true
+            showExceptions = true
+            showStackTraces = true
+            showStandardStreams = true
+            // remove standard output/error logging from --info builds
+            // by assigning only 'failed' and 'skipped' events
+            info.events = setOf(TestLogEvent.FAILED, TestLogEvent.SKIPPED)
         }
+        // listen to events in the test execution lifecycle
+        // see: https://nwillc.wordpress.com/2019/01/08/gradle-kotlin-dsl-closures/
+        beforeTest(closureOf<TestDescriptor>{
+            logger.lifecycle("\t===== START TEST: ${this.className}.${this.name}")
+        })
+        afterSuite(KotlinClosure2<TestDescriptor,TestResult,Unit>({descriptor, result ->
+            if (descriptor.parent == null) {
+                logger.lifecycle("Tests run: ${result.testCount}, Failures: ${result.failedTestCount}, Skipped: ${result.skippedTestCount}")
+            }
+            Unit
+        }))
     }
     withType<JacocoReport> {
         reports {

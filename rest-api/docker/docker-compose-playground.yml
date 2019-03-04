@@ -4,6 +4,8 @@ services:
     image: local/spring-kotlin-exposed-db:latest
     ports:
       - "5432:5432"
+    networks:
+      - spring-kotlin-exposed-playground-network
     volumes:
       - spring-kotlin-exposed-playground-db-volume:/var/lib/postgresql/data
 
@@ -11,6 +13,8 @@ services:
     image: local/spring-kotlin-exposed-rest-api:${SERVICE_VERSION}
     ports:
       - "8080:8080"
+    networks:
+      - spring-kotlin-exposed-playground-network
     environment:
       - "DB_URL=spring-kotlin-exposed-playground-db:5432/app"
     command: ["java","-jar","-Dspring.profiles.active=playground", "-Xms32m", "-Xmx256m", "/opt/app/app.jar"]
@@ -23,5 +27,7 @@ services:
       retries: 3
       start_period: 30s
 
+networks:
+  spring-kotlin-exposed-playground-network: {}
 volumes:
   spring-kotlin-exposed-playground-db-volume: {}

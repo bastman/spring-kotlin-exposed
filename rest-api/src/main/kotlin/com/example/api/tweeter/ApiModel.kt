@@ -9,12 +9,12 @@ data class CreateTweetRequest(val message: String, val comment: String?)
 data class UpdateTweetRequest(val message: String, val comment: String?)
 
 data class TweetDto(
-        val id: UUID, val createdAt: Instant, val modifiedAt: Instant, val deletedAt: Instant,
+        val id: UUID, val createdAt: Instant, val modifiedAt: Instant, val deletedAt: Instant, val version:Int,
         val message: String, val comment: String?, val status: TweetStatus
 )
 
 fun TweetsRecord.toTweetsDto() = TweetDto(
-        id = id, createdAt = createdAt, modifiedAt = modifiedAt, deletedAt = deletedAt,
+        id = id, createdAt = createdAt, modifiedAt = modifiedAt, deletedAt = deletedAt, version = version,
         message = message, comment = comment, status = status
 )
 

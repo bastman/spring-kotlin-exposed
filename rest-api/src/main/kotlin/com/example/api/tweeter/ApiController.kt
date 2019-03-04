@@ -1,6 +1,9 @@
 package com.example.api.tweeter
 
+import com.example.api.tweeter.db.TweetStatus
+import com.example.api.tweeter.db.TweetsRecord
 import com.example.api.tweeter.db.TweetsRepo
+import com.example.api.tweeter.db.TweetsTable
 import com.example.api.tweeter.search.TweeterSearchHandler
 import com.example.api.tweeter.search.TweeterSearchRequest
 import com.example.api.tweeter.search.TweeterSearchResponse
@@ -40,6 +43,28 @@ class TweeterApiController(
     @PostMapping("/api/tweeter/search")
     fun search(@RequestBody payload: TweeterSearchRequest): TweeterSearchResponse = payload
             .let(search::handle)
+
+    @PutMapping("/api/tweeter/bulk-generate/{maxRecords}")
+    fun bulkGenerate(@PathVariable maxRecords: Int): Any {
+        val words: List<String> = "The quick brown fox jumps over the lazy dog".split(" ")
+        val records: List<TweetsRecord> = (0..maxRecords).map {
+            val now: Instant = Instant.now()
+            TweetsRecord(
+                    id = UUID.randomUUID(),
+                    createdAt = now,
+                    modifiedAt = now,
+                    deletedAt = Instant.EPOCH,
+                    status = TweetStatus.values().random(),
+                    comment = "comment: ${words.shuffled().take(3).joinToString(separator = " ")}",
+                    message = "message: ${words.shuffled().take(5).joinToString(separator = " ")}",
+                    version = (0..10).random()
+
+            ).let(repo::insert)
+        }
+        return mapOf(
+                "items" to records.map { with(TweetsTable) { it.toTweetsDto() } }
+        )
+    }
 
     companion object : KLogging()
 }

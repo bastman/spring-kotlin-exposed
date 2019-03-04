@@ -124,9 +124,44 @@ playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres, jsonb, flyw
 
 ```
 
-## examples:
+## examples: api tweeter
 
-- api tweeter: simple crud (tables: tweet). 
+- simple crud api endpoint (tables: tweet)
+- api endpoint to insert some random data into db
+- api endpoint to search in db ( poc for the spring-data-rest fans.)
+
+```
+# generate 50 records in table "tweet"
+$ curl -X PUT http://localhost:8080/api/tweeter/bulk-generate/50
+
+# search records in table "tweet"
+
+POST "http://localhost:8080/api/tweeter/search"
+
+payload:
+
+{
+  "limit": 10,
+  "offset": 0,
+  "match": {
+    "message-LIKE": "fox",
+    "comment-LIKE": "brown"
+  },
+  "filter": {
+    "status-IN": [
+      "DRAFT",
+      "PUBLISHED"
+    ]
+  },
+  "orderBy": [
+    "createdAt-DESC"
+  ]
+}
+
+$ curl -X POST "http://localhost:8080/api/tweeter/search" -H "accept: */*" -H "Content-Type: application/json" -d "{ \"limit\": 10, \"offset\": 0, \"match\": { \"message-LIKE\": \"fox\", \"comment-LIKE\": \"brown\" }, \"filter\": { \"id-IN\": [ ], \"status-IN\": [ \"DRAFT\",\"PUBLISHED\" ] }, \"orderBy\": [ \"createdAt-DESC\" ]}"
+
+```
+
 
 ```
 # Highlights: postgres enum types
@@ -150,6 +185,8 @@ object TweetsTable : Table("tweet") {
 }
 
 ```
+## examples: api bookstore, bookz
+
 - api bookstore: crud-ish (joined tables: author, book)
 - api bookz: jsonb examples (tables: bookz)
 

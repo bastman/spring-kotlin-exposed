@@ -56,9 +56,9 @@ class TweeterSearchHandler {
                     true -> null
                     false -> (tweetsTable.message.lowerCase() like "%${match.messageLIKE.toLowerCase()}%")
                 },
-                when (match.commentLike.isNullOrEmpty()) {
+                when (match.commentLIKE.isNullOrEmpty()) {
                     true -> null
-                    false -> (tweetsTable.comment.lowerCase() like "%${match.commentLike.toLowerCase()}%")
+                    false -> (tweetsTable.comment.lowerCase() like "%${match.commentLIKE.toLowerCase()}%")
                 }
         )
 

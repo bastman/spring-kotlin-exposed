@@ -30,15 +30,15 @@ data class TweeterSearchRequest(
 
     @ApiModel("${SWAGGER_API_MODEL_PREFIX}_Payload_Filter")
     data class Filter(
-            // SQL: AND, e.g: id IN ("123","456") AND status IN(DRAFT, PENDING)
+            // SQL: AND, e.g: ( id IN ("123","456") AND status IN(DRAFT, PENDING)   )
             @JsonProperty("id-IN") val idIN: Set<UUID>?,
             @JsonProperty("status-IN") val statusIN: Set<TweetStatus>?
     )
 
     @ApiModel("${SWAGGER_API_MODEL_PREFIX}_Payload_Match")
     data class Match(
-            // SQL: OR, e.g: id IN ("123","456") AND status IN(DRAFT, PENDING)
+            // SQL: OR, e.g: (  (message LIKE "%foo%) OR (comment LIKE "%bar%)  )
             @JsonProperty("message-LIKE") val messageLIKE: String?,
-            @JsonProperty("comment-LIKE") val commentLike: String?
+            @JsonProperty("comment-LIKE") val commentLIKE: String?
     )
 }

@@ -7,6 +7,7 @@ import com.example.util.time.durationToNowInMillis
 import mu.KLogging
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
@@ -37,6 +38,7 @@ class TweeterSearchHandler {
     private fun query(req: Request): List<TweetsRecord> {
         val tweetsTable = TweetsTable
         val filter = req.filter
+        val match = req.match
         val orderBy = req.orderBy
         val orderByExpressions = orderBy
                 .map { Pair(it.field, it.sortOrder) } + Pair(tweetsTable.id, SortOrder.ASC)
@@ -52,9 +54,30 @@ class TweeterSearchHandler {
                 }
         )
 
+        val matchPredicates = listOfNotNull(
+                when (match.messageLIKE.isNullOrEmpty()) {
+                    true -> null
+                    false -> (tweetsTable.message.lowerCase() like "%${match.messageLIKE.toLowerCase()}%")
+                },
+                when (match.commentLike.isNullOrEmpty()) {
+                    true -> null
+                    false -> (tweetsTable.comment.lowerCase() like "%${match.commentLike.toLowerCase()}%")
+                }
+        )
+
         val startedAt: Instant = Instant.now()
         return tweetsTable
-                .select { Op.TRUE and filterPredicates.compoundAnd() }
+                .select {
+                    Op.TRUE and
+                            when (filterPredicates.isEmpty()) {
+                                true -> Op.TRUE
+                                false -> filterPredicates.compoundAnd()
+                            } and
+                            when (matchPredicates.isEmpty()) {
+                                true -> Op.TRUE
+                                false -> matchPredicates.compoundOr()
+                            }
+                }
                 .limit(n = req.limit, offset = req.offset)
                 .orderBy(*(orderByExpressions.toTypedArray()))
                 .map { with(TweetsTable) { it.toTweetsRecord() } }

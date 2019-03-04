@@ -15,6 +15,7 @@ private const val SWAGGER_API_MODEL_PREFIX = "TweeterSearchRequest"
 data class TweeterSearchRequest(
         val limit: Int,
         val offset: Int,
+        val match: Match,
         val filter: Filter,
         val orderBy: Set<OrderBy>
 ) {
@@ -32,5 +33,12 @@ data class TweeterSearchRequest(
             // SQL: AND, e.g: id IN ("123","456") AND status IN(DRAFT, PENDING)
             @JsonProperty("id-IN") val idIN: Set<UUID>?,
             @JsonProperty("status-IN") val statusIN: Set<TweetStatus>?
+    )
+
+    @ApiModel("${SWAGGER_API_MODEL_PREFIX}_Payload_Match")
+    data class Match(
+            // SQL: OR, e.g: id IN ("123","456") AND status IN(DRAFT, PENDING)
+            @JsonProperty("message-LIKE") val messageLIKE: String?,
+            @JsonProperty("comment-LIKE") val commentLike: String?
     )
 }

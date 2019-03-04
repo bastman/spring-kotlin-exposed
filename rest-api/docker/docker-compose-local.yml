@@ -4,8 +4,12 @@ services:
     image: local/spring-kotlin-exposed-db:latest
     ports:
       - "5432:5432"
+    networks:
+      - spring-kotlin-exposed-local-network
     volumes:
       - spring-kotlin-exposed-local-db-volume:/var/lib/postgresql/data
 
+networks:
+  spring-kotlin-exposed-local-network: {}
 volumes:
   spring-kotlin-exposed-local-db-volume: {}

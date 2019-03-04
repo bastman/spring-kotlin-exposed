@@ -8,6 +8,7 @@ plugins {
     // built-in plugins
     java
     jacoco
+    id("project-report")
     application
     // versions of all kotlin plugins are resolved by logic in 'settings.gradle.kts'
     kotlin("jvm")
@@ -19,8 +20,8 @@ plugins {
     id("org.springframework.boot")
     // other plugins require a version to be mentioned
     id("io.spring.dependency-management") version "1.0.6.RELEASE"
-    id("io.gitlab.arturbosch.detekt") version "1.0.0-RC12"
-    id("org.owasp.dependencycheck") version "4.0.1"
+    id("io.gitlab.arturbosch.detekt") version "1.0.0-RC14"
+    id("org.owasp.dependencycheck") version "4.0.2"
 }
 
 version = "0.0.1"
@@ -32,8 +33,6 @@ application {
 repositories {
     mavenCentral()
     jcenter()
-    //maven { setUrl("https://dl.bintray.com/kotlin/exposed") }
-    //maven { setUrl("https://dl.bintray.com/sdeleuze/maven/") }
 }
 dependencies {
     // val springBootVersion: String by project.extra

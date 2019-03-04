@@ -3,7 +3,7 @@ services:
   spring-kotlin-exposed-db-ci:
     image: local/spring-kotlin-exposed-db:latest
     ports:
-      - "5435:5432"
+      - "5432:5432"
     networks:
       - spring-kotlin-exposed-ci-network
     tmpfs:

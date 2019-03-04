@@ -1,26 +1,17 @@
 package com.example.bootstrap
 
-import com.example.testutils.spring.SpringProfiles
+import com.example.testutils.spring.BootWebRandomPortTest
 import org.amshove.kluent.`should be greater than`
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.reactive.server.WebTestClient
-import org.springframework.transaction.annotation.Transactional
 import java.time.Duration
 
-@ExtendWith(SpringExtension::class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles(SpringProfiles.TEST)
-@Transactional
 class BootstrapIT(
         @LocalServerPort private val port: Int,
         @Autowired webTestClient: WebTestClient
-) {
+) : BootWebRandomPortTest() {
     private val webClient: WebTestClient = webTestClient
             .mutate()
             .responseTimeout(Duration.ofSeconds(60))

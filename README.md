@@ -104,6 +104,19 @@ playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres, jsonb, flyw
 
 ```
 
+## build + test
+
+```
+    $ make -C rest-api help
+    $ make -C rest-api app.test
+    
+    # serve test reports ...
+    $ make -C rest-api reports.serve.tests
+    $ open http://127.0.0.1:20000
+    
+
+```
+
 ## run local db (docker)
 
 ```

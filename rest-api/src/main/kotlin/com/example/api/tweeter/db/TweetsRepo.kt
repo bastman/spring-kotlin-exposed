@@ -13,7 +13,7 @@ class TweetsRepo {
 
     fun insert(record: TweetsRecord): TweetsRecord {
         try {
-            TweetsTable.insert({
+            TweetsTable.insert {
                 it[id] = record.id
                 it[createdAt] = record.createdAt
                 it[modifiedAt] = record.modifiedAt
@@ -22,7 +22,7 @@ class TweetsRepo {
                 it[message] = record.message
                 it[comment] = record.comment
                 it[status] = record.status
-            })
+            }
         } catch (all: Throwable) {
             all.printStackTrace()
 

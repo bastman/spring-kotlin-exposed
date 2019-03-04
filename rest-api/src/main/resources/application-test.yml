@@ -1,7 +1,8 @@
 spring:
   profiles: test
   datasource:
-    url: jdbc:postgresql://localhost:5432/app
+    #url: jdbc:postgresql://localhost:5432/app
+    url: jdbc:postgresql://${SPRING_KOTLIN_EXPOSED_DB_CI_HOST:localhost}:5432/app_test
     username: app_rw
     password: app_rw
 

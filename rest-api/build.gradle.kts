@@ -150,6 +150,22 @@ tasks {
             }
             Unit
         }))
+        doFirst {
+            //dockerCompose.exposeAsEnvironment(project.tasks.named("test").get())
+            //dockerCompose.exposeAsSystemProperties(project.tasks.named("test").get())
+            
+            // no idea, how to port that: dockerCompose.exposeAsEnvironment(test)
+            // no idea, how to port that: dockerCompose.exposeAsSystemProperties(test)
+            // expose db host as env variable in a bash-compliant way ...
+            dockerCompose.servicesInfos.forEach {
+                val k = it.key
+                val v = it.value
+                val envVarName="${k.replace("-","_").toUpperCase()}_HOST"
+                val envVarValue=v.host
+                println("=== dockerCompose: expose env var: $envVarName=$envVarValue")
+                environment(envVarName, envVarValue)
+            }
+        }
     }
     withType<JacocoReport> {
         reports {

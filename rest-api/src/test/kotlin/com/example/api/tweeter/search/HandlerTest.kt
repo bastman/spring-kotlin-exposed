@@ -41,7 +41,11 @@ class TweetsRepoTest(
                     test(name = "req: ${testCase.request}") {
                         val responseExpected: Response = testCase.response
                         val responseGiven: Response = search.handle(testCase.request)
-                        testCase.copy(response = responseGiven).dump(testCaseName)
+
+                        testCase.dump("expected: $testCaseName")
+                        testCase
+                                .copy(response = responseGiven)
+                                .dump("given: $testCaseName")
 
                         responseGiven.toJson() shouldEqualJson responseExpected.toJson()
                     }
@@ -66,7 +70,7 @@ private data class TestCase(val request: Request, val response: Response)
 private fun TestCase.dump(testCaseName: String) {
     println("==== tc: $testCaseName ====")
     println(this.toJson(mapper = JSON))
-    println("==== ====== ====")
+    println("================")
 }
 
 interface GenerateTestCaseTrait {

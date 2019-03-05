@@ -1,5 +1,10 @@
 SERVICE_NAME=spring-kotlin-exposed-rest-api
-SERVICE_VERSION ?= $(shell test -n "$$(cat version.txt)" && cat version.txt || ./bin/version.sh | tee version.txt)
+SERVICE_VERSION_FILE=./version.txt
+GIT_BRANCH_NAME=$(shell git rev-parse --abbrev-ref HEAD | tr "/" "-")
+GIT_COMMIT_HASH=$(shell git rev-parse HEAD | cut -c 1-8)
+SERVICE_BUILD_TIME=$(shell date -u +"%Y-%m-%dT%H.%M.%SZ")
+SERVICE_VERSION ?=$(shell cat $(SERVICE_VERSION_FILE))
+
 
 DOCKER_FILE_DB=docker/postgres/Dockerfile
 DOCKER_FILE_APP=docker/app/Dockerfile
@@ -22,24 +27,37 @@ guard-%:
 help : Makefile
 	@sed -n 's/^##//p' $<
 
-version:
-	@echo $(SERVICE_VERSION)
+#### service version #####
+version.show: guard-SERVICE_VERSION
+	@echo "service.version: $(SERVICE_VERSION)"
+version.clean:
+	rm -f -v $(SERVICE_VERSION_FILE)
+	$(eval SERVICE_VERSION := "")
+	@echo "service.version: $(SERVICE_VERSION)"
+version.set: guard-NEW_SERVICE_VERSION
+	@echo "$(NEW_SERVICE_VERSION)" > $(SERVICE_VERSION_FILE)
+	$(eval SERVICE_VERSION := $(NEW_SERVICE_VERSION))
+version.generate: version.clean
+	$(eval SERVICE_VERSION := $(SERVICE_BUILD_TIME)-$(GIT_COMMIT_HASH)-$(GIT_BRANCH_NAME))
+	$(shell echo $(SERVICE_VERSION) > $(SERVICE_VERSION_FILE))
+	@echo "(new) service.version: $(SERVICE_VERSION)"
+
 
 ## db.build   : build db docker image
 db.build:
 	docker build -t $(DOCKER_TAG_LOCAL_DB) -f $(DOCKER_FILE_DB) .
 
 ## app.clean   : clean
-app.clean:
+app.clean: version.clean
 	$(GRADLE_CMD) clean
-	rm version.txt || true
 
 ## app.version   : show version
 app.version:
 	@echo "$(SERVICE_VERSION)"
 
 ## app.build   : clean and build (jar, docker)
-app.build: app.clean app.version guard-SERVICE_VERSION db.build
+app.build: app.clean version.generate guard-SERVICE_VERSION db.build
+	make version.set NEW_SERVICE_VERSION=$(SERVICE_VERSION)
 	@echo "building service $(SERVICE_NAME) version $(SERVICE_VERSION)"
 	mkdir -p src/main/resources/public/ && cp -rf version.txt src/main/resources/public/version.txt
 	$(GRADLE_CMD) clean build -x test
@@ -48,7 +66,8 @@ app.build: app.clean app.version guard-SERVICE_VERSION db.build
 	@echo "Note: this build is not tested"
 
 ## app.test   : clean , build, test (jar, docker)
-app.test: db-ci.down.v app.clean app.version guard-SERVICE_VERSION db.build
+app.test: db-ci.down.v app.clean version.generate guard-SERVICE_VERSION db.build
+	make version.set NEW_SERVICE_VERSION=$(SERVICE_VERSION)
 	@echo "build + test service $(SERVICE_NAME) version $(SERVICE_VERSION)"
 	mkdir -p src/main/resources/public/ && cp -rf version.txt src/main/resources/public/version.txt
 	$(GRADLE_CMD) clean build test  projectReport dependencyCheckAggregate --info --full-stacktrace --no-daemon --profile projectReport dependencyCheckAggregate --info --full-stacktrace --no-daemon --profile

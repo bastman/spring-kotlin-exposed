@@ -175,7 +175,7 @@ tasks {
                 isEnabled = true
             }
             html.apply {
-                isEnabled = false
+                isEnabled = true
             }
         }
     }

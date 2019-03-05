@@ -31,11 +31,10 @@ class TweetsRepoTest(
     private val given: GoldenTestData = loadResource("/tests/api/tweeter/search/golden-test-data.json")
             .let { JSON.readValue(it) }
 
-
     fun `search should work`() = rootContext<Unit> {
         saveGoldenTestDataIntoDb(goldenData = given)
 
-        listOf("001", "002", "003", "004")
+        listOf("001", "002", "003", "004", "005", "006", "007")
                 .forEach { testCaseName ->
                     val testCase = loadTestCase(testCaseName)
                     test(name = "req: ${testCase.request}") {

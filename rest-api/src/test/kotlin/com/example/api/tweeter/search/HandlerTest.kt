@@ -11,9 +11,10 @@ import com.example.testutils.json.toJson
 import com.example.testutils.spring.BootWebMockMvcTest
 import com.example.util.resources.loadResource
 import com.fasterxml.jackson.module.kotlin.readValue
+import dev.minutest.junit.JUnit5Minutests
+import dev.minutest.rootContext
 import mu.KLogging
 import org.amshove.kluent.shouldEqual
-import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import java.time.Instant
 import java.util.*
@@ -24,21 +25,26 @@ private typealias Response = TweeterSearchResponse
 class TweetsRepoTest(
         @Autowired private val repo: TweetsRepo,
         @Autowired private val search: TweeterSearchHandler
-) : BootWebMockMvcTest() {
+) : BootWebMockMvcTest(), JUnit5Minutests {
     companion object : KLogging(), GenerateTestCaseTrait
 
     private val given: GoldenTestData = loadResource("/tests/api/tweeter/search/golden-test-data.json")
             .let { JSON.readValue(it) }
 
-    @Test
-    fun `search should work`() {
+
+    fun `search should work`() = rootContext<Unit> {
         saveGoldenTestDataIntoDb(goldenData = given)
 
-        loadTestCase("001")
-                .also { testCase ->
-                    val responseExpected: Response = testCase.response
-                    val responseGiven: Response = search.handle(testCase.request)
-                    responseGiven.toJson() shouldEqualJson responseExpected.toJson()
+        listOf("001", "002", "003", "004")
+                .forEach { testCaseName ->
+                    val testCase = loadTestCase(testCaseName)
+                    test(name = "req: ${testCase.request}") {
+                        val responseExpected: Response = testCase.response
+                        val responseGiven: Response = search.handle(testCase.request)
+                        testCase.copy(response = responseGiven).dump(testCaseName)
+
+                        responseGiven.toJson() shouldEqualJson responseExpected.toJson()
+                    }
                 }
     }
 
@@ -57,7 +63,14 @@ private val JSON = Jackson.defaultMapper()
 private data class GoldenTestData(val items: List<TweetsRecord>)
 private data class TestCase(val request: Request, val response: Response)
 
+private fun TestCase.dump(testCaseName: String) {
+    println("==== tc: $testCaseName ====")
+    println(this.toJson(mapper = JSON))
+    println("==== ====== ====")
+}
+
 interface GenerateTestCaseTrait {
+
     fun generateGoldenTestData(repo: TweetsRepo, maxRecords: Int): Any {
         val words: List<String> = "The quick brown fox jumps over the lazy dog".split(" ")
         val records: List<TweetsRecord> = (0..maxRecords).map {
@@ -118,3 +131,4 @@ interface GenerateTestCaseTrait {
 
     }
 }
+

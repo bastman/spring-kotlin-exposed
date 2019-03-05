@@ -91,12 +91,14 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
     testImplementation("org.amshove.kluent:kluent:1.47")
     testImplementation("io.mockk:mockk:1.9")
+    testImplementation("dev.minutest:minutest:1.4.+")
 
     // test: spring
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(module= "junit")
         exclude(group="com.vaadin.external.google", module="android-json")
     }
+
 
     /*
     testCompile("org.mockito:mockito-core:2.23.4") {

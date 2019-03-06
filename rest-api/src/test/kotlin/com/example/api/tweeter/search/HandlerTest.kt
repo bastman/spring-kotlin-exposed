@@ -34,7 +34,7 @@ class TweetsRepoTest(
     fun `search should work`() = rootContext<Unit> {
         saveGoldenTestDataIntoDb(goldenData = given)
 
-        listOf("001", "002", "003", "004", "005", "006", "007")
+        listOf("001", "002", "003", "004", "005", "006", "007", "008")
                 .forEach { testCaseName ->
                     val testCase = loadTestCase(testCaseName)
                     test(name = "req: ${testCase.request}") {

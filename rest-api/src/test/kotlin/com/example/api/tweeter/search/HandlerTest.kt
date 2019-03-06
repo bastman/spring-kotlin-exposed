@@ -68,7 +68,7 @@ private data class TestCase(val request: Request, val response: Response)
 
 private fun TestCase.dump(testCaseName: String) {
     println("==== tc: $testCaseName ====")
-    println(this.toJson(mapper = JSON))
+    println(this.toJson())
     println("================")
 }
 

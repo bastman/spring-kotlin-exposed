@@ -7,10 +7,16 @@ import com.example.api.tweeter.db.TweetsTable
 import com.example.api.tweeter.search.TweeterSearchHandler
 import com.example.api.tweeter.search.TweeterSearchRequest
 import com.example.api.tweeter.search.TweeterSearchResponse
+import com.example.config.Jackson
+import com.fasterxml.jackson.databind.JsonNode
+import io.burt.jmespath.Expression
+import io.burt.jmespath.JmesPath
+import io.burt.jmespath.jackson.JacksonRuntime
 import mu.KLogging
 import org.springframework.web.bind.annotation.*
 import java.time.Instant
 import java.util.*
+
 
 @RestController
 class TweeterApiController(
@@ -44,6 +50,22 @@ class TweeterApiController(
     fun search(@RequestBody payload: TweeterSearchRequest): TweeterSearchResponse = payload
             .let(search::handle)
 
+    // example: "jq": "items[0:2].{id:id, createdAt:createdAt}"
+    @PostMapping("/api/tweeter/search/v2")
+    fun searchV2(@RequestBody payload: TweeterSearchRequest): Any {
+        val sink = when (payload.jq.isNullOrBlank()) {
+            true -> search.handle(payload)
+            false -> {
+                val expression: Expression<JsonNode> = JMESPATH.compile(payload.jq)
+                val data: TweeterSearchResponse = search.handle(payload)
+                val json: String = JSON.writeValueAsString(data)
+                val tree: JsonNode = JSON.readTree(json)
+                expression.search(tree)
+            }
+        }
+        return mapOf("data" to sink)
+    }
+
     @PutMapping("/api/tweeter/bulk-generate/{maxRecords}")
     fun bulkGenerate(@PathVariable maxRecords: Int): Any {
         val words: List<String> = "The quick brown fox jumps over the lazy dog".split(" ")
@@ -69,5 +91,7 @@ class TweeterApiController(
     companion object : KLogging()
 }
 
+private val JSON = Jackson.defaultMapper()
+private val JMESPATH: JmesPath<JsonNode> = JacksonRuntime()
 
 

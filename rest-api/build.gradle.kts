@@ -66,6 +66,8 @@ dependencies {
     implementation("org.jetbrains.exposed:spring-transaction:$exposedVersion")
     // db: flyway db migrations
     implementation("org.flywaydb:flyway-core:5.2.0")
+    // jmespath ... you know "jq" ;)
+    implementation("io.burt:jmespath-jackson:0.2.1")
     // spring
     implementation("org.springframework.boot:spring-boot-starter-web") {
         exclude(group="org.springframework.boot", module = "spring-boot-starter-tomcat")

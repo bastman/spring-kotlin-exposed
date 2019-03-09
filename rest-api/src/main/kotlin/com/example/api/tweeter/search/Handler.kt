@@ -36,29 +36,31 @@ class TweeterSearchHandler {
             Response(items = records.map { it.toTweetsDto() })
 
     private fun query(req: Request): List<TweetsRecord> {
-        val tweetsTable = TweetsTable
-        val filterPredicates: List<Op<Boolean>> = req.filter.toPredicates()
-        val matchPredicates: List<Op<Boolean>> = req.match.toPredicates()
+        val filterPredicates: List<Op<Boolean>>? = req.filter?.toPredicates()
+        val matchPredicates: List<Op<Boolean>>? = req.match?.toPredicates()
         val orderByExpressions: List<SortExpression> =
-                (req.orderBy.toExpressions()) + Pair(tweetsTable.id, SortOrder.ASC)
+                when (val orderBy: Set<OrderSpec>? = req.orderBy) {
+                    null -> listOf(Pair(TWEETS.id, SortOrder.ASC))
+                    else -> (orderBy.toExpressions()) + Pair(TWEETS.id, SortOrder.ASC)
+                }
 
         val startedAt: Instant = Instant.now()
-        return tweetsTable
-                .slice(tweetsTable.columns)
+        return TWEETS
+                .slice(TWEETS.columns)
                 .select {
                     Op.TRUE and
-                            when (filterPredicates.isEmpty()) {
+                            when (filterPredicates.isNullOrEmpty()) {
                                 true -> Op.TRUE
                                 false -> filterPredicates.compoundAnd()
                             } and
-                            when (matchPredicates.isEmpty()) {
+                            when (matchPredicates.isNullOrEmpty()) {
                                 true -> Op.TRUE
                                 false -> matchPredicates.compoundOr()
                             }
                 }
                 .limit(n = req.limit, offset = req.offset)
                 .orderBy(*(orderByExpressions.toTypedArray()))
-                .map { with(TweetsTable) { it.toTweetsRecord() } }
+                .map { with(TWEETS) { it.toTweetsRecord() } }
                 .also {
                     logger.info {
                         "Found ${it.size} items in db." +
@@ -73,65 +75,65 @@ class TweeterSearchHandler {
 
 }
 
+private val TWEETS = TweetsTable
+
 private typealias SortExpression = Pair<Column<*>, SortOrder>
 
 private fun Set<TweeterSearchRequest.OrderBy>.toExpressions(): List<SortExpression> =
         map { Pair(it.field, it.sortOrder) }
 
 private fun TweeterSearchRequest.Match.toPredicates(): List<Op<Boolean>> {
-    val tweetsTable = TweetsTable
     val match = this
     return listOfNotNull(
             when (match.messageLIKE.isNullOrEmpty()) {
                 true -> null
-                false -> (tweetsTable.message.lowerCase() like "%${match.messageLIKE.toLowerCase()}%")
+                false -> (TWEETS.message.lowerCase() like "%${match.messageLIKE.toLowerCase()}%")
             },
             when (match.commentLIKE.isNullOrEmpty()) {
                 true -> null
-                false -> (tweetsTable.comment.lowerCase() like "%${match.commentLIKE.toLowerCase()}%")
+                false -> (TWEETS.comment.lowerCase() like "%${match.commentLIKE.toLowerCase()}%")
             }
     )
 }
 
 private fun TweeterSearchRequest.Filter.toPredicates(): List<Op<Boolean>> {
-    val tweetsTable = TweetsTable
     val filter = this
     return listOfNotNull(
             when (filter.idIN.isNullOrEmpty()) {
                 true -> null
-                false -> (tweetsTable.id inList filter.idIN)
+                false -> (TWEETS.id inList filter.idIN)
             },
             when (filter.statusIN.isNullOrEmpty()) {
                 true -> null
-                false -> (tweetsTable.status inList filter.statusIN)
+                false -> (TWEETS.status inList filter.statusIN)
             },
             when (val value: Instant? = filter.createdAtGTE) {
                 null -> null
-                else -> (tweetsTable.createdAt greaterEq value)
+                else -> (TWEETS.createdAt greaterEq value)
             },
             when (val value: Instant? = filter.createdAtLOE) {
                 null -> null
-                else -> (tweetsTable.createdAt lessEq value)
+                else -> (TWEETS.createdAt lessEq value)
             },
             when (val value: Instant? = filter.modifiedAtGTE) {
                 null -> null
-                else -> (tweetsTable.modifiedAt greaterEq value)
+                else -> (TWEETS.modifiedAt greaterEq value)
             },
             when (val value: Instant? = filter.modifiedAtLOE) {
                 null -> null
-                else -> (tweetsTable.modifiedAt lessEq value)
+                else -> (TWEETS.modifiedAt lessEq value)
             },
             when (val value: Int? = filter.versionEQ) {
                 null -> null
-                else -> (tweetsTable.version eq value)
+                else -> (TWEETS.version eq value)
             },
             when (val value: Int? = filter.versionGTE) {
                 null -> null
-                else -> (tweetsTable.version greaterEq value)
+                else -> (TWEETS.version greaterEq value)
             },
             when (val value: Int? = filter.versionLOE) {
                 null -> null
-                else -> (tweetsTable.version lessEq value)
+                else -> (TWEETS.version lessEq value)
             }
     )
 }

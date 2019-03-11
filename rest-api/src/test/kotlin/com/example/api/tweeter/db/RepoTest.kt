@@ -1,6 +1,6 @@
 package com.example.api.tweeter.db
 
-import com.example.api.common.EntityNotFoundException
+import com.example.api.common.error.exceptions.EntityNotFoundException
 import com.example.testutils.spring.BootWebMockMvcTest
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeInstanceOf

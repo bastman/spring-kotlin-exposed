@@ -1,5 +1,6 @@
 package com.example.api.tweeter
 
+import com.example.api.common.error.exceptions.BadRequestException
 import com.example.api.tweeter.db.TweetStatus
 import com.example.api.tweeter.db.TweetsRecord
 import com.example.api.tweeter.db.TweetsRepo
@@ -68,7 +69,11 @@ class TweeterApiController(
                 SearchJqResponse.Raw(r)
             }
             false -> {
-                val expression: Expression<JsonNode> = JMESPATH.compile(payload.jq)
+                val expression: Expression<JsonNode> = try {
+                    JMESPATH.compile(payload.jq)
+                } catch (all:Exception) {
+                    throw BadRequestException("Invalid req.jq ! ${all.message}")
+                }
                 val data: TweeterSearchResponse = search.handle(payload)
                 val json: String = JSON.writeValueAsString(data)
                 val tree: JsonNode = JSON.readTree(json)

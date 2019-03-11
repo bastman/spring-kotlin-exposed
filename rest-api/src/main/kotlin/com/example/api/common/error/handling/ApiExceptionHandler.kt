@@ -1,6 +1,7 @@
 package com.example.api.common.error.handling
 
 
+import com.example.api.common.error.exceptions.BadRequestException
 import mu.KLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -17,19 +18,34 @@ class ApiExceptionHandler {
     companion object : KLogging()
 
     @ExceptionHandler(HttpMessageNotReadableException::class)
-    fun handleHttpMessageNotReadableException(ex: HttpMessageNotReadableException): ApiResponseEntity {
-        val logId: UUID = UUID.randomUUID()
-        val httpStatus: HttpStatus = HttpStatus.BAD_REQUEST
-        val apiErrorType: ApiError.ApiErrorType = ApiError.ApiErrorType.BAD_REQUEST
+    fun handle(ex: HttpMessageNotReadableException): ApiResponseEntity =
+            handleApiException(
+                    ex = ex,
+                    httpStatus = HttpStatus.BAD_REQUEST,
+                    apiErrorType = ApiError.ApiErrorType.BAD_REQUEST
+            )
+
+    @ExceptionHandler(BadRequestException::class)
+    fun handle(ex: BadRequestException): ApiResponseEntity =
+            handleApiException(
+                    ex = ex,
+                    httpStatus = HttpStatus.BAD_REQUEST,
+                    apiErrorType = ApiError.ApiErrorType.BAD_REQUEST
+            )
+
+    private fun handleApiException(
+            ex: Exception, httpStatus: HttpStatus, apiErrorType: ApiError.ApiErrorType
+    ): ApiResponseEntity {
+        val logId = UUID.randomUUID()
         val responseBody: ApiErrorResponseBody = ex.toApiErrorResponseBody(
                 logId = logId, httpStatus = httpStatus, type = apiErrorType
         )
         val responseEntity: ApiResponseEntity = ResponseEntity(responseBody, httpStatus)
-        logApiExecption(ex, logId, responseEntity)
+        logApiException(ex, logId, responseEntity)
         return responseEntity
     }
 
-    private fun logApiExecption(
+    private fun logApiException(
             ex: Exception,
             logId: UUID,
             responseEntity: ApiResponseEntity
@@ -46,7 +62,7 @@ class ApiExceptionHandler {
 }
 
 
-private fun HttpMessageNotReadableException.toApiErrorResponseBody(
+private fun Exception.toApiErrorResponseBody(
         logId: UUID, httpStatus: HttpStatus, type: ApiError.ApiErrorType
 ): ApiErrorResponseBody =
         ApiErrorResponseBody(
@@ -56,7 +72,6 @@ private fun HttpMessageNotReadableException.toApiErrorResponseBody(
                 error = "${this::class.qualifiedName}",
                 apiError = ApiError(logId = logId, type = type)
         )
-
 
 data class ApiErrorResponseBody(
         val status: Int,

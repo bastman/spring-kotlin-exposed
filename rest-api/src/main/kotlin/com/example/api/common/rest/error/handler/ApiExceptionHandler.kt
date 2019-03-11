@@ -1,7 +1,8 @@
-package com.example.api.common.error.handling
+package com.example.api.common.rest.error.handler
 
 
-import com.example.api.common.error.exceptions.BadRequestException
+import com.example.api.common.rest.error.exception.BadRequestException
+import com.example.api.common.rest.error.exception.EntityNotFoundException
 import mu.KLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -31,6 +32,14 @@ class ApiExceptionHandler {
                     ex = ex,
                     httpStatus = HttpStatus.BAD_REQUEST,
                     apiErrorType = ApiError.ApiErrorType.BAD_REQUEST
+            )
+
+    @ExceptionHandler(EntityNotFoundException::class)
+    fun handle(ex: EntityNotFoundException): ApiResponseEntity =
+            handleApiException(
+                    ex = ex,
+                    httpStatus = HttpStatus.NOT_FOUND,
+                    apiErrorType = ApiError.ApiErrorType.ENTITY_NOT_FOUND
             )
 
     private fun handleApiException(
@@ -86,6 +95,8 @@ data class ApiError(
         val logId: UUID
 ) {
     enum class ApiErrorType {
-        BAD_REQUEST;
+        BAD_REQUEST,
+        ENTITY_NOT_FOUND
+        ;
     }
 }

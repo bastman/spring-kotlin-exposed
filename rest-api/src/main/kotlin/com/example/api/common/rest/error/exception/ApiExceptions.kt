@@ -1,4 +1,4 @@
-package com.example.api.common.error.exceptions
+package com.example.api.common.rest.error.exception
 
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus

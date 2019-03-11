@@ -1,6 +1,6 @@
 package com.example.api.tweeter
 
-import com.example.api.common.error.exceptions.BadRequestException
+import com.example.api.common.rest.error.exception.BadRequestException
 import com.example.api.tweeter.db.TweetStatus
 import com.example.api.tweeter.db.TweetsRecord
 import com.example.api.tweeter.db.TweetsRepo

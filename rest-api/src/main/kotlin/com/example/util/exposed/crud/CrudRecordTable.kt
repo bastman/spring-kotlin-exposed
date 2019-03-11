@@ -1,7 +1,7 @@
 package com.example.util.exposed.crud
 
 
-import com.example.api.common.error.exceptions.EntityNotFoundException
+import com.example.api.common.rest.error.exception.EntityNotFoundException
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.UpdateStatement
 import java.util.*

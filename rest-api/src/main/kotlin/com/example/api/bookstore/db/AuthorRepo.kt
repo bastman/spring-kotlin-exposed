@@ -1,6 +1,6 @@
 package com.example.api.bookstore.db
 
-import com.example.api.common.error.exceptions.EntityNotFoundException
+import com.example.api.common.rest.error.exception.EntityNotFoundException
 import org.jetbrains.exposed.sql.*
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional

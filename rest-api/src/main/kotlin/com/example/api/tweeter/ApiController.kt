@@ -12,6 +12,9 @@ import com.fasterxml.jackson.databind.JsonNode
 import io.burt.jmespath.Expression
 import io.burt.jmespath.JmesPath
 import io.burt.jmespath.jackson.JacksonRuntime
+import io.swagger.annotations.ApiModel
+import io.swagger.annotations.ApiResponse
+import io.swagger.annotations.ApiResponses
 import mu.KLogging
 import org.springframework.web.bind.annotation.*
 import java.time.Instant
@@ -50,20 +53,30 @@ class TweeterApiController(
     fun search(@RequestBody payload: TweeterSearchRequest): TweeterSearchResponse = payload
             .let(search::handle)
 
+
     // example: "jq": "items[0:2].{id:id, createdAt:createdAt}"
-    @PostMapping("/api/tweeter/search/v2")
-    fun searchV2(@RequestBody payload: TweeterSearchRequest): Any {
-        val sink = when (payload.jq.isNullOrBlank()) {
-            true -> search.handle(payload)
+    @PostMapping("/api/tweeter/search/jq")
+    @ApiResponses(
+            value = [
+                ApiResponse(code = 200, response = TweeterSearchResponse::class, message = "some response")
+            ]
+    )
+    fun searchJQ(@RequestBody payload: TweeterSearchRequest): SearchJqResponse {
+        val sink: SearchJqResponse = when (payload.jq.isNullOrBlank()) {
+            true -> {
+                val r: TweeterSearchResponse = search.handle(payload)
+                SearchJqResponse.Raw(r)
+            }
             false -> {
                 val expression: Expression<JsonNode> = JMESPATH.compile(payload.jq)
                 val data: TweeterSearchResponse = search.handle(payload)
                 val json: String = JSON.writeValueAsString(data)
                 val tree: JsonNode = JSON.readTree(json)
-                expression.search(tree)
+                val r: JsonNode = expression.search(tree)
+                SearchJqResponse.Jq(r)
             }
         }
-        return mapOf("data" to sink)
+        return sink
     }
 
     @PutMapping("/api/tweeter/bulk-generate/{maxRecords}")
@@ -95,3 +108,10 @@ private val JSON = Jackson.defaultMapper()
 private val JMESPATH: JmesPath<JsonNode> = JacksonRuntime()
 
 
+// Note: springfox-swagger limitations: currently, no support for Response is "oneOf" (aka "union types")
+// see: https://github.com/springfox/springfox/issues/2928
+@ApiModel(subTypes = [SearchJqResponse.Raw::class, SearchJqResponse.Jq::class])
+sealed class SearchJqResponse {
+    data class Raw(val data: TweeterSearchResponse) : SearchJqResponse()
+    data class Jq(val data: JsonNode) : SearchJqResponse()
+}

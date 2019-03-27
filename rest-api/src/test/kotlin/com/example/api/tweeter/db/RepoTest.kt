@@ -1,14 +1,21 @@
 package com.example.api.tweeter.db
 
 import com.example.api.common.rest.error.exception.EntityNotFoundException
+import com.example.testutils.assertions.shouldEqualRecursively
+import com.example.testutils.minutest.minuTestFactory
+import com.example.testutils.random.random
+import com.example.testutils.random.randomEnumValue
+import com.example.testutils.random.randomString
 import com.example.testutils.spring.BootWebMockMvcTest
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeInstanceOf
 import org.amshove.kluent.shouldEqual
 import org.amshove.kluent.shouldNotEqual
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
+import java.time.Duration
 import java.time.Instant
 import java.util.*
 
@@ -65,5 +72,36 @@ class TweetsRepoTest(
         recordFromDb.comment shouldEqual recordNew.comment
     }
 
+    @TestFactory
+    fun `some random crud ops should work`() = minuTestFactory {
+        val testCases: List<TestCase> = (0..100).map {
+            val instantMin: Instant = Instant.EPOCH
+            val instantMax: Instant = (Instant.now() + Duration.ofDays(50 * 365))
+            TestCase(
+                    recordNew = TweetsRecord(
+                            id = UUID.randomUUID(),
+                            createdAt = (instantMin..instantMax).random(),
+                            modifiedAt = (instantMin..instantMax).random(),
+                            deletedAt = (instantMin..instantMax).random(),
+                            version = (0..1000).random(),
+                            message = randomString(prefix = "msg-"),
+                            comment = randomString(prefix = "comment-"),
+                            status = randomEnumValue()
+                    )
+            )
+        }
+
+        testCases.forEach { testCase ->
+            test("test INSERT: ${testCase.recordNew}") {
+                val inserted: TweetsRecord = repo.insert(testCase.recordNew)
+                inserted shouldEqualRecursively testCase.recordNew
+            }
+        }
+    }
+
+
+    private data class TestCase(
+            val recordNew: TweetsRecord
+    )
 
 }

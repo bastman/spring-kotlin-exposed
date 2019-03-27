@@ -25,7 +25,7 @@ fun simpleJsonSerializer(): ObjectMapper {
 fun String.toNormalizedJson(): String {
     val mapper = jacksonObjectMapper()
     mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
-    val decoded:Any? = mapper.readValue(this)// mapper.readTree(this)
+    val decoded: Any? = mapper.readValue(this)// mapper.readTree(this)
 
     return mapper
             .writeValueAsString(decoded)

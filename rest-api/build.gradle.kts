@@ -19,14 +19,14 @@ plugins {
     kotlin("plugin.spring")
     kotlin("plugin.allopen")
     kotlin("plugin.noarg")
-    id("org.jetbrains.dokka") version "0.9.17" apply false
+    id("org.jetbrains.dokka") version "0.9.18" apply false
     // version of spring boot plugin is also resolved by 'settings.gradle.kts'
     id("org.springframework.boot")
     // other plugins require a version to be mentioned
-    id("io.spring.dependency-management") version "1.0.6.RELEASE"
+    id("io.spring.dependency-management") version "1.0.7.RELEASE"
     id("io.gitlab.arturbosch.detekt") version "1.0.0-RC14"
     id("org.owasp.dependencycheck") version "4.0.2"
-    id("com.avast.gradle.docker-compose") version "0.8.8"
+    id("com.avast.gradle.docker-compose") version "0.9.2"
     id("com.github.ben-manes.versions") version "0.21.0"
 }
 
@@ -45,29 +45,29 @@ dependencies {
     // kotlin
     compile(kotlin("stdlib-jdk8"))
     // logging
-    implementation("io.github.microutils:kotlin-logging:1.6.10")
+    implementation("io.github.microutils:kotlin-logging:1.6.+")
     implementation("net.logstash.logback:logstash-logback-encoder:5.+")
     val logbackJsonVersion = "0.1.5"
     implementation("ch.qos.logback.contrib:logback-json-classic:$logbackJsonVersion")
     implementation("ch.qos.logback.contrib:logback-jackson:$logbackJsonVersion")
     // monitoring
-    implementation("io.micrometer:micrometer-registry-prometheus:1.0.+")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.1.+")
     // serialization: jackson json
-    val jacksonVersion =  "2.9.7"
+    val jacksonVersion =  "2.9.8"
     implementation("com.fasterxml.jackson.module:jackson-modules-java8:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     // db: postgres driver & hikari pool
-    implementation("org.postgresql:postgresql:42.2.4")
-    implementation("com.zaxxer:HikariCP:3.2.0")
+    implementation("org.postgresql:postgresql:42.2.5")
+    implementation("com.zaxxer:HikariCP:3.3.1")
     // db: exposed sql client
-    val exposedVersion = "0.12.2"//"0.11.1"
+    val exposedVersion = "0.13.6"
     implementation("org.jetbrains.exposed:exposed:$exposedVersion")
     implementation("org.jetbrains.exposed:spring-transaction:$exposedVersion")
     // db: flyway db migrations
-    implementation("org.flywaydb:flyway-core:5.2.0")
+    implementation("org.flywaydb:flyway-core:5.2.4")
     // jmespath ... you know "jq" ;)
     implementation("io.burt:jmespath-jackson:0.2.1")
     // spring
@@ -93,8 +93,8 @@ dependencies {
     // test: kotlin
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-    testImplementation("org.amshove.kluent:kluent:1.47")
-    testImplementation("io.mockk:mockk:1.9")
+    testImplementation("org.amshove.kluent:kluent:1.49")
+    testImplementation("io.mockk:mockk:1.9.+")
     testImplementation("dev.minutest:minutest:1.4.+")
 
     // test: spring

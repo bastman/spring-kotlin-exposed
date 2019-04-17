@@ -127,6 +127,14 @@ playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres, jsonb, flyw
 
 ```
 
+## connect to a cloud hosted db (ssl enabled)
+
+```
+    # if your postgres is ssl enabled, you may need to add a few parameters to jdbc url ...
+    e.g.: DB_URL: "my.postgres.example.com:5432/mydb?ssl=true&sslmode=prefer"
+
+```
+
 ## examples: api tweeter
 
 - simple crud api endpoint (tables: tweet)

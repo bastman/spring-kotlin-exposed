@@ -26,6 +26,7 @@ plugins {
     id("io.gitlab.arturbosch.detekt") version "1.0.0-RC14"
     id("org.owasp.dependencycheck") version "4.0.2"
     id("com.avast.gradle.docker-compose") version "0.8.8"
+    id("com.github.ben-manes.versions") version "0.21.0"
 }
 
 version = "0.0.1"

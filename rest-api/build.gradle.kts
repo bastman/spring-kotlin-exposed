@@ -3,6 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.time.Duration
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 //import com.avast.gradle.dockercompose.
 
 // copy-pasta from Ilya ;) (https://github.com/ilya40umov/KotLink/blob/master/build.gradle.kts)
@@ -186,12 +187,25 @@ tasks {
         description = "Runs Detekt code analysis"
         config = files("src/main/resources/default-detekt-config.yml")
     }
+
+    withType<DependencyUpdatesTask> {
+        // https://github.com/ben-manes/gradle-versions-plugin
+        checkForGradleUpdate = true
+        outputFormatter = "plain"
+        outputDir = "build/reports/dependencyUpdates"
+        reportfileName = "report"
+        revision = "release" // one of: release | milestone | integration
+    }
 }
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
 }
 
+dependencyCheck {
+    // see: https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration-aggregate.html
+    failOnError=false
+}
 
 dockerCompose {
     isRequiredBy(project.tasks.named("test").get())

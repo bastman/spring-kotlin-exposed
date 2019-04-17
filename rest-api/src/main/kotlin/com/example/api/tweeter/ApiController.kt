@@ -50,6 +50,31 @@ class TweeterApiController(
                     .also { logger.info { "UPDATE DB ENTITY: $it" } }
                     .toTweetsDto()
 
+    data class PatchTweetRequest(val message: Optional<String>, val comment: Optional<String?>)
+    @PatchMapping("/api/tweeter/{id}")
+    fun patchOne(@PathVariable id: UUID, @RequestBody req: PatchTweetRequest): Any? {
+        req.message.also {
+            println("req.message: $it")
+            println("req.message.isPresent: ${it.isPresent}")
+        }
+        req.comment.also {
+            println("req.comment: $it")
+            println("req.comment.isPresent: ${it.isPresent}")
+        }
+        val data = mutableMapOf<String,Any?>()
+        if(req.message.isPresent) {
+            data["message"] = req.message.get()
+        }
+        if(req.comment.isPresent) {
+            data["comment"] = req.comment.get()
+        }
+
+        return mapOf(
+                "req" to req,
+                "data" to data
+        )
+    }
+
     @PostMapping("/api/tweeter/search")
     fun search(@RequestBody payload: TweeterSearchRequest): TweeterSearchResponse = payload
             .let(search::handle)

@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.ReferenceTypeSerializer
 import com.fasterxml.jackson.databind.type.ReferenceType
 import com.fasterxml.jackson.databind.util.NameTransformer
+import org.funktionale.option.Option
 
 class PatchableModule : SimpleModule() {
     override fun setupModule(context: SetupContext?) {
@@ -124,4 +125,9 @@ class PatchableSerializer : ReferenceTypeSerializer<Patchable<*>> // since 2.9
     }
 }
 
-
+fun <T : Any> Patchable<T>.toOption(): Option<T?> =
+        when (this) {
+            is Patchable.Present -> Option.Some(content)
+            is Patchable.Null -> Option.Some(null)
+            is Patchable.Undefined -> Option.None
+        }

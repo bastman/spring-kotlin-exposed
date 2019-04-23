@@ -1,6 +1,7 @@
 package com.example.api.tweeter
 
 import com.example.api.common.rest.error.exception.BadRequestException
+import com.example.api.common.rest.serialization.Patchable
 import com.example.api.tweeter.db.TweetStatus
 import com.example.api.tweeter.db.TweetsRecord
 import com.example.api.tweeter.db.TweetsRepo
@@ -17,6 +18,7 @@ import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiResponse
 import io.swagger.annotations.ApiResponses
 import mu.KLogging
+import org.funktionale.option.Option
 import org.springframework.web.bind.annotation.*
 import java.time.Instant
 import java.util.*
@@ -50,6 +52,38 @@ class TweeterApiController(
                     .also { logger.info { "UPDATE DB ENTITY: $it" } }
                     .toTweetsDto()
 
+
+    @PatchMapping("/api/tweeter/{id}")
+    fun patchOne(
+            @PathVariable id: UUID,
+            @RequestBody req: PatchTweetRequest
+    ): TweetDto {
+        val record: TweetsRecord = repo[id]
+        val message: Option<String> = when (val it = req.message) {
+            is Patchable.Null -> Option.None // Option.Some<String?>(null)
+            is Patchable.Undefined -> Option.None
+            is Patchable.Present -> Option.Some(it.content)
+        }
+        val comment: Option<String> = when (val it = req.comment) {
+            is Patchable.Null -> Option.None // Option.Some<String?>(null)
+            is Patchable.Undefined -> Option.None
+            is Patchable.Present -> Option.Some(it.content)
+        }
+        return record.let {
+            when (message) {
+                is Option.Some -> it.copy(message = message.get(), modifiedAt = Instant.now())
+                is Option.None -> it
+            }
+        }.let {
+            when (comment) {
+                is Option.Some -> it.copy(comment = comment.get(), modifiedAt = Instant.now())
+                is Option.None -> it
+            }
+        }.let(repo::update)
+                .also { logger.info { "UPDATE DB ENTITY: $it" } }
+                .toTweetsDto()
+    }
+
     @PostMapping("/api/tweeter/search")
     fun search(@RequestBody payload: TweeterSearchRequest): TweeterSearchResponse = payload
             .let(search::handle)
@@ -71,7 +105,7 @@ class TweeterApiController(
             false -> {
                 val expression: Expression<JsonNode> = try {
                     JMESPATH.compile(payload.jq)
-                } catch (all:Exception) {
+                } catch (all: Exception) {
                     throw BadRequestException("Invalid req.jq ! ${all.message}")
                 }
                 val data: TweeterSearchResponse = search.handle(payload)
@@ -120,3 +154,8 @@ sealed class SearchJqResponse {
     data class Raw(val data: TweeterSearchResponse) : SearchJqResponse()
     data class Jq(val data: JsonNode) : SearchJqResponse()
 }
+
+
+
+
+

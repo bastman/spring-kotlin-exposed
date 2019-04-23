@@ -54,6 +54,7 @@ dependencies {
     implementation("io.micrometer:micrometer-registry-prometheus:1.1.+")
     // serialization: jackson json
     val jacksonVersion =  "2.9.8"
+    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-modules-java8:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion")
@@ -84,6 +85,9 @@ dependencies {
     val swaggerVersion = "2.9.2"
     implementation("io.springfox:springfox-swagger2:$swaggerVersion")
     implementation("io.springfox:springfox-swagger-ui:$swaggerVersion")
+
+    // fp
+    implementation("org.funktionale:funktionale-all:1.2")
 
     // test: junit5
     val junitVersion = "5.3.1"

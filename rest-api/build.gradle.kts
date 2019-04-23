@@ -86,6 +86,9 @@ dependencies {
     implementation("io.springfox:springfox-swagger2:$swaggerVersion")
     implementation("io.springfox:springfox-swagger-ui:$swaggerVersion")
 
+    // fp
+    implementation("org.funktionale:funktionale-all:1.2")
+
     // test: junit5
     val junitVersion = "5.3.1"
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")

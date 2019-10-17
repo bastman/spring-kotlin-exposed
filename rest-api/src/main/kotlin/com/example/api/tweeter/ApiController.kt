@@ -1,5 +1,7 @@
 package com.example.api.tweeter
 
+import com.example.api.bookstore.db.AuthorTable
+import com.example.api.bookz.db.BookzTable
 import com.example.api.common.rest.error.exception.BadRequestException
 import com.example.api.common.rest.serialization.Patchable
 import com.example.api.tweeter.db.TweetStatus
@@ -10,6 +12,7 @@ import com.example.api.tweeter.search.TweeterSearchHandler
 import com.example.api.tweeter.search.TweeterSearchRequest
 import com.example.api.tweeter.search.TweeterSearchResponse
 import com.example.config.Jackson
+import com.example.util.exposed.expr.postgres.*
 import com.fasterxml.jackson.databind.JsonNode
 import io.burt.jmespath.Expression
 import io.burt.jmespath.JmesPath
@@ -19,6 +22,8 @@ import io.swagger.annotations.ApiResponse
 import io.swagger.annotations.ApiResponses
 import mu.KLogging
 import org.funktionale.option.Option
+import org.jetbrains.exposed.sql.*
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import java.time.Instant
 import java.util.*
@@ -36,6 +41,63 @@ class TweeterApiController(
     @GetMapping("/api/tweeter/{id}")
     fun getOne(@PathVariable id: UUID): TweetDto =
             repo[id].toTweetsDto()
+
+    @GetMapping("/api/tweeter/distinctOn")
+    @Transactional(readOnly = true)
+    fun getDistinct():List<TweetDto> {
+
+        val trimmedAndLoweredFullName = Concat(
+                " ",
+                TweetsTable.message, TweetsTable.message
+        )//.trim().lowerCase()
+// val fullNames = TweetsTable.slice(trimmedAndLoweredFullName).selectAll().map {
+
+        val f=TweetsTable.slice(TweetsTable.message, TweetsTable.message).fields
+        val a = TweetsTable.message
+        val b = AuthorTable.name
+        val f2=f.first()
+
+        //f2.toQueryBuilder()
+        /*
+        val cdistinctOn = CustomStringFunction(
+                "DISTINCT ON",
+                b,TweetsTable.message, TweetsTable.comment, TweetsTable.id
+        )
+
+         */
+
+
+        val cdistinctOn = customDistinctOn(
+                b
+        )
+
+        val distinctOn = DistinctOn4(
+               // *f.toTypedArray()
+b
+        )
+
+/*
+        val d = DistinctOn(TweetsTable.message, TweetsTable.comment)
+        val c=listOf(TweetsTable.message, TweetsTable.comment)
+        val d2 = DistinctOn2(cols = c)
+        val sl= TweetsTable.columns
+        val xx = TweetsTable.slice(TweetsTable.columns)
+        xx.fields.appendTo()
+        */
+
+       // val a = TweetsTable.selectAll().adjustSlice {  }
+
+        val dtos: List<TweetDto> =TweetsTable
+                .slice(
+                      //  cdistinctOn, TweetsTable.id, TweetsTable.comment
+                        cdistinctOn,*TweetsTable.columns.toTypedArray()
+                )
+
+                .selectAll()
+                .map { with(TweetsTable) {it.toTweetsRecord()} }
+                .map { it.toTweetsDto() }
+        return dtos
+    }
 
     @PutMapping("/api/tweeter")
     fun createOne(@RequestBody req: CreateTweetRequest): TweetDto =

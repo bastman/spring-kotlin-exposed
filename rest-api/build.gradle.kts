@@ -64,7 +64,7 @@ dependencies {
     implementation("org.postgresql:postgresql:42.2.5")
     implementation("com.zaxxer:HikariCP:3.3.1")
     // db: exposed sql client
-    val exposedVersion = "0.13.6"
+    val exposedVersion = "0.17.5"
     implementation("org.jetbrains.exposed:exposed:$exposedVersion")
     implementation("org.jetbrains.exposed:spring-transaction:$exposedVersion")
     // db: flyway db migrations

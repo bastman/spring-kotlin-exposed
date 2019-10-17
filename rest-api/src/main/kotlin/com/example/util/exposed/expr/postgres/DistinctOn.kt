@@ -1,4 +1,4 @@
-package com.example.util.exposed.expr
+package com.example.util.exposed.expr.postgres
 
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Expression

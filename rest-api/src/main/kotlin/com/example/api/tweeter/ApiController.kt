@@ -10,6 +10,8 @@ import com.example.api.tweeter.search.TweeterSearchHandler
 import com.example.api.tweeter.search.TweeterSearchRequest
 import com.example.api.tweeter.search.TweeterSearchResponse
 import com.example.config.Jackson
+import com.example.util.exposed.functions.postgres.distinctOn
+import com.example.util.exposed.query.toSQL
 import com.fasterxml.jackson.databind.JsonNode
 import io.burt.jmespath.Expression
 import io.burt.jmespath.JmesPath
@@ -19,10 +21,12 @@ import io.swagger.annotations.ApiResponse
 import io.swagger.annotations.ApiResponses
 import mu.KLogging
 import org.funktionale.option.Option
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import java.time.Instant
 import java.util.*
-
 
 @RestController
 class TweeterApiController(
@@ -36,6 +40,33 @@ class TweeterApiController(
     @GetMapping("/api/tweeter/{id}")
     fun getOne(@PathVariable id: UUID): TweetDto =
             repo[id].toTweetsDto()
+
+    @GetMapping("/api/tweeter/distinctOn")
+    @Transactional(readOnly = true)
+    fun getDistinct(): List<TweetDto> {
+        val selectDistinctOn: CustomFunction<Boolean?> = distinctOn(
+                TweetsTable.message,
+                TweetsTable.comment
+        )
+        val selectColumns: List<Column<*>> = (TweetsTable.columns)
+        val selectWhere: Op<Boolean> = (
+                TweetsTable.createdAt.greaterEq(Instant.EPOCH)
+                )
+
+        val query: Query = TweetsTable
+                .slice(
+                        selectDistinctOn,
+                        *selectColumns.toTypedArray()
+                )
+                .select { selectWhere }
+
+        val SQL: String = query.toSQL()
+        logger.info { "==== Select Distinct On Example === SQL: $SQL " }
+        val dtos: List<TweetDto> = query
+                .map { with(TweetsTable) { it.toTweetsRecord() } }
+                .map { it.toTweetsDto() }
+        return dtos
+    }
 
     @PutMapping("/api/tweeter")
     fun createOne(@RequestBody req: CreateTweetRequest): TweetDto =

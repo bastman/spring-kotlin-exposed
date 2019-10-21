@@ -7,6 +7,7 @@ CREATE TABLE place
     modified_at                  timestamp          NOT NULL,
     deleted_at                   timestamp          NULL,
     active                       bool               NOT NULL,
+    place_name                   varchar(2048)      NOT NULL,
     country_name                 varchar(2048)      NOT NULL,
     city_name                    varchar(2048)      NOT NULL,
     postal_code                  varchar(2048)      NOT NULL,

@@ -7,10 +7,7 @@ import com.example.api.places.common.dto.PlaceDto
 import com.example.api.places.common.dto.toPlaceDto
 import mu.KLogging
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.math.BigDecimal
 import java.time.Instant
 import java.util.*
@@ -36,6 +33,20 @@ class PlacesApiController(
             .toRecord(placeId = UUID.randomUUID(), now = Instant.now())
             .let(repo::insert)
             .also { logger.info { "INSERT DB ENTITY: $it" } }
+            .toPlaceDto()
+
+    @DeleteMapping("$API_BASE_URI/{placeId}")
+    @Transactional(readOnly = false)
+    fun softDelete(@PathVariable("placeId") placeId: UUID): PlaceDto = repo
+            .softDeleteById(placeId = placeId, deletedAt = Instant.now())
+            .also { logger.info { "SOFT DELETE DB ENTITY: $it" } }
+            .toPlaceDto()
+
+    @PostMapping("$API_BASE_URI/{placeId}/restore")
+    @Transactional(readOnly = false)
+    fun softRestore(@PathVariable("placeId") placeId: UUID): PlaceDto = repo
+            .softRestoreById(placeId = placeId)
+            .also { logger.info { "SOFT RESTORE DB ENTITY: $it" } }
             .toPlaceDto()
 }
 

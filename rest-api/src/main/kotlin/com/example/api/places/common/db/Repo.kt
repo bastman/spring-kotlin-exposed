@@ -80,13 +80,13 @@ class PlaceRepo {
                 it[longitude] = record.longitude
             }.let { getById(placeId = record.place_id, isActive = null) }
 
-    private fun softDeleteById(placeId: UUID, deletedAt: Instant): PlaceRecord = table
+    fun softDeleteById(placeId: UUID, deletedAt: Instant): PlaceRecord = table
             .update({ table.place_id eq placeId }) {
                 it[active] = false
                 it[deleted_at] = deletedAt
             }.let { getById(placeId = placeId, isActive = null) }
 
-    private fun softRestoreById(placeId: UUID): PlaceRecord = table
+    fun softRestoreById(placeId: UUID): PlaceRecord = table
             .update({ table.place_id eq placeId }) {
                 it[active] = true
                 it[deleted_at] = null

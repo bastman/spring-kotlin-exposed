@@ -6,6 +6,9 @@ import com.example.api.places.common.rest.mutation.toRecord
 import com.example.api.places.common.rest.response.ListResponseDto
 import com.example.api.places.common.rest.response.PlaceDto
 import com.example.api.places.common.rest.response.toPlaceDto
+import com.example.api.places.geosearch.PlacesGeoSearchRequest
+import com.example.api.places.geosearch.PlacesGeoSearchResponse
+import com.example.api.places.geosearch.native.GeoSearchNativeHandler
 import mu.KLogging
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
@@ -16,7 +19,8 @@ private const val API_BASE_URI = "/api/places"
 
 @RestController
 class PlacesApiController(
-        private val repo: PlaceRepo
+        private val repo: PlaceRepo,
+        private val geoSearchNative: GeoSearchNativeHandler
 ) {
     companion object : KLogging()
 
@@ -48,6 +52,12 @@ class PlacesApiController(
             .softRestoreById(placeId = placeId)
             .also { logger.info { "SOFT RESTORE DB ENTITY: $it" } }
             .toPlaceDto()
+
+    @PostMapping("$API_BASE_URI/geosearch/native")
+    fun geoSearchNative(@RequestBody payload: PlacesGeoSearchRequest.Payload): PlacesGeoSearchResponse =
+            PlacesGeoSearchRequest(payload = payload)
+                    .let(geoSearchNative::handle)
+
 }
 
 

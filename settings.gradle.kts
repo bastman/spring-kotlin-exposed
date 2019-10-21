@@ -1,17 +1,42 @@
+rootProject.name = "spring-kotlin-exposed"
 include("rest-api")
 
-// "copy pasta" from: https://github.com/ilya40umov/KotLink/blob/master/settings.gradle.kts
-
 pluginManagement {
-    repositories {
-        gradlePluginPortal()
+    // see: https://github.com/ilya40umov/KotLink/blob/master/settings.gradle.kts
+
+    val kotlinVersion = "1.3.50"
+    val springBootVersion = "2.1.8.RELEASE"
+
+    plugins {
+        kotlin("jvm") version kotlinVersion
+        id("tanvd.kosogor") version "1.0.7"
+        id("io.gitlab.arturbosch.detekt") version "1.0.1"
+        id("org.owasp.dependencycheck") version "5.2.1"
+        id("com.avast.gradle.docker-compose") version "0.9.4"
+        id("com.github.ben-manes.versions") version "0.24.0"
+
+        // spring
+        id("io.spring.dependency-management") version "1.0.8.RELEASE"
+        id("org.springframework.boot") version springBootVersion
+
+        // spring-kotlin
+        // kotlin: spring (proxy) related plugins see: https://kotlinlang.org/docs/reference/compiler-plugins.html
+        id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
+        id("org.jetbrains.kotlin.plugin.noarg") version kotlinVersion
+        id("org.jetbrains.kotlin.plugin.allopen") version kotlinVersion
+
+        // ak-artifactory
+        //id("com.jfrog.artifactory") version "4.9.6"
     }
+
+
     resolutionStrategy {
         eachPlugin {
-            if (requested.id.id.startsWith("org.jetbrains.kotlin")) {
-                gradle.rootProject.extra["kotlinVersion"]?.let { useVersion(it as String) }
-            } else if (requested.id.id == "org.springframework.boot") {
-                gradle.rootProject.extra["springBootVersion"]?.let { useVersion(it as String) }
+            if(requested.id.id.startsWith("org.jetbrains.kotlin")) {
+                useVersion(kotlinVersion)
+            }
+            if (requested.id.id == "org.springframework.boot") {
+                useVersion(springBootVersion)
             }
         }
     }

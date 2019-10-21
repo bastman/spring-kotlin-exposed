@@ -1,12 +1,9 @@
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import io.gitlab.arturbosch.detekt.Detekt
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.time.Duration
-import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
-//import com.avast.gradle.dockercompose.
-
-// copy-pasta from Ilya ;) (https://github.com/ilya40umov/KotLink/blob/master/build.gradle.kts)
 
 plugins {
     // built-in plugins
@@ -16,61 +13,80 @@ plugins {
     application
     // versions of all kotlin plugins are resolved by logic in 'settings.gradle.kts'
     kotlin("jvm")
-    kotlin("plugin.spring")
-    kotlin("plugin.allopen")
-    kotlin("plugin.noarg")
+    id("io.gitlab.arturbosch.detekt") apply true
+    id("org.owasp.dependencycheck") apply true
+    id("com.avast.gradle.docker-compose") apply true
+    id("com.github.ben-manes.versions") apply true
     id("org.jetbrains.dokka") version "0.9.18" apply false
-    // version of spring boot plugin is also resolved by 'settings.gradle.kts'
-    id("org.springframework.boot")
-    // other plugins require a version to be mentioned
-    id("io.spring.dependency-management") version "1.0.7.RELEASE"
-    id("io.gitlab.arturbosch.detekt") version "1.0.0-RC14"
-    id("org.owasp.dependencycheck") version "4.0.2"
-    id("com.avast.gradle.docker-compose") version "0.9.2"
-    id("com.github.ben-manes.versions") version "0.21.0"
+
+    // spring
+    // kotlin: spring (proxy) related plugins see: https://kotlinlang.org/docs/reference/compiler-plugins.html
+    id("org.jetbrains.kotlin.plugin.spring") apply true
+    id("org.jetbrains.kotlin.plugin.noarg") apply true
+    id("org.jetbrains.kotlin.plugin.allopen") apply true
+    // spring
+    id("io.spring.dependency-management") apply true
+    id("org.springframework.boot") apply true
+    // id("com.jfrog.artifactory") apply true
 }
 
+group = "exom.example.restapi"
 version = "0.0.1"
 
 application {
     mainClassName = "com.example.MainKt"
 }
-
 repositories {
+    // artifactory
+    /*
+    maven {
+        url = uri("https://<YOUR_COMPANY>.jfrog.io/<YOUR_COMPANY>/libs-release")
+        credentials {
+            username = System.getenv("ARTIFACTORY_USERNAME")
+                    .also { if (it.isNullOrBlank()) { error("ENV-VAR NOT SET: ARTIFACTORY_USERNAME") } }
+            password = System.getenv("ARTIFACTORY_PASSWORD")
+                    .also { if (it.isNullOrBlank()) { error("ENV-VAR NOT SET: ARTIFACTORY_PASSWORD") } }
+        }
+    }
+    */
+    mavenLocal()
     mavenCentral()
     jcenter()
+    // maven { url=uri("https://dl.bintray.com/konform-kt/konform") }
 }
 dependencies {
-    // val springBootVersion: String by project.extra
     // kotlin
-    compile(kotlin("stdlib-jdk8"))
+    implementation(kotlin("stdlib-jdk8"))
+
     // logging
-    implementation("io.github.microutils:kotlin-logging:1.6.+")
+    implementation("io.github.microutils:kotlin-logging:1.7.+")
     implementation("net.logstash.logback:logstash-logback-encoder:5.+")
     val logbackJsonVersion = "0.1.5"
     implementation("ch.qos.logback.contrib:logback-json-classic:$logbackJsonVersion")
     implementation("ch.qos.logback.contrib:logback-jackson:$logbackJsonVersion")
     // monitoring
     implementation("io.micrometer:micrometer-registry-prometheus:1.1.+")
+
+    // db: postgres driver & hikari pool & flyway
+    implementation("org.postgresql:postgresql:42.2.6")
+    implementation("com.zaxxer:HikariCP:3.3.1")
+    implementation("org.flywaydb:flyway-core:5.2.4")
+    // db: exposed sql client
+    val exposedVersion = "0.17.5"
+    implementation("org.jetbrains.exposed:exposed:$exposedVersion")
+    implementation("org.jetbrains.exposed:spring-transaction:$exposedVersion")
+
     // serialization: jackson json
-    val jacksonVersion =  "2.9.8"
+    val jacksonVersion =  "2.9.9"
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-modules-java8:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
-    // db: postgres driver & hikari pool
-    implementation("org.postgresql:postgresql:42.2.5")
-    implementation("com.zaxxer:HikariCP:3.3.1")
-    // db: exposed sql client
-    val exposedVersion = "0.17.5"
-    implementation("org.jetbrains.exposed:exposed:$exposedVersion")
-    implementation("org.jetbrains.exposed:spring-transaction:$exposedVersion")
-    // db: flyway db migrations
-    implementation("org.flywaydb:flyway-core:5.2.4")
     // jmespath ... you know "jq" ;)
     implementation("io.burt:jmespath-jackson:0.2.1")
+
     // spring
     implementation("org.springframework.boot:spring-boot-starter-web") {
         exclude(group="org.springframework.boot", module = "spring-boot-starter-tomcat")
@@ -90,14 +106,14 @@ dependencies {
     implementation("org.funktionale:funktionale-all:1.2")
 
     // test: junit5
-    val junitVersion = "5.3.1"
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
+    val junitVersion ="5.5.2"
+    // see: https://stackoverflow.com/questions/54598484/gradle-5-junit-bom-and-spring-boot-incorrect-versions/54605523#54605523
+    testImplementation(enforcedPlatform("org.junit:junit-bom:$junitVersion")) // JUnit 5 BOM
+    testImplementation("org.junit.jupiter:junit-jupiter")
     // test: kotlin
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-    testImplementation("org.amshove.kluent:kluent:1.49")
+    testImplementation("org.amshove.kluent:kluent:1.56")
     testImplementation("io.mockk:mockk:1.9.+")
     testImplementation("dev.minutest:minutest:1.4.+")
 
@@ -107,12 +123,7 @@ dependencies {
         exclude(group="com.vaadin.external.google", module="android-json")
     }
 
-
     /*
-    testCompile("org.mockito:mockito-core:2.23.4") {
-        isForce = true
-        because("version that is enforced by Spring Boot is not compatible with Java 11")
-    }
     testCompile("net.bytebuddy:byte-buddy:1.9.3") {
         isForce = true
         because("version that is enforced by Spring Boot is not compatible with Java 11")
@@ -130,6 +141,8 @@ tasks {
     withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = "1.8"
+            apiVersion = "1.3"
+            languageVersion = "1.3"
             freeCompilerArgs = listOf("-Xjsr305=strict")
         }
     }
@@ -200,10 +213,6 @@ tasks {
         reportfileName = "report"
         revision = "release" // one of: release | milestone | integration
     }
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
 }
 
 dependencyCheck {

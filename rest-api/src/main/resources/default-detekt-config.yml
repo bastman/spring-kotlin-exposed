@@ -24,7 +24,7 @@ test-pattern: # Configure exclusions for test sources
 
 build:
   #maxIssues: 10
-  maxIssues: 100 # ;)
+  maxIssues: 1000 # ;)
   weights:
   # complexity: 2
   # LongParameterList: 1

@@ -1,4 +1,4 @@
-package com.example.api.places.common.dto
+package com.example.api.places.common.rest.response
 
 import com.example.api.places.common.db.PlaceRecord
 import java.math.BigDecimal

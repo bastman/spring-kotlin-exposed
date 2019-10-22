@@ -24,7 +24,9 @@ fun ll_to_earth(latitude: Double, longitude: Double): CustomFunction<Boolean?> =
         ll_to_earth(latitude = doubleParam(latitude), longitude = doubleParam(longitude))
 
 /**
- * earth_distance(earth, earth):float8 - Returns the great circle distance between two points on the surface of the Earth.
+ * earth_distance(earth, earth):float8
+ * - Returns the great circle distance between two points on the surface of the Earth.
+ * - returns a value in meters
  * see: https://www.postgresql.org/docs/8.3/earthdistance.html
  */
 fun earth_distance(fromEarth: Expression<*>, toEarth: Expression<*>): CustomFunction<Double> {

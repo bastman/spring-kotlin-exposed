@@ -7,6 +7,7 @@ import org.jetbrains.exposed.sql.*
  * PostGIS or Cube + EarthDistance
  *
  * see:
+ * https://hashrocket.com/blog/posts/juxtaposing-earthdistance-and-postgis
  * https://gist.github.com/norman/1535879
  * https://developpaper.com/using-postgresql-database-to-app-geographical-location/
  */

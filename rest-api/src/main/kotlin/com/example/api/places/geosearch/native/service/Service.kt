@@ -63,13 +63,13 @@ class PlacesGeoSearchService {
 
         val items: List<ResultItem> = Try { execSql(sql = sql) }
                 .onFailure {
-                    logger.error { "SQL QUERY FAILED ! error.message: ${it.message} sqlQuery: $sql" }
+                    logger.error { "SQL QUERY FAILED ! error.message: ${it.message} - req: $req - SQL: $sql" }
                 }
                 .get()
 
         return Result(items = items)
                 .also {
-                    logger.info { "==== items found: ${it.items.size} req=$req" }
+                    logger.info { "==== result.items.count: ${it.items.size} - req: $req - SQL: $sql" }
                 }
     }
 

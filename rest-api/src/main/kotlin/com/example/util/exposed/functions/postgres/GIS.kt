@@ -3,6 +3,12 @@ package com.example.util.exposed.functions.postgres
 import com.example.util.exposed.functions.common.CustomBooleanFunction
 import org.jetbrains.exposed.sql.*
 
+/**
+ * PostGIS or Cube + EarthDistance
+ *
+ * see: https://developpaper.com/using-postgresql-database-to-app-geographical-location/
+ */
+
 // see: https://www.postgresql.org/docs/8.3/earthdistance.html
 // ll_to_earth( place.latitude , place.longitude )
 // ll_to_earth(float8, float8): earth - Returns the location of a point on the surface of the Earth given its latitude (argument 1) and longitude (argument 2) in degrees.

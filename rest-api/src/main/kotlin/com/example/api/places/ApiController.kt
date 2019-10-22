@@ -8,6 +8,7 @@ import com.example.api.places.common.rest.response.PlaceDto
 import com.example.api.places.common.rest.response.toPlaceDto
 import com.example.api.places.geosearch.PlacesGeoSearchRequest
 import com.example.api.places.geosearch.PlacesGeoSearchResponse
+import com.example.api.places.geosearch.dsl.GeoSearchDslHandler
 import com.example.api.places.geosearch.native.GeoSearchNativeHandler
 import mu.KLogging
 import org.springframework.transaction.annotation.Transactional
@@ -20,7 +21,8 @@ private const val API_BASE_URI = "/api/places"
 @RestController
 class PlacesApiController(
         private val repo: PlaceRepo,
-        private val geoSearchNative: GeoSearchNativeHandler
+        private val geoSearchNative: GeoSearchNativeHandler,
+        private val geoSearchDsl: GeoSearchDslHandler
 ) {
     companion object : KLogging()
 
@@ -58,6 +60,11 @@ class PlacesApiController(
             PlacesGeoSearchRequest(payload = payload)
                     .let(geoSearchNative::handle)
 
+    @PostMapping("$API_BASE_URI/geosearch/dsl")
+    @Transactional(readOnly = true)
+    fun geoSearchDsl(@RequestBody payload: PlacesGeoSearchRequest.Payload): PlacesGeoSearchResponse =
+            PlacesGeoSearchRequest(payload = payload)
+                    .let(geoSearchDsl::handle)
 }
 
 

@@ -2,7 +2,10 @@ package com.example.util.exposed.functions.postgres
 
 import com.example.util.exposed.functions.common.CustomBooleanFunction
 import org.jetbrains.exposed.sql.*
-
+import org.jetbrains.exposed.sql.transactions.TransactionManager
+import org.jetbrains.exposed.sql.vendors.DatabaseDialect
+import org.postgresql.util.*
+import org.jetbrains.exposed.sql.Function as ExposedFunction
 /**
  * PostGIS or Cube + EarthDistance
  *
@@ -11,6 +14,8 @@ import org.jetbrains.exposed.sql.*
  * https://gist.github.com/norman/1535879
  * https://developpaper.com/using-postgresql-database-to-app-geographical-location/
  */
+
+
 
 // see: https://www.postgresql.org/docs/8.3/earthdistance.html
 // ll_to_earth( place.latitude , place.longitude )
@@ -23,8 +28,54 @@ fun ll_to_earth(latitude: Expression<*>, longitude: Expression<*>): CustomFuncti
         params = *(listOf(latitude, longitude).toTypedArray())
 )
 
-fun ll_to_earth(latitude: Double, longitude: Double): CustomFunction<Boolean?> =
+fun ll_to_earth2(latitude: Expression<*>, longitude: Expression<*>) = CustomFunction<Double>(
+        "ll_to_earth",
+        DoubleColumnType(),
+        *(listOf(latitude, longitude).toTypedArray())
+)
+fun CustomFunction<Double>.nullable():CustomFunction<Double?> = this as CustomFunction<Double?>
+
+fun ll_to_earth3(latitude: Double, longitude: Double): CustomFunction<Boolean?> =
         ll_to_earth(latitude = doubleParam(latitude), longitude = doubleParam(longitude))
+
+
+data class LatLon<T:Number>(val lat:T, val lon:T)
+fun <T:Double>ll_to_earth(coords:LatLon<T>):T {
+    val out = coords.lat
+    return out
+}
+
+
+class LLToEarth<T: Number?>(val latitude: Expression<T>,val longitude: Expression<T>) : ExposedFunction<T>(DoubleColumnType()) {
+    override fun toQueryBuilder(queryBuilder: QueryBuilder) = queryBuilder {
+        append("ll_to_earth(", latitude, ", ", longitude, ")")
+    }
+}
+
+fun <T:Number?>ll_to_earthX(latitude: T, longitude: T):Pair<T,T> {
+    return Pair(latitude,longitude)
+}
+
+val lat:Double?=null
+val lon:Double?=null
+
+val r= ll_to_earthX(1.0,null)
+val r1=r.first
+
+
+
+fun <T:Double?>ll_to_earthXXXX(latitude:  T, longitude:  T)= CustomFunction<T>(
+        "ll_to_earth",
+        DoubleColumnType(),
+        when(latitude) {
+            null-> stringLiteral("NULL")
+            else -> doubleParam(latitude)
+        },
+        when(longitude) {
+            null-> stringLiteral("NULL")
+            else -> doubleParam(longitude)
+        }
+)
 
 /**
  * earth_distance(earth, earth):float8
@@ -60,3 +111,18 @@ fun doubleParam(value: Double): Expression<Double> = QueryParameter(value, Doubl
 
 fun <T> CustomFunction<T>.pgContains(other: Expression<*>): Op<Boolean> = PgContainsOp(this, containsOtherExpr = other)
 private class PgContainsOp(val sourceExpr: Expression<*>, val containsOtherExpr: Expression<*>) : ComparisonOp(sourceExpr, containsOtherExpr, "@>")
+
+
+//private val currentDialect: DatabaseDialect get() = TransactionManager.current().db.dialect
+class AnyColumnType(): ColumnType() {
+    override fun sqlType(): String  = ""//currentDialect.dataTypeProvider.
+    override fun valueFromDB(value: Any): Any {
+        val valueFromDB = super.valueFromDB(value)
+        return valueFromDB
+    }
+}
+
+
+class PgCubeColumnType(): ColumnType() {
+    override fun sqlType(): String ="cube"
+}

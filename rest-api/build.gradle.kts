@@ -75,7 +75,16 @@ dependencies {
     val exposedVersion = "0.17.5"
     implementation("org.jetbrains.exposed:exposed:$exposedVersion")
     implementation("org.jetbrains.exposed:spring-transaction:$exposedVersion")
-
+    // db: postgis:
+    // https://github.com/sdeleuze/geospatial-messenger/blob/master/build.gradle.kts
+    // https://postgis.net/docs/reference.
+    // http://www.tsusiatsoftware.net/jts/main.html
+    implementation("net.postgis:postgis-jdbc:2.3.0") {
+        exclude(module = "postgresql")
+    }
+    implementation("com.github.mayconbordin:postgis-geojson:1.1") {
+        exclude(module = "postgresql")
+    }
     // serialization: jackson json
     val jacksonVersion =  "2.9.9"
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")

@@ -1,6 +1,7 @@
 package com.example.api.places
 
 import com.example.api.places.common.db.PlaceRepo
+import com.example.api.places.common.db.PlaceTable
 import com.example.api.places.common.rest.mutation.Mutations
 import com.example.api.places.common.rest.mutation.toRecord
 import com.example.api.places.common.rest.response.ListResponseDto
@@ -10,7 +11,13 @@ import com.example.api.places.geosearch.PlacesGeoSearchRequest
 import com.example.api.places.geosearch.PlacesGeoSearchResponse
 import com.example.api.places.geosearch.dsl.GeoSearchDslHandler
 import com.example.api.places.geosearch.native.GeoSearchNativeHandler
+import com.example.util.exposed.postgres.extensions.earthdistance.PGEarthPointLocation
+import com.example.util.exposed.postgres.extensions.earthdistance.earth
+import com.example.util.exposed.postgres.extensions.earthdistance.latitude
+import com.example.util.exposed.postgres.extensions.earthdistance.ll_to_earth_nullable
+import com.example.util.exposed.query.toSQL
 import mu.KLogging
+import org.jetbrains.exposed.sql.selectAll
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import java.time.Instant
@@ -65,6 +72,36 @@ class PlacesApiController(
     fun geoSearchDsl(@RequestBody payload: PlacesGeoSearchRequest.Payload): PlacesGeoSearchResponse =
             PlacesGeoSearchRequest(payload = payload)
                     .let(geoSearchDsl::handle)
+    @PostMapping("$API_BASE_URI/foo")
+    @Transactional(readOnly = true)
+    fun foo() {
+
+        val earth_expr = earth()
+        val ll_expr=ll_to_earth_nullable(1.0,null)
+        val req_earth = PGEarthPointLocation(
+                5881394.65979286, 2140652.5921368, 1227937.44619261
+        )
+
+        val lat_expr = latitude(null)//.nullable()
+        //val req_earth = PGEarthPointLocation
+
+        val query = PlaceTable.slice(earth_expr,ll_expr, lat_expr)
+                .selectAll()
+                .limit(1)
+                .also {
+                    println("SQL: ${it.toSQL()}")
+                }
+
+                query
+                .map {
+                    val row=it
+                    val earth = it[earth_expr]
+                    val ll=it[ll_expr]
+                    val lat = it[lat_expr]
+                    "foo"
+                }
+
+    }
 }
 
 

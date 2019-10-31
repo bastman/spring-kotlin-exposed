@@ -75,8 +75,8 @@ class PlacesApiController(
     fun foo() {
 
         val earth_expr = earth()
-        val ll_expr_nullable=ll_to_earth2(1.0,null)
-        val ll_expr_not_nullable=ll_to_earth2(1.0,2.0)
+        val ll_expr_nullable=ll_to_earth(1.0,null)
+        val ll_expr_not_nullable=ll_to_earth(1.0,2.0)
         val req_earth = PGEarthPointLocation(
                 5881394.65979286, 2140652.5921368, 1227937.44619261
         )

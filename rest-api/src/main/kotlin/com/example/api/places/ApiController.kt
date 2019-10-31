@@ -11,6 +11,7 @@ import com.example.api.places.geosearch.PlacesGeoSearchRequest
 import com.example.api.places.geosearch.PlacesGeoSearchResponse
 import com.example.api.places.geosearch.dsl.GeoSearchDslHandler
 import com.example.api.places.geosearch.native.GeoSearchNativeHandler
+import com.example.util.exposed.functions.postgres.earth_distance
 import com.example.util.exposed.postgres.extensions.earthdistance.*
 import com.example.util.exposed.query.toSQL
 import mu.KLogging
@@ -77,6 +78,7 @@ class PlacesApiController(
         val earth_expr = earth()
         val ll_expr_nullable=ll_to_earth(1.0,null)
         val ll_expr_not_nullable=ll_to_earth(1.0,2.0)
+        val ll_expr2_not_nullable=ll_to_earth(2.0,3.0)
         val req_earth = PGEarthPointLocation(
                 5881394.65979286, 2140652.5921368, 1227937.44619261
         )
@@ -90,7 +92,11 @@ class PlacesApiController(
         val lat_expr_alias = ExpressionAlias(lat_expr, "the_lat")
         //val req_earth = PGEarthPointLocation
 
-        val query = PlaceTable.slice(earth_expr,ll_expr_nullable,ll_expr_not_nullable, lat_expr_alias, ll_to_earth_col_expr_not_nullable)
+        val earth_distance_expr = earth_distanceV2(ll_expr_not_nullable,ll_expr2_not_nullable)
+
+        val query = PlaceTable.slice(
+                earth_expr,ll_expr_nullable,ll_expr_not_nullable, lat_expr_alias,
+                ll_to_earth_col_expr_not_nullable,earth_distance_expr)
                 .selectAll()
                 .limit(1)
                 .also {
@@ -106,6 +112,7 @@ class PlacesApiController(
                     val r_ll_expr_nullable = it[ll_expr_nullable]
                     val r_ll_expr_not_nullable = it[ll_expr_not_nullable]
                     val r_ll_to_earth_col_expr_not_nullable = it[ll_to_earth_col_expr_not_nullable]
+                    val r_earth_distance_expr=it[earth_distance_expr]
                     "foo"
                 }
 

@@ -11,7 +11,48 @@ fun earth(): CustomFunction<Double> {
     return fn
 }
 
+/*
+/**
+ * earth_distance(earth, earth):float8
+ * - Returns the great circle distance between two points on the surface of the Earth.
+ * - returns a value in meters
+ * see: https://www.postgresql.org/docs/8.3/earthdistance.html
+ */
+fun earth_distance(fromEarth: Expression<*>, toEarth: Expression<*>): CustomFunction<Double> {
+    val params = listOf(
+            fromEarth, toEarth
+    )
+    val fn = CustomFunction<Double>("earth_distance", DoubleColumnType(), *(params).toTypedArray())
+    return fn
+}
+ */
+@JvmName("earth_distance_not_nullable")
+@Suppress("UNCHECKED_CAST")
+fun <T:PGEarthPointLocation>earth_distanceV2(
+        fromEarth: CustomFunction<T>, toEarth: CustomFunction<T>
+): CustomFunction<Double> = _earth_distance(
+        fromEarth=fromEarth,
+        toEarth = toEarth,
+        returnsNullable = false
+) as CustomFunction<Double>
 
+fun <T:PGEarthPointLocation?>earth_distanceV2(
+        fromEarth: CustomFunction<T>, toEarth: CustomFunction<T>, returnsNullable:Boolean
+): CustomFunction<Double?> = _earth_distance(fromEarth=fromEarth, toEarth = toEarth, returnsNullable = true)
+
+private fun <T:PGEarthPointLocation?>_earth_distance(
+        fromEarth: CustomFunction<T>, toEarth: CustomFunction<T>, returnsNullable:Boolean
+): CustomFunction<Double?> {
+    val params = listOf(
+            fromEarth, toEarth
+    )
+    val fn = CustomFunction<Double?>(
+            "earth_distance",
+            DoubleColumnType().apply { nullable=returnsNullable },
+            *(params).toTypedArray()
+    )
+    return fn
+}
 
 /**
 
@@ -24,68 +65,3 @@ fun ll_to_earth(latitude:Double?, longitude:Double?):PGEarthPointLocation?
 
 
 
-data class PGEarthPointLocation(val x:Double, val y:Double, val z:Double)
-class PGEarthPointLocationColumnType: ColumnType() {
-    override fun sqlType(): String  = "cube"
-
-    override fun valueFromDB(value: Any): PGEarthPointLocation {
-        var pgType:String?=null
-        var pgValue:String?=null
-        return try {
-            value as PGobject
-            pgType=value.type
-            pgValue=value.value
-            val t = PGtokenizer(PGtokenizer.removePara(pgValue), ',')
-            PGEarthPointLocation(
-                    x=java.lang.Double.parseDouble(t.getToken(0)),
-                    y = java.lang.Double.parseDouble(t.getToken(1)),
-                    z=java.lang.Double.parseDouble(t.getToken(2))
-            )
-        } catch (e: NumberFormatException) {
-            throw PSQLException(
-                    GT.tr("Conversion to type $pgType -> ${this.javaClass} failed: $pgValue."),
-                    PSQLState.DATA_TYPE_MISMATCH, e)
-        }
-    }
-
-    override fun setParameter(stmt: PreparedStatement, index: Int, value: Any?) {
-        val obj = PGobject()
-        obj.type = sqlType()
-        obj.value = when(value) {
-            null->null
-            else-> try {
-                value as PGEarthPointLocation
-                "(${value.x}, ${value.y}, ${value.z})"
-            } catch (all:Exception) {
-                throw PSQLException(
-                        "Failed to setParameter at index: $index - value: $value ! reason: ${all.message}",
-                        PSQLState.DATA_TYPE_MISMATCH,
-                        all
-                )
-            }
-        }
-        stmt.setObject(index, obj)
-    }
-
-    override fun notNullValueToDB(value: Any): PGEarthPointLocation {
-        return value as PGEarthPointLocation
-        /*
-        return when(value) {
-            is PGEarthPointLocation -> value
-            else -> super.notNullValueToDB(value)
-        }
-
-         */
-    }
-    override fun nonNullValueToString(value: Any): String {
-        val sinkValue = notNullValueToDB(value)
-        // "(${value.x}, ${value.y}, ${value.z})"
-        return "'(${sinkValue.x}, ${sinkValue.y}, ${sinkValue.z})'"
-    }
-}
-
-class NullExpr: Expression<Unit>() {
-    override fun toQueryBuilder(queryBuilder: QueryBuilder) = queryBuilder {
-        append(" NULL ")
-    }
-}

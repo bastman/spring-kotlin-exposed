@@ -80,6 +80,9 @@ class PlacesApiController(
         val req_earth = PGEarthPointLocation(
                 5881394.65979286, 2140652.5921368, 1227937.44619261
         )
+        val ll_to_earth_col_expr_not_nullable = ll_to_earth(
+                PlaceTable.latitude, PlaceTable.longitude
+        )
 
         //val lat_expr = req_earth.latitude4().nn()//.nullable()
         val lat_expr = latitude(req_earth)
@@ -87,7 +90,7 @@ class PlacesApiController(
         val lat_expr_alias = ExpressionAlias(lat_expr, "the_lat")
         //val req_earth = PGEarthPointLocation
 
-        val query = PlaceTable.slice(earth_expr,ll_expr_nullable,ll_expr_not_nullable, lat_expr_alias)
+        val query = PlaceTable.slice(earth_expr,ll_expr_nullable,ll_expr_not_nullable, lat_expr_alias, ll_to_earth_col_expr_not_nullable)
                 .selectAll()
                 .limit(1)
                 .also {
@@ -102,6 +105,7 @@ class PlacesApiController(
                    val lat = it[lat_expr_alias]
                     val r_ll_expr_nullable = it[ll_expr_nullable]
                     val r_ll_expr_not_nullable = it[ll_expr_not_nullable]
+                    val r_ll_to_earth_col_expr_not_nullable = it[ll_to_earth_col_expr_not_nullable]
                     "foo"
                 }
 

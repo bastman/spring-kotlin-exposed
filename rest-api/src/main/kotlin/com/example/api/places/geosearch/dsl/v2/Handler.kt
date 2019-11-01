@@ -54,6 +54,9 @@ class GeoSearchDslHandlerV2 {
         val earthDistanceExpr: CustomFunction<Double> = earth_distanceV2(
                 fromEarth = reqEarthExpr, toEarth = dbEarthExpr
         )
+        val earthDistanceExprAlias = ExpressionAlias(
+                earthDistanceExpr, "distance_from_current_location"
+        )
         val reqEarthBoxExpr: CustomFunction<PGEarthBox> = earth_boxV2(
                 fromLocation = reqEarthExpr,
                 greatCircleRadiusInMeter = intParam(req.payload.radiusInMeter)
@@ -61,7 +64,7 @@ class GeoSearchDslHandlerV2 {
 
         return PLACE
                 .slice(
-                        earthDistanceExpr,
+                        earthDistanceExprAlias,
                         *PLACE.columns.toTypedArray()
                 )
                 .select {
@@ -80,7 +83,7 @@ class GeoSearchDslHandlerV2 {
                 }
                 .map {
                     val placeRecord: PlaceRecord = PLACE.mapRowToRecord(it)
-                    val distance: Double = it[earthDistanceExpr]
+                    val distance: Double = it[earthDistanceExprAlias]
                     SearchResult.Item(distance = distance, placeRecord = placeRecord)
                 }
                 .let { SearchResult(items = it) }

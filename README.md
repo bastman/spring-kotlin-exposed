@@ -1,5 +1,5 @@
 # spring-kotlin-exposed
-playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres, jsonb, flyway, docker
+playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres (jsonb + cube + earthdistance), flyway, docker
 
 - Yes, we can talk to a sql db. It's easy. No rocket science.
 - There is a life besides the "dark art of hibernate / jpa".

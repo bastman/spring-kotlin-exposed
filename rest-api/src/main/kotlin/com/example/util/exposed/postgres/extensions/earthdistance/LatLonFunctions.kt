@@ -1,7 +1,5 @@
 package com.example.util.exposed.postgres.extensions.earthdistance
 
-import com.example.util.exposed.functions.postgres.doubleParam
-import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.CustomFunction
 import org.jetbrains.exposed.sql.DoubleColumnType
 import org.jetbrains.exposed.sql.QueryParameter

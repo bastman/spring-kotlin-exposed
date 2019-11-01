@@ -1,9 +1,16 @@
 package com.example.util.exposed.postgres.extensions.earthdistance
 
-import com.example.util.exposed.functions.postgres.doubleParam
-import org.jetbrains.exposed.sql.*
-import org.postgresql.util.*
-import java.sql.PreparedStatement
+import org.jetbrains.exposed.sql.CustomFunction
+import org.jetbrains.exposed.sql.DoubleColumnType
+
+/**
+ * PostGIS or Cube + EarthDistance
+ *
+ * see:
+ * https://hashrocket.com/blog/posts/juxtaposing-earthdistance-and-postgis
+ * https://gist.github.com/norman/1535879
+ * https://developpaper.com/using-postgresql-database-to-app-geographical-location/
+ */
 
 // select earth() -> returns the assumed radius of te earth as float8 ( SELECT '6378168'::float8 )
 fun earth(): CustomFunction<Double> {
@@ -28,27 +35,27 @@ fun earth_distance(fromEarth: Expression<*>, toEarth: Expression<*>): CustomFunc
  */
 @JvmName("earth_distance_not_nullable")
 @Suppress("UNCHECKED_CAST")
-fun <T:PGEarthPointLocation>earth_distanceV2(
+fun <T : PGEarthPointLocation> earth_distanceV2(
         fromEarth: CustomFunction<T>, toEarth: CustomFunction<T>
 ): CustomFunction<Double> = _earth_distance(
-        fromEarth=fromEarth,
+        fromEarth = fromEarth,
         toEarth = toEarth,
         returnsNullable = false
 ) as CustomFunction<Double>
 
-fun <T:PGEarthPointLocation?>earth_distanceV2(
-        fromEarth: CustomFunction<T>, toEarth: CustomFunction<T>, returnsNullable:Boolean
-): CustomFunction<Double?> = _earth_distance(fromEarth=fromEarth, toEarth = toEarth, returnsNullable = true)
+fun <T : PGEarthPointLocation?> earth_distanceV2(
+        fromEarth: CustomFunction<T>, toEarth: CustomFunction<T>, returnsNullable: Boolean
+): CustomFunction<Double?> = _earth_distance(fromEarth = fromEarth, toEarth = toEarth, returnsNullable = true)
 
-private fun <T:PGEarthPointLocation?>_earth_distance(
-        fromEarth: CustomFunction<T>, toEarth: CustomFunction<T>, returnsNullable:Boolean
+private fun <T : PGEarthPointLocation?> _earth_distance(
+        fromEarth: CustomFunction<T>, toEarth: CustomFunction<T>, returnsNullable: Boolean
 ): CustomFunction<Double?> {
     val params = listOf(
             fromEarth, toEarth
     )
     val fn = CustomFunction<Double?>(
             "earth_distance",
-            DoubleColumnType().apply { nullable=returnsNullable },
+            DoubleColumnType().apply { nullable = returnsNullable },
             *(params).toTypedArray()
     )
     return fn

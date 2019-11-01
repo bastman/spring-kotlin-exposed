@@ -70,7 +70,7 @@ class GeoSearchDslHandler {
                 .select {
                     (PLACE.active eq true)
                             .and(earthDistanceExpr lessEq req.payload.radiusInMeter.toDouble())
-                            .and(reqEarthBoxExpr rangeContains dbEarthExpr )
+                            .and(reqEarthBoxExpr rangeContains dbEarthExpr)
                 }
                 .orderBy(
                         Pair(earthDistanceExpr, SortOrder.ASC),

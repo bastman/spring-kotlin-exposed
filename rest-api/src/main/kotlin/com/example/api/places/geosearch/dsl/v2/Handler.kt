@@ -1,4 +1,4 @@
-package com.example.api.places.geosearch.dsl
+package com.example.api.places.geosearch.dsl.v2
 
 import com.example.api.places.common.db.PlaceRecord
 import com.example.api.places.common.db.PlaceTable
@@ -6,18 +6,13 @@ import com.example.api.places.common.rest.response.toPlaceDto
 import com.example.api.places.geosearch.PlacesGeoSearchRequest
 import com.example.api.places.geosearch.PlacesGeoSearchResponse
 import com.example.api.places.geosearch.PlacesGeoSearchResponseItem
-import com.example.util.exposed.functions.postgres.earth_box
-import com.example.util.exposed.functions.postgres.earth_distance
-import com.example.util.exposed.functions.postgres.ll_to_earth
-import com.example.util.exposed.functions.postgres.pgContains
+import com.example.util.exposed.postgres.extensions.earthdistance.*
+
 import com.example.util.exposed.query.toSQL
 import com.example.util.time.durationToNowInMillis
 import mu.KLogging
 import org.funktionale.tries.Try
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.intParam
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
@@ -27,7 +22,7 @@ private typealias Response = PlacesGeoSearchResponse
 private typealias ResponseItem = PlacesGeoSearchResponseItem
 
 @Component
-class GeoSearchDslHandler {
+class GeoSearchDslHandlerV2 {
     companion object : KLogging()
 
     @Transactional(readOnly = true)
@@ -50,19 +45,18 @@ class GeoSearchDslHandler {
         val logCtxInfo: String = req.logCtxInfo
         val startedAt = Instant.now()
 
-        val reqEarthExpr = ll_to_earth(
+        val reqEarthExpr: CustomFunction<PGEarthPointLocation> = ll_to_earth(
                 latitude = req.payload.latitude, longitude = req.payload.longitude
         )
-        val dbEarthExpr = ll_to_earth(
+        val dbEarthExpr: CustomFunction<PGEarthPointLocation> = ll_to_earth(
                 latitude = PLACE.latitude, longitude = PLACE.longitude
         )
-        val earthDistanceExpr = earth_distance(
+        val earthDistanceExpr: CustomFunction<Double> = earth_distanceV2(
                 fromEarth = reqEarthExpr, toEarth = dbEarthExpr
         )
-
-        val reqEarthBoxExpr = earth_box(
-                earth = reqEarthExpr,
-                earthDistance = intParam(req.payload.radiusInMeter)
+        val reqEarthBoxExpr: CustomFunction<PGEarthBox> = earth_boxV2(
+                fromLocation = reqEarthExpr,
+                greatCircleRadiusInMeter = intParam(req.payload.radiusInMeter)
         )
 
         return PLACE
@@ -72,8 +66,8 @@ class GeoSearchDslHandler {
                 )
                 .select {
                     (PLACE.active eq true)
-                            .and(earthDistanceExpr.lessEq(req.payload.radiusInMeter.toDouble()))
-                            .and(reqEarthBoxExpr.pgContains(dbEarthExpr))
+                            .and(earthDistanceExpr lessEq req.payload.radiusInMeter.toDouble())
+                            .and(reqEarthBoxExpr rangeContains dbEarthExpr )
                 }
                 .orderBy(
                         Pair(earthDistanceExpr, SortOrder.ASC),

@@ -196,10 +196,11 @@ object TweetsTable : Table("tweet") {
 }
 
 ```
-## examples: api bookstore, bookz
+## examples: api bookstore, bookz, places
 
 - api bookstore: crud-ish (joined tables: author, book)
 - api bookz: jsonb examples (tables: bookz)
+- api places: postgres geospatial query examples (postgres extensions: cube + earthdistance)
 
 ## This example project is based on ...
 - https://github.com/making/spring-boot-db-samples

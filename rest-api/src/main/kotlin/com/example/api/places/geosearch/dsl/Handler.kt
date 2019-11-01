@@ -6,13 +6,15 @@ import com.example.api.places.common.rest.response.toPlaceDto
 import com.example.api.places.geosearch.PlacesGeoSearchRequest
 import com.example.api.places.geosearch.PlacesGeoSearchResponse
 import com.example.api.places.geosearch.PlacesGeoSearchResponseItem
-import com.example.util.exposed.postgres.extensions.earthdistance.*
-
+import com.example.api.places.geosearch.dsl.service.GeoSearchQuery
+import com.example.api.places.geosearch.dsl.service.buildGeoSearchQuery
 import com.example.util.exposed.query.toSQL
 import com.example.util.time.durationToNowInMillis
 import mu.KLogging
 import org.funktionale.tries.Try
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.select
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
@@ -44,36 +46,27 @@ class GeoSearchDslHandler {
     private fun search(req: Request): SearchResult {
         val logCtxInfo: String = req.logCtxInfo
         val startedAt = Instant.now()
-
-        val reqEarthExpr: CustomFunction<PGEarthPointLocation> = ll_to_earth(
-                latitude = req.payload.latitude, longitude = req.payload.longitude
-        )
-        val dbEarthExpr: CustomFunction<PGEarthPointLocation> = ll_to_earth(
-                latitude = PLACE.latitude, longitude = PLACE.longitude
-        )
-        val earthDistanceExpr: CustomFunction<Double> = earth_distance(
-                fromEarth = reqEarthExpr, toEarth = dbEarthExpr
-        )
-        val earthDistanceExprAlias = ExpressionAlias(
-                earthDistanceExpr, "distance_from_current_location"
-        )
-        val reqEarthBoxExpr: CustomFunction<PGEarthBox> = earth_box(
-                fromLocation = reqEarthExpr,
-                greatCircleRadiusInMeter = intParam(req.payload.radiusInMeter)
+        val geoSearchQuery: GeoSearchQuery = buildGeoSearchQuery(
+                fromLatitude = req.payload.latitude,
+                fromLongitude = req.payload.longitude,
+                searchRadiusInMeter = req.payload.radiusInMeter,
+                toLatitudeColumn = PLACE.latitude,
+                toLongitudeColumn = PLACE.longitude,
+                returnDistanceAsAlias = "distance_from_current_location"
         )
 
         return PLACE
                 .slice(
-                        earthDistanceExprAlias,
+                        geoSearchQuery.sliceDistanceAlias,
                         *PLACE.columns.toTypedArray()
                 )
                 .select {
                     (PLACE.active eq true)
-                            .and(earthDistanceExpr lessEq req.payload.radiusInMeter.toDouble())
-                            .and(reqEarthBoxExpr rangeContains dbEarthExpr)
+                            .and(geoSearchQuery.whereDistanceLessEqRadius)
+                            .and(geoSearchQuery.whereEarthBoxContainsLocation)
                 }
                 .orderBy(
-                        Pair(earthDistanceExpr, SortOrder.ASC),
+                        Pair(geoSearchQuery.orderByDistance, SortOrder.ASC),
                         Pair(PLACE.createdAt, SortOrder.ASC),
                         Pair(PLACE.place_id, SortOrder.ASC)
                 )
@@ -83,7 +76,7 @@ class GeoSearchDslHandler {
                 }
                 .map {
                     val placeRecord: PlaceRecord = PLACE.mapRowToRecord(it)
-                    val distance: Double = it[earthDistanceExprAlias]
+                    val distance: Double = it[geoSearchQuery.sliceDistanceAlias]
                     SearchResult.Item(distance = distance, placeRecord = placeRecord)
                 }
                 .let { SearchResult(items = it) }

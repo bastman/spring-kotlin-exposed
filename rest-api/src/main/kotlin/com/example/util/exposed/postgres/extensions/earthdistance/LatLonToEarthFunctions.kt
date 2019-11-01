@@ -38,16 +38,16 @@ private fun <T : Number?> _ll_to_earth(
         )
 
 
-fun <T : Number?> ll_to_earth(latitude: Column<T>, longitude: Column<T>): CustomFunction<PGEarthPointLocation?> =
+fun <T : Number?> ll_to_earth(latitude: Column<out T>, longitude: Column<out T>): CustomFunction<PGEarthPointLocation?> =
         _ll_to_earth(latitude = latitude, longitude = longitude)
 
 @JvmName("ll_to_earth_not_nullable")
 @Suppress("UNCHECKED_CAST")
-fun <T : Number> ll_to_earth(latitude: Column<T>, longitude: Column<T>): CustomFunction<PGEarthPointLocation> =
+fun <T : Number> ll_to_earth(latitude: Column<out T>, longitude: Column<out T>): CustomFunction<PGEarthPointLocation> =
         _ll_to_earth(latitude = latitude, longitude = longitude) as CustomFunction<PGEarthPointLocation>
 
 fun <T : Number?> _ll_to_earth(
-        latitude: Column<T>, longitude: Column<T>
+        latitude: Column<out T>, longitude: Column<out T>
 ): CustomFunction<PGEarthPointLocation?> = CustomFunction(
         "ll_to_earth",
         PGEarthPointLocationColumnType().apply { nullable = true },

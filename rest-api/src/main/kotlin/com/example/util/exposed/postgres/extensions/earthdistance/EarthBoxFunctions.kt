@@ -22,12 +22,50 @@ fun earth_box(earth: Expression<*>, earthDistance: Expression<*>): CustomFunctio
 
 // CustomFunction<PGEarthPointLocation?>
  */
+/*
 fun earth_boxV2(
         fromLocation: CustomFunction<out PGEarthPointLocation?>,
         greatCircleRadiusInMeter:Expression<out Number?>
 ):CustomFunction<PGEarthBox?>{
     val returnsNullable = true
      val params = listOf(
+            fromLocation, greatCircleRadiusInMeter
+    )
+    val fn = CustomFunction<PGEarthBox?>(
+            "earth_box",
+            PGEarthBoxColumnType().apply { nullable=returnsNullable },
+            *(params).toTypedArray()
+    )
+    return fn
+}
+
+ */
+
+fun earth_boxV2(
+        fromLocation: CustomFunction<out PGEarthPointLocation?>,
+        greatCircleRadiusInMeter:Expression<out Number?>
+):CustomFunction<PGEarthBox?> = _earth_boxV2(
+        fromLocation=fromLocation,
+        greatCircleRadiusInMeter = greatCircleRadiusInMeter,
+        returnsNullable = true
+)
+@JvmName("earth_boxV2_not_nullable")
+@Suppress("UNCHECKED_CAST")
+fun earth_boxV2(
+        fromLocation: CustomFunction<out PGEarthPointLocation>,
+        greatCircleRadiusInMeter:Expression<out Number>
+):CustomFunction<PGEarthBox> = _earth_boxV2(
+        fromLocation=fromLocation,
+        greatCircleRadiusInMeter = greatCircleRadiusInMeter,
+        returnsNullable = false
+) as CustomFunction<PGEarthBox>
+
+private fun _earth_boxV2(
+        fromLocation: Expression<out PGEarthPointLocation?>,
+        greatCircleRadiusInMeter:Expression<out Number?>,
+        returnsNullable:Boolean
+):CustomFunction<PGEarthBox?>{
+    val params = listOf(
             fromLocation, greatCircleRadiusInMeter
     )
     val fn = CustomFunction<PGEarthBox?>(

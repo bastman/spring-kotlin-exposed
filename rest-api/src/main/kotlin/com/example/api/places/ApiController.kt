@@ -9,8 +9,7 @@ import com.example.api.places.common.rest.response.PlaceDto
 import com.example.api.places.common.rest.response.toPlaceDto
 import com.example.api.places.geosearch.PlacesGeoSearchRequest
 import com.example.api.places.geosearch.PlacesGeoSearchResponse
-import com.example.api.places.geosearch.dsl.v1.GeoSearchDslHandlerV1
-import com.example.api.places.geosearch.dsl.v2.GeoSearchDslHandlerV2
+import com.example.api.places.geosearch.dsl.GeoSearchDslHandler
 import com.example.api.places.geosearch.native.GeoSearchNativeHandler
 import com.example.util.exposed.postgres.extensions.earthdistance.*
 import com.example.util.exposed.query.toSQL
@@ -29,8 +28,7 @@ private const val API_BASE_URI = "/api/places"
 class PlacesApiController(
         private val repo: PlaceRepo,
         private val geoSearchNative: GeoSearchNativeHandler,
-        private val geoSearchDslV1: GeoSearchDslHandlerV1,
-        private val geoSearchDslV2: GeoSearchDslHandlerV2
+        private val geoSearchDsl: GeoSearchDslHandler
 ) {
     companion object : KLogging()
 
@@ -68,17 +66,11 @@ class PlacesApiController(
             PlacesGeoSearchRequest(payload = payload)
                     .let(geoSearchNative::handle)
 
-    @PostMapping("$API_BASE_URI/geosearch/dsl/v1")
+    @PostMapping("$API_BASE_URI/geosearch/dsl")
     @Transactional(readOnly = true)
-    fun geoSearchDslV1(@RequestBody payload: PlacesGeoSearchRequest.Payload): PlacesGeoSearchResponse =
+    fun geoSearchDsl(@RequestBody payload: PlacesGeoSearchRequest.Payload): PlacesGeoSearchResponse =
             PlacesGeoSearchRequest(payload = payload)
-                    .let(geoSearchDslV1::handle)
-
-    @PostMapping("$API_BASE_URI/geosearch/dsl/v2")
-    @Transactional(readOnly = true)
-    fun geoSearchDslV2(@RequestBody payload: PlacesGeoSearchRequest.Payload): PlacesGeoSearchResponse =
-            PlacesGeoSearchRequest(payload = payload)
-                    .let(geoSearchDslV2::handle)
+                    .let(geoSearchDsl::handle)
 
     @PostMapping("$API_BASE_URI/foo")
     @Transactional(readOnly = true)

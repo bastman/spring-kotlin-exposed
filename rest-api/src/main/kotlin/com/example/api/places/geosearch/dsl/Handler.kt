@@ -1,4 +1,4 @@
-package com.example.api.places.geosearch.dsl.v2
+package com.example.api.places.geosearch.dsl
 
 import com.example.api.places.common.db.PlaceRecord
 import com.example.api.places.common.db.PlaceTable
@@ -22,7 +22,7 @@ private typealias Response = PlacesGeoSearchResponse
 private typealias ResponseItem = PlacesGeoSearchResponseItem
 
 @Component
-class GeoSearchDslHandlerV2 {
+class GeoSearchDslHandler {
     companion object : KLogging()
 
     @Transactional(readOnly = true)

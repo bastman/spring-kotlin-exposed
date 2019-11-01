@@ -16,6 +16,7 @@ import com.example.util.exposed.postgres.extensions.earthdistance.*
 import com.example.util.exposed.query.toSQL
 import mu.KLogging
 import org.jetbrains.exposed.sql.ExpressionAlias
+import org.jetbrains.exposed.sql.intParam
 import org.jetbrains.exposed.sql.selectAll
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
@@ -93,10 +94,14 @@ class PlacesApiController(
         //val req_earth = PGEarthPointLocation
 
         val earth_distance_expr = earth_distanceV2(ll_expr_not_nullable,ll_expr2_not_nullable)
+        val box_expr = earth_boxV2(
+                fromLocation = ll_to_earth(2.0,3.0),
+                greatCircleRadiusInMeter = intParam(100)
+        )
 
         val query = PlaceTable.slice(
                 earth_expr,ll_expr_nullable,ll_expr_not_nullable, lat_expr_alias,
-                ll_to_earth_col_expr_not_nullable,earth_distance_expr)
+                ll_to_earth_col_expr_not_nullable,earth_distance_expr,box_expr)
                 .selectAll()
                 .limit(1)
                 .also {
@@ -113,6 +118,7 @@ class PlacesApiController(
                     val r_ll_expr_not_nullable = it[ll_expr_not_nullable]
                     val r_ll_to_earth_col_expr_not_nullable = it[ll_to_earth_col_expr_not_nullable]
                     val r_earth_distance_expr=it[earth_distance_expr]
+                    var r_box_expr=it[box_expr]
                     "foo"
                 }
 

@@ -56,7 +56,7 @@ class PGEarthBoxColumnType : ColumnType() {
         obj.value = when (value) {
             null -> null
             else -> try {
-                (value as PGEarthPointLocation).toPgValue()
+                (value as PGEarthBox).toPgValue()
             } catch (all: Exception) {
                 throw PSQLException(
                         "Failed to setParameter at index: $index - value: $value ! reason: ${all.message}",
@@ -68,12 +68,12 @@ class PGEarthBoxColumnType : ColumnType() {
         stmt.setObject(index, obj)
     }
 
-    override fun notNullValueToDB(value: Any): PGEarthPointLocation {
-        return value as PGEarthPointLocation
+    override fun notNullValueToDB(value: Any): PGEarthBox {
+        return value as PGEarthBox
     }
 
     override fun nonNullValueToString(value: Any): String {
-        val sinkValue: PGEarthPointLocation = notNullValueToDB(value)
+        val sinkValue: PGEarthBox = notNullValueToDB(value)
         return "'${sinkValue.toPgValue()}'"
     }
 }

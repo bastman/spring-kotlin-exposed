@@ -51,13 +51,13 @@ class GeoSearchDslHandler {
         val dbEarthExpr: CustomFunction<PGEarthPointLocation> = ll_to_earth(
                 latitude = PLACE.latitude, longitude = PLACE.longitude
         )
-        val earthDistanceExpr: CustomFunction<Double> = earth_distanceV2(
+        val earthDistanceExpr: CustomFunction<Double> = earth_distance(
                 fromEarth = reqEarthExpr, toEarth = dbEarthExpr
         )
         val earthDistanceExprAlias = ExpressionAlias(
                 earthDistanceExpr, "distance_from_current_location"
         )
-        val reqEarthBoxExpr: CustomFunction<PGEarthBox> = earth_boxV2(
+        val reqEarthBoxExpr: CustomFunction<PGEarthBox> = earth_box(
                 fromLocation = reqEarthExpr,
                 greatCircleRadiusInMeter = intParam(req.payload.radiusInMeter)
         )

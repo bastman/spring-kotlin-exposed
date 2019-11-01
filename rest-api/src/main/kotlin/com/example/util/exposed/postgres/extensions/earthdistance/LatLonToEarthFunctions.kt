@@ -2,6 +2,11 @@ package com.example.util.exposed.postgres.extensions.earthdistance
 
 import org.jetbrains.exposed.sql.*
 
+/**
+ * select ll_to_earth( 11.1 , 20.0 ); -> returns (5881394.65979286, 2140652.5921368, 1227937.44619261)
+ * fun ll_to_earth(latitude:Double?, longitude:Double?):PGEarthPointLocation?
+ */
+
 fun <T : Number?> ll_to_earth(latitude: T, longitude: T): CustomFunction<PGEarthPointLocation?> =
         _ll_to_earth(latitude = latitude, longitude = longitude, returnsNullable = true)
 
@@ -14,7 +19,11 @@ fun <T : Number> ll_to_earth(latitude: T, longitude: T): CustomFunction<PGEarthP
                 returnsNullable = false
         ) as CustomFunction<PGEarthPointLocation>
 
-private fun <T : Number?> _ll_to_earth(latitude: T?, longitude: T?, returnsNullable: Boolean): CustomFunction<PGEarthPointLocation?> =
+private fun <T : Number?> _ll_to_earth(
+        latitude: T?,
+        longitude: T?,
+        returnsNullable: Boolean
+): CustomFunction<PGEarthPointLocation?> =
         CustomFunction(
                 "ll_to_earth",
                 PGEarthPointLocationColumnType().apply { nullable = returnsNullable },

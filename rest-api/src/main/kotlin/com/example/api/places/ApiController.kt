@@ -93,8 +93,8 @@ class PlacesApiController(
         val lat_expr_alias = ExpressionAlias(lat_expr, "the_lat")
         //val req_earth = PGEarthPointLocation
 
-        val earth_distance_expr = earth_distanceV2(ll_expr_not_nullable,ll_expr2_not_nullable)
-        val box_expr = earth_boxV2(
+        val earth_distance_expr = earth_distance(ll_expr_not_nullable,ll_expr2_not_nullable)
+        val box_expr = earth_box(
                 fromLocation = ll_to_earth(2.0,3.0),
                 greatCircleRadiusInMeter = intParam(100)
         )

@@ -11,57 +11,28 @@ import org.jetbrains.exposed.sql.Expression
  *   select earth_box(null, 10); -> returns NULL
  */
 
-/*
-fun earth_box(earth: Expression<*>, earthDistance: Expression<*>): CustomFunction<Any> {
-    val params = listOf(
-            earth, earthDistance
-    )
-    val fn = CustomFunction<Any>("earth_box", BooleanColumnType(), *(params).toTypedArray())
-    return fn
-}
 
-// CustomFunction<PGEarthPointLocation?>
- */
-/*
-fun earth_boxV2(
-        fromLocation: CustomFunction<out PGEarthPointLocation?>,
-        greatCircleRadiusInMeter:Expression<out Number?>
-):CustomFunction<PGEarthBox?>{
-    val returnsNullable = true
-     val params = listOf(
-            fromLocation, greatCircleRadiusInMeter
-    )
-    val fn = CustomFunction<PGEarthBox?>(
-            "earth_box",
-            PGEarthBoxColumnType().apply { nullable=returnsNullable },
-            *(params).toTypedArray()
-    )
-    return fn
-}
-
- */
-
-fun earth_boxV2(
+fun earth_box(
         fromLocation: CustomFunction<out PGEarthPointLocation?>,
         greatCircleRadiusInMeter: Expression<out Number?>
-): CustomFunction<PGEarthBox?> = _earth_boxV2(
+): CustomFunction<PGEarthBox?> = _earth_box(
         fromLocation = fromLocation,
         greatCircleRadiusInMeter = greatCircleRadiusInMeter,
         returnsNullable = true
 )
 
-@JvmName("earth_boxV2_not_nullable")
+@JvmName("earth_box_not_nullable")
 @Suppress("UNCHECKED_CAST")
-fun earth_boxV2(
+fun earth_box(
         fromLocation: CustomFunction<out PGEarthPointLocation>,
         greatCircleRadiusInMeter: Expression<out Number>
-): CustomFunction<PGEarthBox> = _earth_boxV2(
+): CustomFunction<PGEarthBox> = _earth_box(
         fromLocation = fromLocation,
         greatCircleRadiusInMeter = greatCircleRadiusInMeter,
         returnsNullable = false
 ) as CustomFunction<PGEarthBox>
 
-private fun _earth_boxV2(
+private fun _earth_box(
         fromLocation: Expression<out PGEarthPointLocation?>,
         greatCircleRadiusInMeter: Expression<out Number?>,
         returnsNullable: Boolean

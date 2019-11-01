@@ -3,7 +3,7 @@ playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres, jsonb, flyw
 
 - Yes, we can talk to a sql db. It's easy. No rocket science.
 - There is a life besides the "dark art of hibernate / jpa".
-- Alternatives: JDBI, Requery, rxjava-jdbc, Jooq, Querydsl ...
+- Alternatives: JDBI, Requery, rxjava-jdbc, Jooq, Querydsl, Ktorm (https://ktorm.liuwj.me/) ...
 
 ## jetbrains exposed (overview)
 - wiki: https://github.com/JetBrains/Exposed/wiki
@@ -239,4 +239,4 @@ Make up your mind ...
 - Opinionated JPA: https://leanpub.com/opinionatedjpa/read
 - Lightweight ORM, do it yourself: https://blog.philipphauer.de/do-it-yourself-orm-alternative-hibernate-drawbacks/
 - Don't use H2 db for testing, use docker: https://blog.philipphauer.de/dont-use-in-memory-databases-tests-h2/
-
+- Spring @Transactional - what you should know: https://www.reddit.com/r/java/comments/dp49m3/spring_transaction_management_an_unconventional/

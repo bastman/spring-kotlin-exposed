@@ -34,3 +34,15 @@ fun ClosedRange<Instant>.random(): Instant {
     val randomMillis = (leftLimit..rightLimit).random()
     return Instant.ofEpochMilli(randomMillis).truncatedTo(ChronoUnit.MILLIS)
 }
+
+inline fun <reified T : Enum<T>> randomEnumSet(itemsCount: IntRange): Set<T> {
+    val out = mutableSetOf<T>()
+    val theCount: Int = itemsCount.random()
+    if (theCount < 1) {
+        return out.toSet()
+    }
+    (0..theCount).forEach {
+        out += (enumValues<T>()).toList().shuffled().first()
+    }
+    return out.toSet()
+}

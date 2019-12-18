@@ -7,3 +7,4 @@ spring:
 
 app:
   envName: playground
+  # flyway.strategy -> externalized in docker-compose-playground.yml

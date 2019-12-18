@@ -1,0 +1,6 @@
+spring:
+  profiles: flyway-validate
+
+app.flyway:
+  info: true
+  strategy: VALIDATE

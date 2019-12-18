@@ -17,7 +17,14 @@ services:
       - spring-kotlin-exposed-playground-network
     environment:
       - "DB_URL=spring-kotlin-exposed-playground-db:5432/app"
-    command: ["java","-jar","-Dspring.profiles.active=playground", "-Xms32m", "-Xmx256m", "/opt/app/app.jar"]
+    command: [
+      "java",
+      "-jar",
+      "-Dspring.profiles.active=playground,flyway-migrate",
+      "-Xms32m",
+      "-Xmx256m",
+      "/opt/app/app.jar"
+    ]
     depends_on:
       - spring-kotlin-exposed-playground-db
     healthcheck:

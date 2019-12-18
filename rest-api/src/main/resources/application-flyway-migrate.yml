@@ -1,0 +1,6 @@
+spring:
+  profiles: flyway-migrate
+
+app.flyway:
+  info: true
+  strategy: MIGRATE

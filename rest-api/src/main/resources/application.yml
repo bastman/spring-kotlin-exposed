@@ -8,7 +8,7 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
 
-  flyway.enabled: true
+  #flyway.enabled: true
 
 logging:
   level:
@@ -19,4 +19,7 @@ logging:
 
 app:
   appName: "spring-kotlin-exposed"
----
+  flyway:
+    info: true
+    strategy: VALIDATE
+

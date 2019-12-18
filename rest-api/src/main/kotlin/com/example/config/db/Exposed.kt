@@ -1,4 +1,4 @@
-package com.example.config
+package com.example.config.db
 
 import com.zaxxer.hikari.HikariDataSource
 import mu.KLogging
@@ -8,15 +8,19 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor
 import org.springframework.transaction.annotation.EnableTransactionManagement
 
+private typealias PlatformDataSource = HikariDataSource
+
 @Configuration
 @EnableTransactionManagement
 class Exposed {
 
     @Bean
-    fun transactionManager(dataSource: HikariDataSource): SpringTransactionManager =
+    fun transactionManager(dataSource: PlatformDataSource): SpringTransactionManager =
             SpringTransactionManager(dataSource)
                     .also {
-                        logger.info { "=== USE SQL datasource: user=${dataSource.username} url=${dataSource.jdbcUrl}" }
+                        logger.info {
+                            "=== USE SQL datasource ${dataSource.toDetailsText()}"
+                        }
                     }
 
     @Bean // PersistenceExceptionTranslationPostProcessor with proxyTargetClass=false, see https://github.com/spring-projects/spring-boot/issues/1844
@@ -24,3 +28,6 @@ class Exposed {
 
     companion object : KLogging()
 }
+
+private fun PlatformDataSource.toDetailsText(): String =
+        "user: $username url: $jdbcUrl pool: $poolName maxPoolSize: $maximumPoolSize minIdle: $minimumIdle"

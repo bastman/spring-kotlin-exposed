@@ -8,3 +8,5 @@ spring:
 
 app:
   envName: test
+  flyway:
+    strategy: MIGRATE

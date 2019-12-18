@@ -8,9 +8,10 @@ import java.util.stream.Stream
 
 @JvmName("minuTestFactoryForClass")
 inline fun <reified F> minuTestFactory(
+        name:String= "root",
         noinline builder: TestContextBuilder<Unit, F>.() -> Unit
-): Stream<out DynamicNode> = rootContext(builder).toTestFactory()
+): Stream<out DynamicNode> = rootContext(name,builder).toTestFactory()
 
 
-fun minuTestFactory(builder: TestContextBuilder<Unit, Unit>.() -> Unit): Stream<out DynamicNode> =
-        minuTestFactory<Unit>(builder)
+fun minuTestFactory(name:String= "root", builder: TestContextBuilder<Unit, Unit>.() -> Unit): Stream<out DynamicNode> =
+        minuTestFactory<Unit>(name, builder)

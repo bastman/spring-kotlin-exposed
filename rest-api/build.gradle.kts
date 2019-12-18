@@ -17,7 +17,7 @@ plugins {
     id("org.owasp.dependencycheck") apply true
     id("com.avast.gradle.docker-compose") apply true
     id("com.github.ben-manes.versions") apply true
-    id("org.jetbrains.dokka") version "0.9.18" apply false
+    id("org.jetbrains.dokka") apply false
 
     // spring
     // kotlin: spring (proxy) related plugins see: https://kotlinlang.org/docs/reference/compiler-plugins.html
@@ -60,19 +60,19 @@ dependencies {
 
     // logging
     implementation("io.github.microutils:kotlin-logging:1.7.+")
-    implementation("net.logstash.logback:logstash-logback-encoder:5.+")
+    implementation("net.logstash.logback:logstash-logback-encoder:6.+")
     val logbackJsonVersion = "0.1.5"
     implementation("ch.qos.logback.contrib:logback-json-classic:$logbackJsonVersion")
     implementation("ch.qos.logback.contrib:logback-jackson:$logbackJsonVersion")
     // monitoring
-    implementation("io.micrometer:micrometer-registry-prometheus:1.1.+")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.3.+")
 
     // db: postgres driver & hikari pool & flyway
-    implementation("org.postgresql:postgresql:42.2.6")
-    implementation("com.zaxxer:HikariCP:3.3.1")
+    implementation("org.postgresql:postgresql:42.2.9")
+    implementation("com.zaxxer:HikariCP:3.4.1")
     implementation("org.flywaydb:flyway-core:5.2.4")
     // db: exposed sql client
-    val exposedVersion = "0.17.5"
+    val exposedVersion = "0.17.7" //"0.19.3"
     implementation("org.jetbrains.exposed:exposed:$exposedVersion")
     implementation("org.jetbrains.exposed:spring-transaction:$exposedVersion")
     // db: postgis:
@@ -90,18 +90,21 @@ dependencies {
      */
     // serialization: jackson json
     val jacksonVersion =  "2.9.9"
+    implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-modules-java8:$jacksonVersion")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
-    implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
+    implementation( "com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+    implementation( "com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion")
+    implementation( "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
+    implementation( "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     // jmespath ... you know "jq" ;)
-    implementation("io.burt:jmespath-jackson:0.2.1")
+    implementation("io.burt:jmespath-jackson:0.5.0")
 
     // spring
     implementation("org.springframework.boot:spring-boot-starter-web") {
         exclude(group="org.springframework.boot", module = "spring-boot-starter-tomcat")
+        exclude(group="com.fasterxml.jackson.core")
     }
     implementation("org.springframework.boot:spring-boot-starter-undertow")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -125,14 +128,15 @@ dependencies {
     // test: kotlin
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-    testImplementation("org.amshove.kluent:kluent:1.56")
+    testImplementation("org.amshove.kluent:kluent:1.58")
     testImplementation("io.mockk:mockk:1.9.+")
-    testImplementation("dev.minutest:minutest:1.4.+")
+    testImplementation("dev.minutest:minutest:1.10.+") // 1.4.+
 
     // test: spring
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
-        exclude(module= "junit")
-        exclude(group="com.vaadin.external.google", module="android-json")
+        //exclude(module= "junit")
+        //exclude(group="com.vaadin.external.google", module="android-json")
+        exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
 
     /*

@@ -1,5 +1,9 @@
 package com.example.config.db
 
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import org.flywaydb.core.Flyway
 import org.springframework.beans.factory.annotation.Value
@@ -7,6 +11,7 @@ import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Component
+import java.time.Duration
 import java.time.Instant
 
 enum class FlywayStrategyName { SKIP, VALIDATE, MIGRATE, REPAIR, BASELINE; }
@@ -15,7 +20,11 @@ enum class FlywayStrategyName { SKIP, VALIDATE, MIGRATE, REPAIR, BASELINE; }
 data class FlywayConfig(
         @Value(value = "\${app.flyway.info}") val info: Boolean,
         @Value(value = "\${app.flyway.strategy}") val strategyName: FlywayStrategyName
-)
+) {
+    val monitorMaxDuration: Duration = Duration.ofSeconds(60)
+    val monitorTickDuration: Duration = Duration.ofSeconds(10)
+}
+
 
 @Configuration
 class FlywayConfiguration(
@@ -25,7 +34,8 @@ class FlywayConfiguration(
 
     @Bean
     fun flywayMigrationStrategy(): FlywayMigrationStrategy =
-            FlywayMigrationStrategy { flyway -> executeFlyway(flyway) }
+            FlywayMigrationStrategy { flyway -> executeFlywayMonitored(flyway) }
+
 
     private fun executeFlyway(flyway: Flyway) {
         logger.info { "==== flyway (START): config=$config ... ====" }
@@ -77,4 +87,41 @@ class FlywayConfiguration(
             }
         }
     }
+
+    /**
+     * execute flyway strategy and detect slow executions
+     * in very rare cases flyway just hangs - without saying anything
+     */
+    private fun executeFlywayMonitored(flyway: Flyway) = runBlocking {
+        val startedAt = Instant.now()
+        val shouldFinishAt = startedAt + config.monitorMaxDuration
+        var finishedAt: Instant? = null
+
+        launch {
+            while (isActive && finishedAt == null) {
+                val now = Instant.now()
+                val isOverdue = now > shouldFinishAt
+                logger.info {
+                    "=== flyway monitor (TICK): startedAt: $startedAt shouldFinishAt: $shouldFinishAt now: $now"
+                }
+                if (isOverdue) {
+                    logger.warn {
+                        "=== flyway monitor: WARN! FLYWAY IS SLOW !!!" +
+                                " - startedAt: $startedAt shouldFinishAt: $shouldFinishAt now: $now"
+                    }
+                }
+                delay(config.monitorTickDuration.toMillis())
+            }
+        }
+
+        try {
+            executeFlyway(flyway)
+            finishedAt = Instant.now()
+        } catch (all: Exception) {
+            finishedAt = Instant.now()
+
+            throw all
+        }
+    }
+
 }

@@ -12,7 +12,7 @@ pluginManagement {
         id("tanvd.kosogor") version "1.0.7"
         id("io.gitlab.arturbosch.detekt") version "1.2.2"
         id("org.owasp.dependencycheck") version "5.2.4"
-        id("com.avast.gradle.docker-compose") version "0.9.4"
+        id("com.avast.gradle.docker-compose") version "0.10.7" // "0.9.4"
         id("com.github.ben-manes.versions") version "0.27.0"
         id("org.jetbrains.dokka") version "0.10.0"
         // spring

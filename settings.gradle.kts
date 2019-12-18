@@ -5,7 +5,7 @@ pluginManagement {
     // see: https://github.com/ilya40umov/KotLink/blob/master/settings.gradle.kts
 
     val kotlinVersion = "1.3.61"
-    val springBootVersion = "2.1.11.RELEASE"
+    val springBootVersion = "2.2.2.RELEASE" // "2.1.11.RELEASE"
 
     plugins {
         kotlin("jvm") version kotlinVersion

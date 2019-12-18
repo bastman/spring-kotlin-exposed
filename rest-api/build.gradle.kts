@@ -30,7 +30,7 @@ plugins {
     // id("com.jfrog.artifactory") apply true
 }
 
-group = "exom.example.restapi"
+group = "com.example.restapi"
 version = "0.0.1"
 
 application {
@@ -89,7 +89,7 @@ dependencies {
 
      */
     // serialization: jackson json
-    val jacksonVersion =  "2.9.9"
+    val jacksonVersion = "2.10.1" // "2.9.9"
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")

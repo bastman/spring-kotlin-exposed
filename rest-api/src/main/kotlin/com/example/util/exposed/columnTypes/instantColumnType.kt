@@ -2,8 +2,9 @@ package com.example.util.exposed.columnTypes
 
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ColumnType
-import org.jetbrains.exposed.sql.DateColumnType
+//import org.jetbrains.exposed.sql.DateColumnType
 import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.jodatime.DateColumnType as JodaDateColumnType
 import org.joda.time.DateTime as JodaDateTime
 import java.time.Instant as JavaInstant
 
@@ -14,7 +15,7 @@ private fun JavaInstant.toJodaDateTime() = JodaDateTime(this.toEpochMilli())
 
 
 class InstantColumnType(time: Boolean) : ColumnType() {
-    private val delegate = DateColumnType(time)
+    private val delegate = JodaDateColumnType(time)
 
     override fun sqlType(): String = delegate.sqlType()
 

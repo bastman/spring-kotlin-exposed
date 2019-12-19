@@ -2,6 +2,7 @@ package com.example.util.exposed.postgres.extensions.earthdistance
 
 
 import org.jetbrains.exposed.sql.ColumnType
+import org.jetbrains.exposed.sql.statements.api.PreparedStatementApi
 import org.postgresql.util.*
 import java.sql.PreparedStatement
 
@@ -50,6 +51,29 @@ class PGEarthBoxColumnType : ColumnType() {
         }
     }
 
+    private fun valueToPGobject(value: Any?,index: Int):PGobject {
+        val obj = PGobject()
+        obj.type = sqlType()
+        obj.value = when (value) {
+            null -> null
+            else -> try {
+                (value as PGEarthBox).toPgValue()
+            } catch (all: Exception) {
+                throw PSQLException(
+                        "Failed to setParameter at index: $index - value: $value ! reason: ${all.message}",
+                        PSQLState.DATA_TYPE_MISMATCH,
+                        all
+                )
+            }
+        }
+        return obj
+    }
+    override fun setParameter(stmt: PreparedStatementApi, index: Int, value: Any?) {
+        val obj:PGobject = valueToPGobject(value=value, index = index)
+        super.setParameter(stmt, index, obj)
+    }
+
+    /*
     override fun setParameter(stmt: PreparedStatement, index: Int, value: Any?) {
         val obj = PGobject()
         obj.type = sqlType()
@@ -67,6 +91,8 @@ class PGEarthBoxColumnType : ColumnType() {
         }
         stmt.setObject(index, obj)
     }
+
+     */
 
     override fun notNullValueToDB(value: Any): PGEarthBox {
         return value as PGEarthBox

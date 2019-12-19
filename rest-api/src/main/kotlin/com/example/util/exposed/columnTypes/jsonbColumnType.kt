@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ColumnType
 import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.statements.api.PreparedStatementApi
 import org.postgresql.util.PGobject
 import java.sql.PreparedStatement
 
@@ -20,6 +21,21 @@ fun <T : Any> Table.jsonb(name: String, klass: Class<T>, jsonMapper: ObjectMappe
 private class JsonB<out T : Any>(private val klass: Class<T>, private val jsonMapper: ObjectMapper) : ColumnType() {
     override fun sqlType() = "jsonb"
 
+    private fun valueToPGobject(value: Any?,index: Int):PGobject {
+        val obj = PGobject()
+        obj.type = "jsonb"
+        obj.value = when(value) {
+            null->null
+            else->value as String
+        }
+        return obj
+    }
+    override fun setParameter(stmt: PreparedStatementApi, index: Int, value: Any?) {
+        val obj: PGobject = valueToPGobject(value=value, index = index)
+        super.setParameter(stmt, index, obj)
+    }
+
+    /*
     override fun setParameter(stmt: PreparedStatement, index: Int, value: Any?) {
         val obj = PGobject()
         obj.type = "jsonb"
@@ -29,6 +45,7 @@ private class JsonB<out T : Any>(private val klass: Class<T>, private val jsonMa
         }
         stmt.setObject(index, obj)
     }
+     */
 
     override fun valueFromDB(value: Any): Any {
         value as PGobject
@@ -59,6 +76,20 @@ private class JsonBFunctional<T : Any>(
 
     override fun sqlType() = "jsonb"
 
+    private fun valueToPGobject(value: Any?,index: Int):PGobject {
+        val obj = PGobject()
+        obj.type = "jsonb"
+        obj.value = when(value) {
+            null->null
+            else->value as String
+        }
+        return obj
+    }
+    override fun setParameter(stmt: PreparedStatementApi, index: Int, value: Any?) {
+        val obj: PGobject = valueToPGobject(value = value, index = index)
+        super.setParameter(stmt, index, obj)
+    }
+    /*
     override fun setParameter(stmt: PreparedStatement, index: Int, value: Any?) {
         val obj = PGobject()
         obj.type = "jsonb"
@@ -68,6 +99,8 @@ private class JsonBFunctional<T : Any>(
         }
         stmt.setObject(index, obj)
     }
+
+     */
 
     private fun jsonDecode(json:String) = fromJson.invoke(json)
     private fun jsonEncode(value:T) = toJson.invoke(value)
@@ -96,6 +129,21 @@ private class JsonBTypeRef<T : Any>(
 
     override fun sqlType() = "jsonb"
 
+    private fun valueToPGobject(value: Any?,index: Int):PGobject {
+        val obj = PGobject()
+        obj.type = "jsonb"
+        obj.value = when(value) {
+            null->null
+            else->value as String
+        }
+        return obj
+    }
+    override fun setParameter(stmt: PreparedStatementApi, index: Int, value: Any?) {
+        val obj: PGobject = valueToPGobject(value = value, index = index)
+        super.setParameter(stmt, index, obj)
+    }
+
+    /*
     override fun setParameter(stmt: PreparedStatement, index: Int, value: Any?) {
         val obj = PGobject()
         obj.type = "jsonb"
@@ -105,6 +153,8 @@ private class JsonBTypeRef<T : Any>(
         }
         stmt.setObject(index, obj)
     }
+
+     */
 
     private fun jsonDecode(json:String):T = jsonMapper.readValue(json, typeRef)
     private fun jsonEncode(value:T):String = jsonMapper.writeValueAsString(value)

@@ -62,7 +62,6 @@ class AuthorRepoTest(
             val recordId = UUID.randomUUID()
             val recordNew = BookstoreApiFixtures.newAuthorRecord(authorId = recordId, now = Instant.now())
                     .randomized(preserveIds = true)
-
             TestCase(
                     recordNew = recordNew,
                     recordsUpdate = (0..10).map {
@@ -88,7 +87,6 @@ class AuthorRepoTest(
                     }
                 }
             }
-
         }
     }
 

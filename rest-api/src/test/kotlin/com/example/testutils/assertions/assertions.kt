@@ -5,6 +5,7 @@ import org.amshove.kluent.shouldEqual
 import org.assertj.core.api.Assertions
 import org.assertj.core.util.BigDecimalComparator
 import org.assertj.core.util.DoubleComparator
+import org.assertj.core.util.FloatComparator
 import org.junit.Assert
 import org.junit.jupiter.api.assertAll
 import java.math.BigDecimal
@@ -31,6 +32,7 @@ infix fun Any?.shouldEqualRecursively(other: Any?) = Assertions
         .usingRecursiveComparison()
         .ignoringAllOverriddenEquals()
         .withComparatorForType(DoubleComparator(0.01), Double::class.java)
+        .withComparatorForType(FloatComparator(0.01f), Float::class.java)
         .withComparatorForType({ o1, o2 ->
             o1.truncatedTo(ChronoUnit.MILLIS).compareTo(o2.truncatedTo(ChronoUnit.MILLIS))
         }, Instant::class.java)

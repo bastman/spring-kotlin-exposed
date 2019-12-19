@@ -9,41 +9,51 @@ import java.util.*
 @Repository
 @Transactional // Should be at @Service level in real applications
 class AuthorRepository {
+    private val crudTable = AuthorTable
 
-    fun insert(record: AuthorRecord): AuthorRecord {
-        AuthorTable.insert({
-            it[id] = record.id
-            it[createdAt] = record.createdAt
-            it[modifiedAt] = record.modifiedAt
-            it[version] = record.version
-            it[name] = record.name
-        })
+    fun insert(authorRecord: AuthorRecord): AuthorRecord = crudTable
+            .insert {
+                it[id] = authorRecord.id
+                it[createdAt] = authorRecord.createdAt
+                it[modifiedAt] = authorRecord.modifiedAt
+                it[version] = authorRecord.version
+                it[name] = authorRecord.name
+            }.let { this[authorRecord.id] }
 
-        return this[record.id]
+    fun update(authorRecord: AuthorRecord): AuthorRecord = updatePartial(authorRecord = authorRecord) { cols: ColumnList ->
+        cols - listOf(crudTable.id)
     }
 
-    fun update(record: AuthorRecord): AuthorRecord {
-        AuthorTable.update({ AuthorTable.id eq record.id }) {
-            it[createdAt] = record.createdAt
-            it[modifiedAt] = record.modifiedAt
-            it[version] = record.version
-            it[name] = record.name
+    fun updatePartial(authorRecord: AuthorRecord, columnsToUpdate: (ColumnList) -> ColumnList): AuthorRecord {
+        val recordId = authorRecord.id
+        val fieldsToUpdate: ColumnList = columnsToUpdate(crudTable.columns)
+        if (fieldsToUpdate.isEmpty()) {
+            return this[recordId]
         }
 
-        return this[record.id]
+        return crudTable.update({ crudTable.id eq recordId }) { stmt ->
+            listOf(
+                    Pair(createdAt, { stmt[createdAt] = authorRecord.createdAt }),
+                    Pair(modifiedAt, { stmt[modifiedAt] = authorRecord.modifiedAt }),
+                    Pair(version, { stmt[version] = authorRecord.version }),
+                    Pair(name, { stmt[name] = authorRecord.name })
+            )
+                    .filter { p -> p.first in fieldsToUpdate }
+                    .forEach { p -> p.second() }
+        }.let { this[recordId] }
     }
 
-    fun findAll() = AuthorTable.selectAll().map { it.toAuthorRecord() }
+    fun findAll(): List<AuthorRecord> = crudTable.selectAll().map { it.toAuthorRecord() }
     fun requireIdExists(id: UUID): UUID = this[id].id
 
     operator fun get(id: UUID): AuthorRecord = findOneById(id)
             ?: throw EntityNotFoundException("AuthorRecord NOT FOUND ! (id=$id)")
 
-    fun findOneById(id: UUID): AuthorRecord? =
-            AuthorTable.select { AuthorTable.id eq id }
-                    .limit(1)
-                    .map { it.toAuthorRecord() }
-                    .firstOrNull()
+    fun findOneById(id: UUID): AuthorRecord? = crudTable
+            .select { AuthorTable.id eq id }
+            .limit(1)
+            .map { it.toAuthorRecord() }
+            .firstOrNull()
 
 }
 

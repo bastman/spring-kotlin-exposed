@@ -72,6 +72,6 @@ fun BookRecord.randomized(preserveIds: Boolean): BookRecord {
             version = (0..1000).random(),
             title = randomString(prefix = "title-"),
             status = randomEnumValue(),
-            price = (-10_0000.01..20_000.01).randomBigDecimal()
+            price = (10_000.01..20_000.01).randomBigDecimal()
     )
 }

@@ -73,9 +73,18 @@ dependencies {
     implementation("com.zaxxer:HikariCP:3.4.1")
     implementation("org.flywaydb:flyway-core:6.1.2") // 6.1.2 5.2.4 // Flyway 6 is only supported as of Spring Boot 2.2
     // db: exposed sql client
-    val exposedVersion = "0.17.7" //"0.19.3"
-    implementation("org.jetbrains.exposed:exposed:$exposedVersion")
+    /*
+    val exposedVersion = "0.17.7"
+    implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:spring-transaction:$exposedVersion")
+    */
+    val exposedVersion = "0.19.3"
+    implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-jodatime:$exposedVersion")
+    //implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
+    implementation("org.jetbrains.exposed:spring-transaction:$exposedVersion")
+
     // db: postgis:
     // https://github.com/sdeleuze/geospatial-messenger/blob/master/build.gradle.kts
     // https://postgis.net/docs/reference.

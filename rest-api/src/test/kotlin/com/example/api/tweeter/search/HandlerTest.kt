@@ -6,15 +6,17 @@ import com.example.api.tweeter.db.TweetsRepo
 import com.example.api.tweeter.db.TweetsTable
 import com.example.api.tweeter.toTweetsDto
 import com.example.config.Jackson
+import com.example.testconfig.CodeSourceResourceBuckets
 import com.example.testutils.json.shouldEqualJson
 import com.example.testutils.json.toJson
+import com.example.testutils.minutest.minuTestFactory
+import com.example.testutils.resources.CodeSourceResourceBucket
+import com.example.testutils.resources.loadResourceText
 import com.example.testutils.spring.BootWebMockMvcTest
-import com.example.util.resources.loadResource
 import com.fasterxml.jackson.module.kotlin.readValue
-import dev.minutest.junit.JUnit5Minutests
-import dev.minutest.rootContext
 import mu.KLogging
 import org.amshove.kluent.shouldEqual
+import org.junit.jupiter.api.TestFactory
 import org.springframework.beans.factory.annotation.Autowired
 import java.time.Instant
 import java.util.*
@@ -25,21 +27,36 @@ private typealias Response = TweeterSearchResponse
 class TweetsRepoTest(
         @Autowired private val repo: TweetsRepo,
         @Autowired private val search: TweeterSearchHandler
-) : BootWebMockMvcTest(), JUnit5Minutests {
+) : BootWebMockMvcTest() {
     companion object : KLogging(), GenerateTestCaseTrait
 
-    private val given: GoldenTestData = loadResource("/tests/api/tweeter/search/golden-test-data.json")
+    private val resourceBucket: CodeSourceResourceBucket = CodeSourceResourceBuckets
+            .GOLDEN_TEST_DATA
+            .bucket
+            .withQualifiedName { "${it.qualifiedName}/tests/api/tweeter/search" }
+
+    private val goldenTestDataGiven: GoldenTestData = resourceBucket
+            .withQualifiedName { "${it.qualifiedName}/golden-test-data.json" }
+            .loadResourceText()
             .let { JSON.readValue(it) }
 
-    fun `search should work`() = rootContext<Unit> {
-        saveGoldenTestDataIntoDb(goldenData = given)
+    private fun loadTestCase(name: String): TestCase = resourceBucket
+            .withQualifiedName { "${it.qualifiedName}/testcase-$name.json" }
+            .loadResourceText()
+            .let { JSON.readValue(it) }
+
+    @TestFactory
+    fun `search should work`() = minuTestFactory(
+            name = "search should work"
+    ) {
+        saveGoldenTestDataIntoDb(goldenData = goldenTestDataGiven)
         (1..10).take(10)
                 .map { "$it".padStart(3, '0') }
                 .forEach { testCaseName ->
                     val testCase = loadTestCase(testCaseName)
                     test(name = "$testCaseName - req: ${testCase.request}") {
                         val req = testCase.request
-                       println("req: $req")
+                        println("req: $req")
                         println("req (json): ${req.toJson()}")
                         val responseExpected: Response = testCase.response
                         println("req.orderBy: ${testCase.request.orderBy}")
@@ -60,12 +77,9 @@ class TweetsRepoTest(
 
     private fun saveGoldenTestDataIntoDb(goldenData: GoldenTestData) {
         goldenData.items.forEach { repo.insert(it) }
-        repo.findAll().sortedBy { it.id } shouldEqual given.items.sortedBy { it.id }
+        repo.findAll().sortedBy { it.id } shouldEqual goldenTestDataGiven.items.sortedBy { it.id }
     }
 
-    private fun loadTestCase(name: String): TestCase =
-            loadResource("/tests/api/tweeter/search/testcase-$name.json")
-                    .let { JSON.readValue(it) }
 }
 
 private val JSON = Jackson.defaultMapper()

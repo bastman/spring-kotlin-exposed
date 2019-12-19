@@ -22,16 +22,26 @@ object CodeSourceResources {
      */
     fun fileLocationAsString(): String = locationURL().file
 
-    fun replaceLocationSuffix(location: String, oldSuffix: String, newSuffix: String, oldSuffixRequired: Boolean): String {
-        if ((oldSuffixRequired) && (!location.endsWith(oldSuffix))) {
-            error(
-                    "Can not replace oldSuffice with newSuffix in location string!" +
-                            " reason: location must end with oldSuffix !" +
-                            " oldSuffix (expected): $oldSuffix newSuffix: $newSuffix location: $location"
-            )
+    fun replaceLocationSuffixes(location: String, oldSuffixes: List<String>, newSuffix: String, oldSuffixRequired: Boolean): String {
+        if ((oldSuffixRequired)) {
+            val hasAnyKnownSuffix=oldSuffixes.any { location.endsWith(it) }
+            if(!hasAnyKnownSuffix) {
+                error(
+                        "Can not replace oldSuffice with newSuffix in location string!" +
+                                " reason: location must end with oneOf oldSuffixes !" +
+                                " oldSuffixes (expected): $oldSuffixes newSuffix: $newSuffix location: $location"
+                )
+            }
+
+        }
+        oldSuffixes.forEach { oldSuffix->
+            if(location.endsWith(oldSuffix)) {
+                return location
+                        .removeSuffix(oldSuffix)
+                        .let { "$it$newSuffix" }
+            }
         }
         return location
-                .removeSuffix(oldSuffix)
                 .let { "$it$newSuffix" }
     }
 

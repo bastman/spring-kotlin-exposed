@@ -7,9 +7,9 @@ object TestConfigurations {
     val codeSourceResourcesLocation: String = CodeSourceResources
             .fileLocationAsString()
             .let {
-                CodeSourceResources.replaceLocationSuffix(
+                CodeSourceResources.replaceLocationSuffixes(
                         location = it,
-                        oldSuffix = "/out/test/classes/",
+                        oldSuffixes = listOf("/out/test/classes/","/classes/kotlin/test/"),
                         newSuffix = "/src/test/resources",
                         oldSuffixRequired = true
                 )

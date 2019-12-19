@@ -33,18 +33,25 @@ class TweetsRepoTest(
 
     fun `search should work`() = rootContext<Unit> {
         saveGoldenTestDataIntoDb(goldenData = given)
-
-        listOf("001", "002", "003", "004", "005", "006", "007", "008", "009", "010")
+        (1..10).take(10)
+                .map { "$it".padStart(3, '0') }
                 .forEach { testCaseName ->
                     val testCase = loadTestCase(testCaseName)
-                    test(name = "req: ${testCase.request}") {
+                    test(name = "$testCaseName - req: ${testCase.request}") {
+                        val req = testCase.request
+                       println("req: $req")
+                        println("req (json): ${req.toJson()}")
                         val responseExpected: Response = testCase.response
+                        println("req.orderBy: ${testCase.request.orderBy}")
                         val responseGiven: Response = search.handle(testCase.request)
 
-                        testCase.dump("expected: $testCaseName")
+                        println("ids expected: ${responseExpected.items.map { it.id }}")
+                        println("ids given   : ${responseGiven.items.map { it.id }}")
+
+                        testCase.dump("response expected: $testCaseName")
                         testCase
                                 .copy(response = responseGiven)
-                                .dump("given: $testCaseName")
+                                .dump("response given: $testCaseName")
 
                         responseGiven.toJson() shouldEqualJson responseExpected.toJson()
                     }

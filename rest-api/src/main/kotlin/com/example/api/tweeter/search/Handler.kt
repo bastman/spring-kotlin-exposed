@@ -39,7 +39,7 @@ class TweeterSearchHandler {
         val filterPredicates: List<Op<Boolean>>? = req.filter?.toPredicates()
         val matchPredicates: List<Op<Boolean>>? = req.match?.toPredicates()
         val orderByExpressions: List<SortExpression> =
-                when (val orderBy: Set<OrderSpec>? = req.orderBy) {
+                when (val orderBy: List<OrderSpec>? = req.orderBy) {
                     null -> listOf(Pair(TWEETS.id, SortOrder.ASC))
                     else -> (orderBy.toExpressions()) + Pair(TWEETS.id, SortOrder.ASC)
                 }
@@ -79,7 +79,7 @@ private val TWEETS = TweetsTable
 
 private typealias SortExpression = Pair<Column<*>, SortOrder>
 
-private fun Set<TweeterSearchRequest.OrderBy>.toExpressions(): List<SortExpression> =
+private fun List<TweeterSearchRequest.OrderBy>.toExpressions(): List<SortExpression> =
         map { Pair(it.field, it.sortOrder) }
 
 private fun TweeterSearchRequest.Match.toPredicates(): List<Op<Boolean>> {

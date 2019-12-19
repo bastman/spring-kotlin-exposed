@@ -18,7 +18,7 @@ data class TweeterSearchRequest(
         val offset: Int,
         val match: Match?,
         val filter: Filter?,
-        val orderBy: Set<OrderBy>?,
+        val orderBy: List<OrderBy>?, // Set<OrderBy> may lead to inconsistent order within the set
         val jq:String?
 ) {
     @ApiModel("${SWAGGER_API_MODEL_PREFIX}_Payload_OrderBy")
@@ -28,7 +28,9 @@ data class TweeterSearchRequest(
         MODIFIED_AT_DESC("modifiedAt-DESC", TweetsTable.modifiedAt, SortOrder.DESC),
         MODIFIED_AT_ASC("modifiedAt-ASC", TweetsTable.modifiedAt, SortOrder.ASC),
         VERSION_DESC("version-DESC", TweetsTable.version, SortOrder.DESC),
-        VERSION_ASC("version-ASC", TweetsTable.version, SortOrder.ASC)
+        VERSION_ASC("version-ASC", TweetsTable.version, SortOrder.ASC),
+        ID_DESC("id-DESC", TweetsTable.id, SortOrder.DESC),
+        ID_ASC("id-ASC", TweetsTable.id, SortOrder.ASC),
         ;
     }
 

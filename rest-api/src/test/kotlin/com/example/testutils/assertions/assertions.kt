@@ -21,7 +21,33 @@ infix fun Instant.shouldEqualInstant(other: Instant?) {
     this.truncatedTo(ChronoUnit.MILLIS) shouldEqual other?.truncatedTo(ChronoUnit.MILLIS)
 }
 
+/**
+ * https://joel-costigliola.github.io/assertj/assertj-core-features-highlight.html#field-by-field-comparison
+ * https://assertj.github.io/doc/#assertj-core-recursive-comparison
+ */
+
 infix fun Any?.shouldEqualRecursively(other: Any?) = Assertions
+        .assertThat(this)
+        .usingRecursiveComparison()
+        .ignoringAllOverriddenEquals()
+        .withComparatorForType(DoubleComparator(0.01), Double::class.java)
+        .withComparatorForType({ o1, o2 ->
+            o1.truncatedTo(ChronoUnit.MILLIS).compareTo(o2.truncatedTo(ChronoUnit.MILLIS))
+        }, Instant::class.java)
+        .withComparatorForType(object : BigDecimalComparator() {
+            private val roundingMode = RoundingMode.HALF_EVEN // banker's rounding," - the rounding policy used for {@code float} and {@code double}
+            override fun compareNonNull(number1: BigDecimal, number2: BigDecimal): Int {
+                val scale = min(number1.scale(), number2.scale())
+
+                val n1 = number1.rounded(scale = scale, roundingMode = roundingMode)
+                val n2 = number2.rounded(scale = scale, roundingMode = roundingMode)
+                val r2 = n1.compareTo(n2)
+                return r2
+            }
+        }, BigDecimal::class.java)
+        .isEqualTo(other)
+
+infix fun Any?.shouldEqualRecursivelyOld(other: Any?) = Assertions
         .assertThat(this)
         .usingComparatorForType(DoubleComparator(0.01), Double::class.java)
         .usingComparatorForType({ o1, o2 ->
@@ -39,6 +65,7 @@ infix fun Any?.shouldEqualRecursively(other: Any?) = Assertions
             }
         }, BigDecimal::class.java)
         .isEqualToComparingFieldByFieldRecursively(other)
+
 
 inline fun <reified T : Any> T?.shouldNotNull(): T {
     Assert.assertTrue("Expected ${T::class.java.canonicalName} to be not null", this != null)

@@ -11,7 +11,6 @@ import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeInstanceOf
 import org.amshove.kluent.shouldEqual
 import org.jetbrains.exposed.sql.select
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.assertThrows
@@ -41,10 +40,10 @@ class BookRepoTest(
                     bookRecord = bookRepo.insert(bookEntity.bookRecord)
             )
 
-    private fun getBookEntityFromDb(bookId:UUID): BookEntity {
+    private fun getBookEntityFromDb(bookId: UUID): BookEntity {
         return (BookTable innerJoin AuthorTable)
                 .select { BookTable.id.eq(bookId) }
-                .limit(n=1, offset = 0)
+                .limit(n = 1, offset = 0)
                 .map {
                     BookEntity(
                             authorRecord = AuthorTable.rowToAuthorRecord(it),
@@ -94,63 +93,63 @@ class BookRepoTest(
         val authorRecordInserted = BookstoreApiFixtures
                 .newAuthorRecord()
                 .let(authorRepo::insert)
-        val authorId:UUID = authorRecordInserted.id
+        val authorId: UUID = authorRecordInserted.id
         val testCases: List<TestCase> = (0..100)
                 .map {
-            val recordNew = BookstoreApiFixtures.newBookRecord(authorId = authorId)
-                    .randomized(preserveIds = true)
-            TestCase(
-                    recordNew = recordNew,
-                    recordsUpdate = (0..10).map {
-                        recordNew.randomized(preserveIds = true)
-                    }
-            )
-        }
+                    val recordNew = BookstoreApiFixtures.newBookRecord(authorId = authorId)
+                            .randomized(preserveIds = true)
+                    TestCase(
+                            recordNew = recordNew,
+                            recordsUpdate = (0..10).map {
+                                recordNew.randomized(preserveIds = true)
+                            }
+                    )
+                }
 
         testCases.onEach { testCase ->
-            context("foo: ${testCase.recordNew}") {
+            context("prepare: ${testCase.recordNew}") {
                 testCase.recordNew shouldEqualRecursively testCase.recordNew
                 testCase shouldEqualRecursively testCase
             }
         }
-                .take(20)
-                .forEach {testCase ->
+                //.take(20)
+                .forEach { testCase ->
 
-            context("test: : ${testCase.recordNew}") {
-                test("INSERT: ${testCase.recordNew}") {
-                    val recordInserted: BookRecord = bookRepo.insert(testCase.recordNew)
-                    recordInserted shouldEqualRecursively testCase.recordNew
+                    context("test: : ${testCase.recordNew}") {
+                        test("INSERT: ${testCase.recordNew}") {
+                            val recordInserted: BookRecord = bookRepo.insert(testCase.recordNew)
+                            recordInserted shouldEqualRecursively testCase.recordNew
 
-                    val entityGiven = getBookEntityFromDb(bookId=recordInserted.id)
-                    val entityExpected = BookEntity(
-                            bookRecord = recordInserted, authorRecord = authorRecordInserted
-                    )
-                    entityGiven shouldEqualRecursively entityExpected
-                }
-                test("GET: ${testCase.recordNew}") {
-                    val recordLoaded: BookRecord = bookRepo.get(id = testCase.recordNew.id)
-                    recordLoaded shouldEqualRecursively testCase.recordNew
+                            val entityGiven = getBookEntityFromDb(bookId = recordInserted.id)
+                            val entityExpected = BookEntity(
+                                    bookRecord = recordInserted, authorRecord = authorRecordInserted
+                            )
+                            entityGiven shouldEqualRecursively entityExpected
+                        }
+                        test("GET: ${testCase.recordNew}") {
+                            val recordLoaded: BookRecord = bookRepo.get(id = testCase.recordNew.id)
+                            recordLoaded shouldEqualRecursively testCase.recordNew
 
-                    val entityGiven = getBookEntityFromDb(bookId=recordLoaded.id)
-                    val entityExpected = BookEntity(
-                            bookRecord = recordLoaded, authorRecord = authorRecordInserted
-                    )
-                   // entityGiven shouldEqualRecursively entityExpected
-                }
-                testCase.recordsUpdate.forEachIndexed { index, recordToUpdate ->
-                    test("UPDATE ($index): $recordToUpdate") {
-                        val recordUpdated: BookRecord = bookRepo.update(recordToUpdate)
-                        recordUpdated shouldEqualRecursively recordToUpdate
+                            val entityGiven = getBookEntityFromDb(bookId = recordLoaded.id)
+                            val entityExpected = BookEntity(
+                                    bookRecord = recordLoaded, authorRecord = authorRecordInserted
+                            )
+                            // entityGiven shouldEqualRecursively entityExpected
+                        }
+                        testCase.recordsUpdate.forEachIndexed { index, recordToUpdate ->
+                            test("UPDATE ($index): $recordToUpdate") {
+                                val recordUpdated: BookRecord = bookRepo.update(recordToUpdate)
+                                recordUpdated shouldEqualRecursively recordToUpdate
 
-                        val entityGiven = getBookEntityFromDb(bookId=recordUpdated.id)
-                        val entityExpected = BookEntity(
-                                bookRecord = recordUpdated, authorRecord = authorRecordInserted
-                        )
-                        // entityGiven shouldEqualRecursively entityExpected
+                                val entityGiven = getBookEntityFromDb(bookId = recordUpdated.id)
+                                val entityExpected = BookEntity(
+                                        bookRecord = recordUpdated, authorRecord = authorRecordInserted
+                                )
+                                // entityGiven shouldEqualRecursively entityExpected
+                            }
+                        }
                     }
                 }
-            }
-        }
     }
 
     private data class TestCase(

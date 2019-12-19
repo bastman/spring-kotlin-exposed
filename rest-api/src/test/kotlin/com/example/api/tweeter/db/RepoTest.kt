@@ -75,33 +75,70 @@ class TweetsRepoTest(
     @TestFactory
     fun `some random crud ops should work`() = minuTestFactory {
         val testCases: List<TestCase> = (0..100).map {
-            val instantMin: Instant = Instant.EPOCH
-            val instantMax: Instant = (Instant.now() + Duration.ofDays(50 * 365))
+            val recordId = UUID.randomUUID()
+            val recordNew = TweetsRecord(
+                    id = recordId,
+                    createdAt = Instant.now(),
+                    modifiedAt = Instant.now(),
+                    deletedAt = Instant.now(),
+                    version = 1,
+                    message = "msg-",
+                    comment = "comment-",
+                    status = TweetStatus.DRAFT
+            )
+                    .randomized(preserveId = true)
+
             TestCase(
-                    recordNew = TweetsRecord(
-                            id = UUID.randomUUID(),
-                            createdAt = (instantMin..instantMax).random(),
-                            modifiedAt = (instantMin..instantMax).random(),
-                            deletedAt = (instantMin..instantMax).random(),
-                            version = (0..1000).random(),
-                            message = randomString(prefix = "msg-"),
-                            comment = randomString(prefix = "comment-"),
-                            status = randomEnumValue()
-                    )
+                    recordNew = recordNew,
+                    recordsUpdate = (0..10).map {
+                        recordNew.randomized(preserveId = true)
+                    }
             )
         }
 
         testCases.forEach { testCase ->
-            test("test INSERT: ${testCase.recordNew}") {
-                val inserted: TweetsRecord = repo.insert(testCase.recordNew)
-                inserted shouldEqualRecursively testCase.recordNew
+            context("test: : ${testCase.recordNew}") {
+                test("INSERT: ${testCase.recordNew}") {
+                    val inserted: TweetsRecord = repo.insert(testCase.recordNew)
+                    inserted shouldEqualRecursively testCase.recordNew
+                }
+                test("GET: ${testCase.recordNew}") {
+                    val loaded: TweetsRecord = repo.get(id = testCase.recordNew.id)
+                    loaded shouldEqualRecursively testCase.recordNew
+                }
+                testCase.recordsUpdate.forEachIndexed { index, recordToUpdate ->
+                    test("UPDATE ($index): $recordToUpdate") {
+                        val updated: TweetsRecord = repo.update(recordToUpdate)
+                        updated shouldEqualRecursively recordToUpdate
+                    }
+                }
             }
+
         }
     }
 
 
     private data class TestCase(
-            val recordNew: TweetsRecord
+            val recordNew: TweetsRecord,
+            val recordsUpdate: List<TweetsRecord>
     )
+
+    private fun TweetsRecord.randomized(preserveId: Boolean): TweetsRecord {
+        val instantMin: Instant = Instant.EPOCH
+        val instantMax: Instant = (Instant.now() + Duration.ofDays(50 * 365))
+        return copy(
+                id = when (preserveId) {
+                    true -> id
+                    false -> UUID.randomUUID()
+                },
+                createdAt = (instantMin..instantMax).random(),
+                modifiedAt = (instantMin..instantMax).random(),
+                deletedAt = (instantMin..instantMax).random(),
+                version = (0..1000).random(),
+                message = randomString(prefix = "msg-"),
+                comment = randomString(prefix = "comment-"),
+                status = randomEnumValue()
+        )
+    }
 
 }

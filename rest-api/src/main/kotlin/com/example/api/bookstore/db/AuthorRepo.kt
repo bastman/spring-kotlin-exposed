@@ -33,6 +33,7 @@ class AuthorRepository {
 
         return crudTable.update({ crudTable.id eq recordId }) { stmt ->
             listOf(
+                    Pair(id, { stmt[id] = authorRecord.id }),
                     Pair(createdAt, { stmt[createdAt] = authorRecord.createdAt }),
                     Pair(modifiedAt, { stmt[modifiedAt] = authorRecord.modifiedAt }),
                     Pair(version, { stmt[version] = authorRecord.version }),

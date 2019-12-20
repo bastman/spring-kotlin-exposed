@@ -73,33 +73,43 @@ class TweetsRepoTest(
                     }
             )
         }
-        testCases.onEach { testCase ->
-            context("prepare: ${testCase.recordNew}") {
-                testCase.recordNew shouldEqualRecursively testCase.recordNew
-                testCase shouldEqualRecursively testCase
+        context("prepare ...") {
+            testCases.onEach { testCase ->
+                context("prepare: ${testCase.recordNew}") {
+                    testCase.recordNew shouldEqualRecursively testCase.recordNew
+                    testCase shouldEqualRecursively testCase
+                }
             }
         }
 
-        testCases.forEach { testCase ->
-            context("test: : ${testCase.recordNew}") {
-                test("INSERT: ${testCase.recordNew}") {
-                    repo.insert(testCase.recordNew)
-                            .also { it shouldEqualRecursively testCase.recordNew }
-                }
-                test("GET INSERTED: ${testCase.recordNew}") {
-                    repo.get(id = testCase.recordNew.id)
-                            .also { it shouldEqualRecursively testCase.recordNew }
-                }
-                testCase.recordsUpdate.forEachIndexed { index, recordToUpdate ->
-                    test("UPDATE ($index): $recordToUpdate") {
-                        repo.update(recordToUpdate)
-                                .also { it shouldEqualRecursively recordToUpdate }
+        testCases.forEachIndexed { testCaseIndex, testCase ->
+            context("test ($testCaseIndex): ${testCase.recordNew}") {
+
+                context("DB INSERT") {
+                    test("INSERT: ${testCase.recordNew}") {
+                        repo.insert(testCase.recordNew)
+                                .also { it shouldEqualRecursively testCase.recordNew }
                     }
-                    test("GET UPDATED ($index): $recordToUpdate") {
-                        repo.get(id = recordToUpdate.id)
-                                .also { it shouldEqualRecursively recordToUpdate }
+                    test("GET INSERTED: ${testCase.recordNew}") {
+                        repo.get(id = testCase.recordNew.id)
+                                .also { it shouldEqualRecursively testCase.recordNew }
                     }
                 }
+                context("DB UPDATE") {
+                    testCase.recordsUpdate.forEachIndexed { index, recordToUpdate ->
+                        context("DB UPDATE ($index): $recordToUpdate") {
+                            test("UPDATE ($index): $recordToUpdate") {
+                                repo.update(recordToUpdate)
+                                        .also { it shouldEqualRecursively recordToUpdate }
+                            }
+                            test("GET UPDATED ($index): $recordToUpdate") {
+                                repo.get(id = recordToUpdate.id)
+                                        .also { it shouldEqualRecursively recordToUpdate }
+                            }
+                        }
+                    }
+                }
+
             }
 
         }

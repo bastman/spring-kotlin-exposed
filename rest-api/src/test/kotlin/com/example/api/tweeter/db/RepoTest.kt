@@ -9,7 +9,6 @@ import com.example.testutils.spring.BootWebMockMvcTest
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeInstanceOf
 import org.amshove.kluent.shouldEqual
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.assertThrows
@@ -61,7 +60,6 @@ class TweetsRepoTest(
     }
 
     @TestFactory
-    @Disabled
     fun `some random crud ops should work`() = minuTestFactory {
         val testCases: List<TestCase> = (0..100).map {
             val recordNew: TweetsRecord = TweeterApiFixtures
@@ -74,6 +72,12 @@ class TweetsRepoTest(
                         recordNew.randomized(preserveIds = true)
                     }
             )
+        }
+        testCases.onEach { testCase ->
+            context("prepare: ${testCase.recordNew}") {
+                testCase.recordNew shouldEqualRecursively testCase.recordNew
+                testCase shouldEqualRecursively testCase
+            }
         }
 
         testCases.forEach { testCase ->
@@ -91,8 +95,6 @@ class TweetsRepoTest(
                         repo.update(recordToUpdate)
                                 .also { it shouldEqualRecursively recordToUpdate }
                     }
-                }
-                testCase.recordsUpdate.forEachIndexed { index, recordToUpdate ->
                     test("GET UPDATED ($index): $recordToUpdate") {
                         repo.get(id = recordToUpdate.id)
                                 .also { it shouldEqualRecursively recordToUpdate }
@@ -102,7 +104,6 @@ class TweetsRepoTest(
 
         }
     }
-
 
     private data class TestCase(
             val recordNew: TweetsRecord,

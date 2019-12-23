@@ -159,6 +159,7 @@ object TweetsTable : Table("tweet") {
 }
 
 ```
+
 ### examples: REST'ish search-dsl
 
 - simple crud api endpoint (tables: tweet)
@@ -242,7 +243,47 @@ $ curl -X POST "http://localhost:8080/api/tweeter/search/jmespath" -H "accept: *
 
 ```
 
+## example: api bookz - Mongo'ish, NoSQL'ish, ...
+- how to build a document store ?
 
+### Highlights: postgres jsonb data type
+```
+# Highlights: postgres jsonb data type
+ 
+sql ..
+ 
+CREATE TABLE bookz (
+  id         UUID                        NOT NULL,
+  created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  is_active BOOLEAN NOT NULL,
+  data       JSONB                       NOT NULL
+);
+ 
+kotlin ...
+ 
+object BookzTable : UUIDCrudTable("bookz") {
+    val id = uuid("id").primaryKey()
+    (...)
+    val data = jsonb("data", BookzData::class.java, jacksonObjectMapper())
+    (...)
+}
+
+data class BookzData(val title: String, val genres: List<String>, val published: Boolean)
+
+
+```
+
+```
+# api: insert some sample data into db ...
+$ curl -X POST "http://localhost:8080/api/bookz-jsonb/books/bulk-save" -H "accept: */*"
+
+# api: insert a new bookz into db
+$ curl -X PUT "http://localhost:8080/api/bookz-jsonb/books" -H "accept: */*" -H "Content-Type: application/json" -d "{ \"data\": { \"genres\": [ \"programming\",\"enterprise\",\"bingo\" ], \"published\": true, \"title\": \"the book\" }}"
+
+# api: get all bookz ...
+$ curl -X GET "http://localhost:8080/api/bookz-jsonb/books" -H "accept: */*"
+```
 
 ## examples: api bookstore, bookz, places
 

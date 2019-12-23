@@ -141,14 +141,14 @@ playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres (jsonb + cub
 
 - bookstore api: 
     - crud-ish (joined tables: author, book)
+- bookz api:
+    - Mongo'ish, NoSQL'ish, ...
+    - how to build a document store ?  
+    - postgres jsonb data type     
 - tweeter api: 
     - postgres enum data type, 
     - how to build your own spring-data-rest-like search-dsl
     - api response json post processing: jq, jsonpath ? JMESPATH.
-- bookz api:
-    - Mongo'ish, NoSQL'ish, ...
-    - how to build a document store ?  
-    - postgres jsonb data type 
 - places api:
     - how to run geospatial queries
     - show all places within a radius of 5 km oder by distance ...
@@ -232,6 +232,48 @@ $ curl -X PUT "http://localhost:8080/api/bookstore/books" -H "accept: */*" -H "C
 
 # api: get all books from db inner join author
 $ curl -X GET "http://localhost:8080/api/bookstore/books" -H "accept: */*"
+```
+
+### example api: bookz - Mongo'ish, NoSQL'ish, ...
+- how to build a json document store ?
+
+#### Highlights: postgres jsonb data type
+```
+# Highlights: postgres jsonb data type
+ 
+sql ..
+ 
+CREATE TABLE bookz (
+  id         UUID                        NOT NULL,
+  created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  is_active BOOLEAN NOT NULL,
+  data       JSONB                       NOT NULL
+);
+ 
+kotlin ...
+ 
+object BookzTable : UUIDCrudTable("bookz") {
+    val id = uuid("id").primaryKey()
+    (...)
+    val data = jsonb("data", BookzData::class.java, jacksonObjectMapper())
+    (...)
+}
+
+data class BookzData(val title: String, val genres: List<String>, val published: Boolean)
+
+
+```
+
+```
+# api: insert some sample data into db ...
+$ curl -X POST "http://localhost:8080/api/bookz-jsonb/books/bulk-save" -H "accept: */*"
+
+# api: insert a new bookz into db
+$ curl -X PUT "http://localhost:8080/api/bookz-jsonb/books" -H "accept: */*" -H "Content-Type: application/json" -d "{ \"data\": { \"genres\": [ \"programming\",\"enterprise\",\"bingo\" ], \"published\": true, \"title\": \"the book\" }}"
+
+# api: get all bookz ...
+$ curl -X GET "http://localhost:8080/api/bookz-jsonb/books" -H "accept: */*"
 ```
 
 ### example api: tweeter
@@ -354,47 +396,7 @@ $ curl -X POST "http://localhost:8080/api/tweeter/search/jmespath" -H "accept: *
 
 ```
 
-### example api: bookz - Mongo'ish, NoSQL'ish, ...
-- how to build a document store ?
 
-#### Highlights: postgres jsonb data type
-```
-# Highlights: postgres jsonb data type
- 
-sql ..
- 
-CREATE TABLE bookz (
-  id         UUID                        NOT NULL,
-  created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-  updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-  is_active BOOLEAN NOT NULL,
-  data       JSONB                       NOT NULL
-);
- 
-kotlin ...
- 
-object BookzTable : UUIDCrudTable("bookz") {
-    val id = uuid("id").primaryKey()
-    (...)
-    val data = jsonb("data", BookzData::class.java, jacksonObjectMapper())
-    (...)
-}
-
-data class BookzData(val title: String, val genres: List<String>, val published: Boolean)
-
-
-```
-
-```
-# api: insert some sample data into db ...
-$ curl -X POST "http://localhost:8080/api/bookz-jsonb/books/bulk-save" -H "accept: */*"
-
-# api: insert a new bookz into db
-$ curl -X PUT "http://localhost:8080/api/bookz-jsonb/books" -H "accept: */*" -H "Content-Type: application/json" -d "{ \"data\": { \"genres\": [ \"programming\",\"enterprise\",\"bingo\" ], \"published\": true, \"title\": \"the book\" }}"
-
-# api: get all bookz ...
-$ curl -X GET "http://localhost:8080/api/bookz-jsonb/books" -H "accept: */*"
-```
 
 ### examples api: places - how to run geospatial queries ?
 - show all places within a radius of 5 km oder by distance ...

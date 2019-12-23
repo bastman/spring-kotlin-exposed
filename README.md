@@ -242,7 +242,7 @@ object TweetsTable : Table("tweet") {
 
 ```
 
-### REST'ish search-dsl
+### highlights: REST'ish search-dsl
 
 - simple crud api endpoint (tables: tweet)
 - api endpoint to insert some random data into db
@@ -281,15 +281,18 @@ $ curl -X POST "http://localhost:8080/api/tweeter/search" -H "accept: */*" -H "C
 
 ```
 
-### REST'ish search-dsl + JMESPath json query language
+### highlights: JMESPath - json query language
 
 - jq, jsonpath, ... ? JMESPath .
 - JMESPath json query language . see: http://jmespath.org/tutorial.html
 
 ```
-how to? 
+how to ...
 
-POST /api/search(q=...) | jmespath(q="items[].{id:id, createdAt:createdAt}")
+    POST /api/search(q=...) | jmespath(q="items[].{id:id, createdAt:createdAt}")
+
+... on REST-api level?
+
 ```
 
 

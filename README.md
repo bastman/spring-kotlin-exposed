@@ -134,9 +134,9 @@ playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres (jsonb + cub
     e.g.: DB_URL: "my.postgres.example.com:5432/mydb?ssl=true&sslmode=prefer"
 
 ```
-## example: api tweeter
+## example api: tweeter
 
-### Highlights: postgres enum types
+### highlights: postgres enum types
 ```
 # Highlights: postgres enum types
  
@@ -160,11 +160,12 @@ object TweetsTable : Table("tweet") {
 
 ```
 
-### examples: REST'ish search-dsl
+### REST'ish search-dsl
 
 - simple crud api endpoint (tables: tweet)
 - api endpoint to insert some random data into db
-- api endpoint to search in db ( poc for the spring-data fans)
+- api endpoint to search in db 
+- how to create your own spring-data-rest clone ?
 
 ```
 # generate 50 records in table "tweet"
@@ -198,12 +199,16 @@ $ curl -X POST "http://localhost:8080/api/tweeter/search" -H "accept: */*" -H "C
 
 ```
 
-### examples: REST'ish search-dsl + JMESPath json query language
+### REST'ish search-dsl + JMESPath json query language
 
-- simple crud api endpoint (tables: tweet)
-- api endpoint to insert some random data into db
-- api endpoint to search in db ( poc for the spring-data fans)
-- JMESPath json query language ( similar to jsonpath, jq). see: http://jmespath.org/tutorial.html
+- jq, jsonpath, ... ? JMESPath .
+- JMESPath json query language . see: http://jmespath.org/tutorial.html
+
+```
+how to? 
+
+POST /api/search(q=...) | jmespath(q="items[].{id:id, createdAt:createdAt}")
+```
 
 
 ```
@@ -243,7 +248,7 @@ $ curl -X POST "http://localhost:8080/api/tweeter/search/jmespath" -H "accept: *
 
 ```
 
-## example: api bookz - Mongo'ish, NoSQL'ish, ...
+## example api: bookz - Mongo'ish, NoSQL'ish, ...
 - how to build a document store ?
 
 ### Highlights: postgres jsonb data type
@@ -285,10 +290,9 @@ $ curl -X PUT "http://localhost:8080/api/bookz-jsonb/books" -H "accept: */*" -H 
 $ curl -X GET "http://localhost:8080/api/bookz-jsonb/books" -H "accept: */*"
 ```
 
-## examples: api bookstore, bookz, places
+## examples: api bookstore, places
 
 - api bookstore: crud-ish (joined tables: author, book)
-- api bookz: jsonb examples (tables: bookz)
 - api places: postgres geospatial query examples (postgres extensions: cube + earthdistance)
 
 ## This example project is based on ...

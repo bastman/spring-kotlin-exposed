@@ -134,8 +134,90 @@ playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres (jsonb + cub
     e.g.: DB_URL: "my.postgres.example.com:5432/mydb?ssl=true&sslmode=prefer"
 
 ```
+## example api: bookstore
+- api bookstore: crud-ish (joined tables: author, book)
+```
+# Highlights: postgres joins
+
+sql ...
+
+CREATE TABLE author (
+  id         UUID                        NOT NULL,
+  version    INTEGER                     NOT NULL,
+  created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  name       TEXT                        NOT NULL
+);
+
+CREATE TABLE book (
+  id         UUID                        NOT NULL,
+  author_id  UUID                        NOT NULL,
+  version    INTEGER                     NOT NULL,
+  created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  title      CHARACTER VARYING(255)      NOT NULL,
+  status     CHARACTER VARYING(255)      NOT NULL,
+  price      NUMERIC(15, 2)              NOT NULL
+);
+ALTER TABLE ONLY author
+  ADD CONSTRAINT author_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY book
+  ADD CONSTRAINT book_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY book
+  ADD CONSTRAINT book_author_id_fkey FOREIGN KEY (author_id) REFERENCES author (id);
+
+```
+
+```
+kotlin ...
+
+object AuthorTable : Table("author") {
+    val id = uuid("id").primaryKey()
+    val createdAt = instant("created_at")
+    val name = text("name")
+    (...)
+}
+
+object BookTable : Table("book") {
+    val id = uuid("id").primaryKey()
+    val createdAt = instant("created_at")
+    val authorId = (uuid("author_id") references AuthorTable.id)
+    val title = varchar("title", 255)
+    val status = enumerationByName("status", 255, BookStatus::class)
+    val price = decimal("price", 15, 2)
+}
+
+enum class BookStatus { NEW, PUBLISHED; }
+
+fun findAllBooksJoinAuthor() =
+        (AuthorTable innerJoin BookTable)
+                .selectAll()
+                .map { 
+                    BookRecordJoinAuthorRecord(
+                        bookRecord = it.toBookRecord(), 
+                        authorRecord = it.toAuthorRecord()
+                    ) 
+                }
+```
+
+```
+### api examples
+
+# api: insert author into db
+$ curl -X PUT "http://localhost:8080/api/bookstore/authors" -H "accept: */*" -H "Content-Type: application/json" -d "{ \"name\": \"John Doe\"}"
+
+# api: insert book into db - referencing author.author_id
+$ curl -X PUT "http://localhost:8080/api/bookstore/books" -H "accept: */*" -H "Content-Type: application/json" -d "{ \"authorId\": \"3c10f9bf-2056-4b93-b691-57128464e85e\", \"title\": \"John's way of life.\", \"status\": \"NEW\", \"price\": 0.29}"
+
+# api: get all books from db inner join author
+$ curl -X GET "http://localhost:8080/api/bookstore/books" -H "accept: */*"
+```
+
 ## example api: tweeter
 
+- postgres enum types
+- how to create your own spring-data-rest-like search dsl ?
+- jq, jsonpath, ... ? JMESPath . How to post process api responses using a json query-language ? 
 ### highlights: postgres enum types
 ```
 # Highlights: postgres enum types

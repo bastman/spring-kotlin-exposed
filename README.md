@@ -85,7 +85,9 @@ playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres (jsonb + cub
 
 ```
 
-## playground
+## runbook - how to run the examples ?
+
+### quickstart: docker-compose "playground"
 
 ```
     # build db + app and start everything using docker-compose
@@ -95,7 +97,7 @@ playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres (jsonb + cub
 ```
 
 
-## build
+### build
 
 ```
     $ make -C rest-api help
@@ -103,7 +105,7 @@ playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres (jsonb + cub
 
 ```
 
-## build + test
+### build + test
 
 ```
     $ make -C rest-api help
@@ -116,7 +118,7 @@ playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres (jsonb + cub
 
 ```
 
-## run local db (docker)
+### run local db (docker)
 
 ```
     # db-local
@@ -127,14 +129,33 @@ playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres (jsonb + cub
 
 ```
 
-## connect to a cloud hosted db (ssl enabled)
+### connect to a cloud hosted db (ssl enabled)
 
 ```
     # if your postgres is ssl enabled, you may need to add a few parameters to jdbc url ...
     e.g.: DB_URL: "my.postgres.example.com:5432/mydb?ssl=true&sslmode=prefer"
 
 ```
-## example api: bookstore
+
+## exposed - examples & recipes
+
+- bookstore api: 
+    - crud-ish (joined tables: author, book)
+- tweeter api: 
+    - postgres enum data type, 
+    - how to build your own spring-data-rest-like search-dsl
+    - api response json post processing: jq, jsonpath ? JMESPATH.
+- bookz api:
+    - Mongo'ish, NoSQL'ish, ...
+    - how to build a document store ?  
+    - postgres jsonb data type 
+- places api:
+    - how to run geospatial queries
+    - show all places within a radius of 5 km oder by distance ...
+    - postgres cube + earthdistance extensions
+    - postgres gist index     
+     
+### example api: bookstore
 - api bookstore: crud-ish (joined tables: author, book)
 ```
 # Highlights: postgres joins
@@ -213,12 +234,12 @@ $ curl -X PUT "http://localhost:8080/api/bookstore/books" -H "accept: */*" -H "C
 $ curl -X GET "http://localhost:8080/api/bookstore/books" -H "accept: */*"
 ```
 
-## example api: tweeter
+### example api: tweeter
 
 - postgres enum types
 - how to create your own spring-data-rest-like search dsl ?
 - jq, jsonpath, ... ? JMESPath . How to post process api responses using a json query-language ? 
-### highlights: postgres enum types
+#### highlights: postgres enum types
 ```
 # Highlights: postgres enum types
  
@@ -242,7 +263,7 @@ object TweetsTable : Table("tweet") {
 
 ```
 
-### highlights: REST'ish search-dsl
+#### highlights: REST'ish search-dsl
 
 - simple crud api endpoint (tables: tweet)
 - api endpoint to insert some random data into db
@@ -281,7 +302,7 @@ $ curl -X POST "http://localhost:8080/api/tweeter/search" -H "accept: */*" -H "C
 
 ```
 
-### highlights: JMESPath - json query language
+#### highlights: JMESPath - json query language
 
 - jq, jsonpath, ... ? JMESPath .
 - JMESPath json query language . see: http://jmespath.org/tutorial.html
@@ -333,10 +354,10 @@ $ curl -X POST "http://localhost:8080/api/tweeter/search/jmespath" -H "accept: *
 
 ```
 
-## example api: bookz - Mongo'ish, NoSQL'ish, ...
+### example api: bookz - Mongo'ish, NoSQL'ish, ...
 - how to build a document store ?
 
-### Highlights: postgres jsonb data type
+#### Highlights: postgres jsonb data type
 ```
 # Highlights: postgres jsonb data type
  
@@ -375,10 +396,156 @@ $ curl -X PUT "http://localhost:8080/api/bookz-jsonb/books" -H "accept: */*" -H 
 $ curl -X GET "http://localhost:8080/api/bookz-jsonb/books" -H "accept: */*"
 ```
 
-## examples: api bookstore, places
+### examples api: places - how to run geospatial queries ?
+- show all places within a radius of 5 km oder by distance ...
+- solution: postgres: cube + earthdistance extensions and gist index
+- alternatives: you may want to have a look into PostGIS as alternative to cube + earthdistance (see: https://github.com/sdeleuze/geospatial-messenger)
+```
+sql ...
 
-- api bookstore: crud-ish (joined tables: author, book)
-- api places: postgres geospatial query examples (postgres extensions: cube + earthdistance)
+CREATE TABLE place
+(
+    place_id                     uuid               NOT NULL,
+    created_at                   timestamp          NOT NULL,
+    modified_at                  timestamp          NOT NULL,
+    deleted_at                   timestamp          NULL,
+    active                       bool               NOT NULL,
+    place_name                   varchar(2048)      NOT NULL,
+    country_name                 varchar(2048)      NOT NULL,
+    city_name                    varchar(2048)      NOT NULL,
+    postal_code                  varchar(2048)      NOT NULL,
+    street_address               varchar(2048)      NOT NULL,
+    formatted_address            varchar(2048)      NOT NULL,
+    latitude                     numeric(10, 6)     NOT NULL,
+    longitude                    numeric(10, 6)     NOT NULL,
+
+    CONSTRAINT place_pkey PRIMARY KEY (place_id)
+);
+
+CREATE INDEX place_geosearch_index ON place USING gist (ll_to_earth(latitude, longitude));
+```
+
+```
+kotlin ...
+
+object PlaceTable : Table("place") {
+    val place_id = uuid("place_id").primaryKey()
+    (...)
+    // custom
+    val streetAddress = varchar(name = "street_address", length = 2048)
+    val latitude = decimal(name = "latitude", precision = 10, scale = 6)
+    val longitude = decimal(name = "longitude", precision = 10, scale = 6)
+}
+```
+```
+flavour: native query ...
+
+        val sql: String = """
+                    SELECT
+                        ${selectFields.joinToString(" , ")},
+
+                        earth_distance(
+                            ll_to_earth( ${req.latitude} , ${req.longitude} ),
+                            ll_to_earth( ${PLACE.latitude.qName}, ${PLACE.longitude.qName} )
+                        ) as $FIELD_DISTANCE
+
+                    FROM
+                        ${PLACE.qTableName}
+
+                    WHERE
+                        earth_box(
+                            ll_to_earth( ${req.latitude} , ${req.longitude} ), ${req.radiusInMeter}
+                        ) @> ll_to_earth( ${PLACE.latitude.qName} , ${PLACE.longitude.qName} )
+
+                        AND
+                            earth_distance(
+                                ll_to_earth( ${req.latitude} , ${req.longitude} ),
+                                ll_to_earth( ${PLACE.latitude.qName}, ${PLACE.longitude.qName} )
+                            ) <= ${req.radiusInMeter}
+
+                    ORDER BY
+                        $FIELD_DISTANCE ASC,
+                        ${PLACE.createdAt.qName} ASC,
+                        ${PLACE.place_id.qName} ASC
+
+                    LIMIT ${req.limit}
+                    OFFSET ${req.offset}
+
+                    ;
+        """.trimIndent()
+```
+```
+flavour: custom dsl query ...
+
+fun search(req:Request):Response {
+        val geoSearchQuery: GeoSearchQuery = buildGeoSearchQuery(
+                fromLatitude = req.payload.latitude,
+                fromLongitude = req.payload.longitude,
+                searchRadiusInMeter = req.payload.radiusInMeter,
+                toLatitudeColumn = PLACE.latitude,
+                toLongitudeColumn = PLACE.longitude,
+                returnDistanceAsAlias = "distance_from_current_location"
+        )
+
+        return PLACE
+                .slice(
+                        geoSearchQuery.sliceDistanceAlias,
+                        *PLACE.columns.toTypedArray()
+                )
+                .select {
+                    (PLACE.active eq true)
+                            .and(geoSearchQuery.whereDistanceLessEqRadius)
+                            .and(geoSearchQuery.whereEarthBoxContainsLocation)
+                }
+                .orderBy(
+                        Pair(geoSearchQuery.orderByDistance, SortOrder.ASC),
+                        Pair(PLACE.createdAt, SortOrder.ASC),
+                        Pair(PLACE.place_id, SortOrder.ASC)
+                )
+                .limit(n = req.payload.limit, offset = req.payload.offset)
+                .map {
+                    (...)
+                }
+}
+
+fun buildGeoSearchQuery(
+        fromLatitude: Number,
+        fromLongitude: Number,
+        searchRadiusInMeter: Number,
+        toLatitudeColumn: Column<out Number>,
+        toLongitudeColumn: Column<out Number>,
+        returnDistanceAsAlias: String
+): GeoSearchQuery {
+    val reqEarthExpr: CustomFunction<PGEarthPointLocation> = ll_to_earth(
+            latitude = fromLatitude, longitude = fromLongitude
+    )
+    val dbEarthExpr: CustomFunction<PGEarthPointLocation> = ll_to_earth(
+            latitude = toLatitudeColumn, longitude = toLongitudeColumn
+    )
+    val earthDistanceExpr: CustomFunction<Double> = earth_distance(
+            fromEarth = reqEarthExpr, toEarth = dbEarthExpr
+    )
+    val earthDistanceExprAlias: ExpressionAlias<Double> = ExpressionAlias(
+            earthDistanceExpr, returnDistanceAsAlias
+    )
+    val reqEarthBoxExpr: CustomFunction<PGEarthBox> = earth_box(
+            fromLocation = reqEarthExpr,
+            greatCircleRadiusInMeter = intParam(searchRadiusInMeter.toInt())
+    )
+
+    return GeoSearchQuery(
+            sliceDistanceAlias = earthDistanceExprAlias,
+            whereDistanceLessEqRadius = (earthDistanceExpr lessEq searchRadiusInMeter.toDouble()),
+            whereEarthBoxContainsLocation = (reqEarthBoxExpr rangeContains dbEarthExpr),
+            orderByDistance = earthDistanceExpr
+    )
+}
+
+```
+```
+api example: find all places within radiusnof 5000 metres from "latitude": 10.0, "longitude": 20.0 order by distance
+$ curl -X POST "http://localhost:8080/api/places/geosearch/dsl" -H "accept: */*" -H "Content-Type: application/json" -d "{ \"latitude\": 10.0, \"longitude\": 20.0, \"radiusInMeter\": 50000, \"limit\": 10, \"offset\": 0}"
+```
 
 ## This example project is based on ...
 - https://github.com/making/spring-boot-db-samples

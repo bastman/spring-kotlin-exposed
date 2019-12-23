@@ -120,30 +120,30 @@ class TweeterApiController(
             .let(search::handle)
 
 
-    // example: "jq": "items[0:2].{id:id, createdAt:createdAt}"
-    @PostMapping("/api/tweeter/search/jq")
+    // example: "jmesPath": "items[0:2].{id:id, createdAt:createdAt}"
+    @PostMapping("/api/tweeter/search/jmespath")
     @ApiResponses(
             value = [
                 ApiResponse(code = 200, response = TweeterSearchResponse::class, message = "some response")
             ]
     )
-    fun searchJQ(@RequestBody payload: TweeterSearchRequest): SearchJqResponse {
-        val sink: SearchJqResponse = when (payload.jq.isNullOrBlank()) {
+    fun searchJMESPath(@RequestBody payload: TweeterSearchRequest): SearchJMESPathResponse {
+        val sink: SearchJMESPathResponse = when (payload.jmesPath.isNullOrBlank()) {
             true -> {
                 val r: TweeterSearchResponse = search.handle(payload)
-                SearchJqResponse.Raw(r)
+                SearchJMESPathResponse.Raw(r)
             }
             false -> {
                 val expression: Expression<JsonNode> = try {
-                    JMESPATH.compile(payload.jq)
+                    JMESPATH.compile(payload.jmesPath)
                 } catch (all: Exception) {
-                    throw BadRequestException("Invalid req.jq ! ${all.message}")
+                    throw BadRequestException("Invalid req.jmesPath ! ${all.message}")
                 }
                 val data: TweeterSearchResponse = search.handle(payload)
                 val json: String = JSON.writeValueAsString(data)
                 val tree: JsonNode = JSON.readTree(json)
                 val r: JsonNode = expression.search(tree)
-                SearchJqResponse.Jq(r)
+                SearchJMESPathResponse.JMESPath(r)
             }
         }
         return sink
@@ -180,10 +180,10 @@ private val JMESPATH: JmesPath<JsonNode> = JacksonRuntime()
 
 // Note: springfox-swagger limitations: currently, no support for Response is "oneOf" (aka "union types")
 // see: https://github.com/springfox/springfox/issues/2928
-@ApiModel(subTypes = [SearchJqResponse.Raw::class, SearchJqResponse.Jq::class])
-sealed class SearchJqResponse {
-    data class Raw(val data: TweeterSearchResponse) : SearchJqResponse()
-    data class Jq(val data: JsonNode) : SearchJqResponse()
+@ApiModel(subTypes = [SearchJMESPathResponse.Raw::class, SearchJMESPathResponse.JMESPath::class])
+sealed class SearchJMESPathResponse {
+    data class Raw(val data: TweeterSearchResponse) : SearchJMESPathResponse()
+    data class JMESPath(val data: JsonNode) : SearchJMESPathResponse()
 }
 
 

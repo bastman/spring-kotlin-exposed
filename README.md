@@ -134,8 +134,32 @@ playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres (jsonb + cub
     e.g.: DB_URL: "my.postgres.example.com:5432/mydb?ssl=true&sslmode=prefer"
 
 ```
+## example: api tweeter
 
-## examples: api tweeter
+### Highlights: postgres enum types
+```
+# Highlights: postgres enum types
+ 
+sql ..
+ 
+CREATE TYPE TweetStatusType AS ENUM ('DRAFT', 'PENDING', 'PUBLISHED');
+
+CREATE TABLE Tweet (
+  (...)
+  status TweetStatusType NOT NULL DEFAULT 'DRAFT'
+);
+ 
+kotlin ...
+ 
+object TweetsTable : Table("tweet") {
+    (...)
+    val status = enumerationByNameAndSqlType(
+            name = "status", sqlType = "TweetStatusType", klass = TweetStatus::class.java
+    )
+}
+
+```
+### examples: REST'ish search-dsl
 
 - simple crud api endpoint (tables: tweet)
 - api endpoint to insert some random data into db
@@ -173,29 +197,53 @@ $ curl -X POST "http://localhost:8080/api/tweeter/search" -H "accept: */*" -H "C
 
 ```
 
+### examples: REST'ish search-dsl + JMESPath json query language
+
+- simple crud api endpoint (tables: tweet)
+- api endpoint to insert some random data into db
+- api endpoint to search in db ( poc for the spring-data fans)
+- JMESPath json query language ( similar to jsonpath, jq). see: http://jmespath.org/tutorial.html
+
 
 ```
-# Highlights: postgres enum types
- 
-sql ..
- 
-CREATE TYPE TweetStatusType AS ENUM ('DRAFT', 'PENDING', 'PUBLISHED');
+# generate 50 records in table "tweet"
+$ curl -X PUT http://localhost:8080/api/tweeter/bulk-generate/50
 
-CREATE TABLE Tweet (
-  (...)
-  status TweetStatusType NOT NULL DEFAULT 'DRAFT'
-);
- 
-kotlin ...
- 
-object TweetsTable : Table("tweet") {
-    (...)
-    val status = enumerationByNameAndSqlType(
-            name = "status", sqlType = "TweetStatusType", klass = TweetStatus::class.java
-    )
+# search records in table "tweet" 
+# and apply JMESPath query to the reponse ...
+# example: "items[].{id:id, createdAt:createdAt}"  
+# ^^ we just want attributes "id", "createdAt" on item level
+
+
+POST "http://localhost:8080/api/tweeter/search"
+
+payload:
+
+{
+  "limit": 10,
+  "offset": 0,
+  "match": {
+    "message-LIKE": "fox",
+    "comment-LIKE": "brown"
+  },
+  "filter": {
+    "status-IN": [
+      "DRAFT",
+      "PUBLISHED"
+    ]
+  },
+  "orderBy": [
+    "createdAt-DESC"
+  ],
+  "jmesPath":"items[].{id:id, createdAt:createdAt}"
 }
 
+$ curl -X POST "http://localhost:8080/api/tweeter/search/jmespath" -H "accept: */*" -H "Content-Type: application/json" -d "{ \"limit\": 10, \"offset\": 0, \"match\": { \"message-LIKE\": \"fox\", \"comment-LIKE\": \"brown\" }, \"filter\": { \"status-IN\": [ \"DRAFT\", \"PUBLISHED\" ] }, \"orderBy\": [ \"createdAt-DESC\" ],\"jmesPath\":\"items[].{id:id, createdAt:createdAt}\"}"
+
 ```
+
+
+
 ## examples: api bookstore, bookz, places
 
 - api bookstore: crud-ish (joined tables: author, book)

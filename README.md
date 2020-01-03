@@ -564,7 +564,9 @@ $ curl -X POST "http://localhost:8080/api/places/geosearch/dsl" -H "accept: */*"
     - https://github.com/sdeleuze/geospatial-messenger
 - Piotr Jagielski: 
     - https://medium.com/@pjagielski/how-we-use-kotlin-with-exposed-at-touk-eacaae4565b5
+    - https://medium.com/@pjagielski/announcing-krush-idiomatic-persistence-layer-for-kotlin-based-on-exposed-ab8e5c6de72d
     - https://github.com/TouK/kotlin-exposed-realworld
+    - https://github.com/TouK/krush
 - Illia Sorokoumov: https://github.com/ilya40umov/KotLink
 
 ## Whats wrong with orm, jpa, hibernate and in-memory h2-db these days ?

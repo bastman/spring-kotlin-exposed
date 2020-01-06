@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import mu.KLogging
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -16,8 +17,11 @@ class Jackson {
 
     @Bean
     fun objectMapper(): ObjectMapper = defaultMapper()
+            .also {
+                logger.info { "==> configure spring objectmapper. JACKSON MODULES: ${it.registeredModuleIds}" }
+            }
 
-    companion object {
+    companion object : KLogging() {
         fun defaultMapper(): ObjectMapper = jacksonObjectMapper()
                 .registerModule(
                         SimpleModule()
@@ -40,7 +44,7 @@ class Jackson {
                 .enable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
                 .enable(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS)
                 .also {
-                    println("==> JACKON MODULES: ${it.registeredModuleIds}")
+                    println("==> JACKSON MODULES: ${it.registeredModuleIds}")
                 }
     }
 }

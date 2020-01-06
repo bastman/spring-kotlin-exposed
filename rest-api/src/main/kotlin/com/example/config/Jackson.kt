@@ -43,8 +43,5 @@ class Jackson {
                 .disable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
                 .enable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
                 .enable(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS)
-                .also {
-                    println("==> JACKSON MODULES: ${it.registeredModuleIds}")
-                }
     }
 }

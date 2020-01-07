@@ -566,6 +566,9 @@ $ curl -X POST "http://localhost:8080/api/places/geosearch/dsl" -H "accept: */*"
     - https://medium.com/@pjagielski/how-we-use-kotlin-with-exposed-at-touk-eacaae4565b5
     - https://github.com/TouK/kotlin-exposed-realworld
 - Illia Sorokoumov: https://github.com/ilya40umov/KotLink
+- krush : https://github.com/TouK/krush
+        It’s based on a compile-time JPA annotation processor that generates Exposed DSL table and objects mappings for you.
+
 
 ## Whats wrong with orm, jpa, hibernate and in-memory h2-db these days ?
 

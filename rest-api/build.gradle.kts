@@ -1,5 +1,4 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
-import io.gitlab.arturbosch.detekt.Detekt
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -69,15 +68,10 @@ dependencies {
     implementation("io.micrometer:micrometer-registry-prometheus:1.3.+")
 
     // db: postgres driver & hikari pool & flyway
-    implementation("org.postgresql:postgresql:42.2.9")
-    implementation("com.zaxxer:HikariCP:3.4.1")
-    implementation("org.flywaydb:flyway-core:6.1.2") // 6.1.2 5.2.4 // Flyway 6 is only supported as of Spring Boot 2.2
+    implementation("org.postgresql:postgresql:42.2.10")
+    implementation("com.zaxxer:HikariCP:3.4.2")
+    implementation("org.flywaydb:flyway-core:6.2.2")
     // db: exposed sql client
-    /*
-    val exposedVersion = "0.17.7"
-    implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
-    implementation("org.jetbrains.exposed:spring-transaction:$exposedVersion")
-    */
     val exposedVersion = "0.19.3"
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
@@ -99,7 +93,7 @@ dependencies {
 
      */
     // serialization: jackson json
-    val jacksonVersion = "2.10.1" // "2.9.9"
+    val jacksonVersion = "2.10.2"
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
@@ -138,7 +132,7 @@ dependencies {
     // test: kotlin
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-    testImplementation("org.amshove.kluent:kluent:1.58")
+    testImplementation("org.amshove.kluent:kluent:1.60")
     testImplementation("io.mockk:mockk:1.9.+")
     testImplementation("dev.minutest:minutest:1.10.+") // 1.4.+
 
@@ -226,10 +220,6 @@ tasks {
             }
         }
     }
-    withType<Detekt> {
-        description = "Runs Detekt code analysis"
-        config = files("src/main/resources/default-detekt-config.yml")
-    }
 
     withType<DependencyUpdatesTask> {
         // https://github.com/ben-manes/gradle-versions-plugin
@@ -269,7 +259,32 @@ dockerCompose {
     dockerComposeStopTimeout = Duration.ofSeconds(5) // time before docker-compose sends SIGTERM to the running containers after the composeDown task has been started
     // environment.put 'BACKEND_ADDRESS', '192.168.1.100' // Pass environment variable to 'docker-compose' for substitution in compose file
     // scale = [${serviceName1}: 5, ${serviceName2}: 2] // Pass docker compose --scale option like 'docker-compose up --scale serviceName1=5 --scale serviceName2=2'
+
+
+    // fix for docker-compose <1.19 ...
+    // after version 0.9.5, docker-compose-plugin will add `--renew-anon-volumes` when forceRecreate is set to true. This command
+    // line option was only added in docker-compose 1.19.0
+    with(composeExecutor.version) {
+        if(major == 1 && minor < 19) {
+            upAdditionalArgs = listOf("--force-recreate")
+        } else {
+            forceRecreate = true // pass "--force-recreate" when calling "docker-compose up"
+        }
+    }
+
 }
 //dockerCompose.isRequiredBy(test) // hooks 'dependsOn composeUp' and 'finalizedBy composeDown', and exposes environment variables and system properties (if possible)
 
 
+detekt {
+    failFast = true // fail build on any finding
+    buildUponDefaultConfig = true // preconfigure defaults
+    config = files("src/main/resources/default-detekt-config.yml") // point to your custom config defining rules to run, overwriting default behavior
+    //baseline = file("$projectDir/config/baseline.xml") // a way of suppressing issues before introducing detekt
+
+    reports {
+        html.enabled = true // observe findings in your browser with structure and code snippets
+        xml.enabled = true // checkstyle like format mainly for integrations like Jenkins
+        txt.enabled = true // similar to the console output, contains issue signature to manually edit baseline files
+    }
+}

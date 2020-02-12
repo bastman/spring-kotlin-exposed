@@ -74,6 +74,16 @@ class TweeterApiController(
     @PutMapping(BASE_URI)
     @Transactional(readOnly = false)
     fun createOne(@RequestBody req: CreateTweetRequest): TweetDto = req
+            .also {
+                it
+                        .validate()
+                        .throwIfInvalid { violations ->
+                            val errors = violations
+                                    .map { v -> v.message() }
+                                    .joinToString(separator = "\n")
+                            BadRequestException("Check your payload ! some errors here. errors: $errors")
+                        }
+            }
             .toRecord(id = UUID.randomUUID(), now = Instant.now())
             .let(repo::insert)
             .also { logger.info { "INSERT DB ENTITY: $it" } }

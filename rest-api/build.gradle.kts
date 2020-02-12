@@ -104,6 +104,8 @@ dependencies {
     implementation( "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     // jmespath ... you know "jq" ;)
     implementation("io.burt:jmespath-jackson:0.5.0")
+    // yavi: "If you are not a fan of Bean Validation, YAVI will be an awesome alternative."
+    implementation("am.ik.yavi:yavi:0.4.0")
 
     // spring
     implementation("org.springframework.boot:spring-boot-starter-web") {

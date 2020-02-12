@@ -1,7 +1,7 @@
 package com.example.config
 
-import com.example.api.common.rest.serialization.Patchable
 import com.example.api.ApiConfig
+import com.example.api.common.rest.serialization.Patchable
 import com.fasterxml.classmate.TypeResolver
 import com.google.common.base.Predicates
 import org.springframework.context.annotation.Bean
@@ -13,7 +13,7 @@ import java.util.*
 
 @Configuration
 @EnableSwagger2
-class Swagger(private val apiConfig: ApiConfig, private val  typeResolver: TypeResolver) {
+class Swagger(private val apiConfig: ApiConfig, private val typeResolver: TypeResolver) {
 
     @Bean
     fun mainApi(): Docket = apiConfig.toDocket()
@@ -37,4 +37,4 @@ class Swagger(private val apiConfig: ApiConfig, private val  typeResolver: TypeR
 
 private fun ApiConfig.getBasePackageName() = this::class.java.`package`.name
 private fun ApiConfig.toApiInfo() = springfox.documentation.builders.ApiInfoBuilder().title(this.title).build()
-private fun ApiConfig.toDocket() = springfox.documentation.spring.web.plugins.Docket(springfox.documentation.spi.DocumentationType.SWAGGER_2).apiInfo(this.toApiInfo())
+private fun ApiConfig.toDocket() = Docket(springfox.documentation.spi.DocumentationType.SWAGGER_2).apiInfo(this.toApiInfo())

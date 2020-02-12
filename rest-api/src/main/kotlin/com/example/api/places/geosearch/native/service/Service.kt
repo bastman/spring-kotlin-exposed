@@ -1,7 +1,5 @@
 package com.example.api.places.geosearch.native.service
 
-import com.akelius.offerb2b.bff.api.property.geosearch.service.GeoSearchServiceRequest
-import com.akelius.offerb2b.bff.api.property.geosearch.service.GeoSearchServiceResult
 import com.example.api.places.common.db.PlaceTable
 import com.example.util.exposed.nativesql.INativeSql
 import mu.KLogging

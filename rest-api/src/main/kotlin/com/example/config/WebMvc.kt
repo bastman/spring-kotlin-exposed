@@ -12,7 +12,7 @@ class WebMvc {
     fun webMvcConfigurer(): WebMvcConfigurer = object : WebMvcConfigurer {
         override fun addViewControllers(registry: ViewControllerRegistry) {
             registry.addViewController("/health").setViewName("forward:/actuator/health")
-            registry.addRedirectViewController("/", "/swagger-ui.html");
+            registry.addRedirectViewController("/", "/swagger-ui.html")
         }
     }
 }

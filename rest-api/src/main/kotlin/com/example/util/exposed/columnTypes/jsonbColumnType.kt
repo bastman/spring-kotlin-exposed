@@ -9,7 +9,6 @@ import org.jetbrains.exposed.sql.ColumnType
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.statements.api.PreparedStatementApi
 import org.postgresql.util.PGobject
-import java.sql.PreparedStatement
 
 /**
  * Created by quangio.
@@ -21,17 +20,18 @@ fun <T : Any> Table.jsonb(name: String, klass: Class<T>, jsonMapper: ObjectMappe
 private class JsonB<out T : Any>(private val klass: Class<T>, private val jsonMapper: ObjectMapper) : ColumnType() {
     override fun sqlType() = "jsonb"
 
-    private fun valueToPGobject(value: Any?,index: Int):PGobject {
+    private fun valueToPGobject(value: Any?, index: Int): PGobject {
         val obj = PGobject()
         obj.type = "jsonb"
-        obj.value = when(value) {
-            null->null
-            else->value as String
+        obj.value = when (value) {
+            null -> null
+            else -> value as String
         }
         return obj
     }
+
     override fun setParameter(stmt: PreparedStatementApi, index: Int, value: Any?) {
-        val obj: PGobject = valueToPGobject(value=value, index = index)
+        val obj: PGobject = valueToPGobject(value = value, index = index)
         super.setParameter(stmt, index, obj)
     }
 
@@ -66,25 +66,25 @@ private class JsonB<out T : Any>(private val klass: Class<T>, private val jsonMa
  * created by: seb
  */
 
-fun <T : Any> Table.jsonb(name: String, fromJson: (String)->T, toJson: (T)->String): Column<T>
-        = registerColumn(name, JsonBFunctional(fromJson = fromJson, toJson = toJson))
+fun <T : Any> Table.jsonb(name: String, fromJson: (String) -> T, toJson: (T) -> String): Column<T> = registerColumn(name, JsonBFunctional(fromJson = fromJson, toJson = toJson))
 
 private class JsonBFunctional<T : Any>(
-        private val fromJson: (String)->T,
-        private val toJson: (T)->String
+        private val fromJson: (String) -> T,
+        private val toJson: (T) -> String
 ) : ColumnType() {
 
     override fun sqlType() = "jsonb"
 
-    private fun valueToPGobject(value: Any?,index: Int):PGobject {
+    private fun valueToPGobject(value: Any?, index: Int): PGobject {
         val obj = PGobject()
         obj.type = "jsonb"
-        obj.value = when(value) {
-            null->null
-            else->value as String
+        obj.value = when (value) {
+            null -> null
+            else -> value as String
         }
         return obj
     }
+
     override fun setParameter(stmt: PreparedStatementApi, index: Int, value: Any?) {
         val obj: PGobject = valueToPGobject(value = value, index = index)
         super.setParameter(stmt, index, obj)
@@ -102,8 +102,8 @@ private class JsonBFunctional<T : Any>(
 
      */
 
-    private fun jsonDecode(json:String) = fromJson.invoke(json)
-    private fun jsonEncode(value:T) = toJson.invoke(value)
+    private fun jsonDecode(json: String) = fromJson.invoke(json)
+    private fun jsonEncode(value: T) = toJson.invoke(value)
 
     override fun valueFromDB(value: Any): T {
         value as PGobject
@@ -119,25 +119,25 @@ private class JsonBFunctional<T : Any>(
     override fun nonNullValueToString(value: Any): String = "'${notNullValueToDB(value)}'"
 }
 
-fun <T : Any> Table.jsonb(name: String, typeRef:TypeReference<T>, jsonMapper: ObjectMapper): Column<T>
-        = registerColumn(name, JsonBTypeRef(typeRef = typeRef, jsonMapper = jsonMapper))
+fun <T : Any> Table.jsonb(name: String, typeRef: TypeReference<T>, jsonMapper: ObjectMapper): Column<T> = registerColumn(name, JsonBTypeRef(typeRef = typeRef, jsonMapper = jsonMapper))
 
 private class JsonBTypeRef<T : Any>(
-        private val typeRef:TypeReference<T>,
+        private val typeRef: TypeReference<T>,
         private val jsonMapper: ObjectMapper
 ) : ColumnType() {
 
     override fun sqlType() = "jsonb"
 
-    private fun valueToPGobject(value: Any?,index: Int):PGobject {
+    private fun valueToPGobject(value: Any?, index: Int): PGobject {
         val obj = PGobject()
         obj.type = "jsonb"
-        obj.value = when(value) {
-            null->null
-            else->value as String
+        obj.value = when (value) {
+            null -> null
+            else -> value as String
         }
         return obj
     }
+
     override fun setParameter(stmt: PreparedStatementApi, index: Int, value: Any?) {
         val obj: PGobject = valueToPGobject(value = value, index = index)
         super.setParameter(stmt, index, obj)
@@ -156,8 +156,8 @@ private class JsonBTypeRef<T : Any>(
 
      */
 
-    private fun jsonDecode(json:String):T = jsonMapper.readValue(json, typeRef)
-    private fun jsonEncode(value:T):String = jsonMapper.writeValueAsString(value)
+    private fun jsonDecode(json: String): T = jsonMapper.readValue(json, typeRef)
+    private fun jsonEncode(value: T): String = jsonMapper.writeValueAsString(value)
 
     override fun valueFromDB(value: Any): T {
         value as PGobject

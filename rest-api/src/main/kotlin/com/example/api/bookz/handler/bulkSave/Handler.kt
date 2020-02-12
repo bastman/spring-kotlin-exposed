@@ -47,8 +47,7 @@ class BulkSaveHandler(private val repo: BookzRepo) {
                 .also { logger.info { "INSERTED DB ENTITY: $it" } }
 
         val oldRecords = ids.map {
-            val record = repo.findOne(it)
-            when (record) {
+            when (val record = repo.findOne(it)) {
                 null -> {
                     val id = UUID.randomUUID()
                     repo.newRecord(
@@ -67,7 +66,7 @@ class BulkSaveHandler(private val repo: BookzRepo) {
                     val id = record.id
                     repo.updateOne(id) {
                         it[modifiedAt] = now
-                        it[data] = record.data.copy("Some Title $id - updatedAt: $now")
+                        it[data] = record.data.copy(title = "Some Title $id - updatedAt: $now")
                     }
                             .also { logger.info { "UPDATED DB ENTITY: $it" } }
                 }

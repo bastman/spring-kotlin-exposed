@@ -3,8 +3,6 @@ package com.example.util.exposed.postgres.extensions.earthdistance
 import org.jetbrains.exposed.sql.ColumnType
 import org.jetbrains.exposed.sql.statements.api.PreparedStatementApi
 import org.postgresql.util.*
-import java.sql.PreparedStatement
-
 
 data class PGEarthPointLocation(val x: Double, val y: Double, val z: Double)
 
@@ -34,7 +32,7 @@ class PGEarthPointLocationColumnType : ColumnType() {
         }
     }
 
-    private fun valueToPGobject(value: Any?,index: Int):PGobject {
+    private fun valueToPGobject(value: Any?, index: Int): PGobject {
         val obj = PGobject()
         obj.type = sqlType()
         obj.value = when (value) {
@@ -51,8 +49,9 @@ class PGEarthPointLocationColumnType : ColumnType() {
         }
         return obj
     }
+
     override fun setParameter(stmt: PreparedStatementApi, index: Int, value: Any?) {
-        val obj:PGobject = valueToPGobject(value=value, index = index)
+        val obj: PGobject = valueToPGobject(value = value, index = index)
         super.setParameter(stmt, index, obj)
     }
     /*

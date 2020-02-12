@@ -59,8 +59,7 @@ class BookzRepo : UUIDCrudRepo<UUIDCrudTable, CrudRecord>() {
                     .let { this[id] }
 
     fun insertOrUpdate(insertRecord: CrudRecord, updateStatement: CrudTable.(UpdateStatement) -> Unit): CrudRecord {
-        val oldRecordId = findOne(insertRecord.crudRecordId())?.crudRecordId()
-        return when (oldRecordId) {
+        return when (val oldRecordId = findOne(insertRecord.crudRecordId())?.crudRecordId()) {
             null -> insert(record = insertRecord)
             else -> updateOne(oldRecordId, updateStatement)
         }

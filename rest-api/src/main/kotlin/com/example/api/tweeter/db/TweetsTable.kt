@@ -19,7 +19,7 @@ object TweetsTable : Table("tweet") {
             name = "status", sqlType = "TweetStatusType", klass = TweetStatus::class.java,
             serialize = { it.dbValue },
             unserialize = { fromDb, toKlass ->
-                toKlass.enumConstants.first { it.dbValue == fromDb };
+                toKlass.enumConstants.first { it.dbValue == fromDb }
             }
     ).default(TweetStatus.DRAFT)
 

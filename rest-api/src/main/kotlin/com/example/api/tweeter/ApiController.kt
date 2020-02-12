@@ -34,18 +34,18 @@ class TweeterApiController(
         private val search: TweeterSearchHandler
 ) {
 
-    @GetMapping("/api/tweeter/{id}")
+    @GetMapping("$BASE_URI/{id}")
     @Transactional(readOnly = true)
     fun getOne(@PathVariable id: UUID): TweetDto = repo[id]
             .toTweetsDto()
 
-    @GetMapping("/api/tweeter")
+    @GetMapping(BASE_URI)
     @Transactional(readOnly = true)
     fun findAll(): List<TweetDto> = repo
             .findAll()
             .map { it.toTweetsDto() }
 
-    @GetMapping("/api/tweeter/distinctOn")
+    @GetMapping("$BASE_URI/distinctOn")
     @Transactional(readOnly = true)
     fun findDistinct(): List<TweetDto> {
         val selectDistinctOn: CustomFunction<Boolean?> = distinctOn(
@@ -72,7 +72,7 @@ class TweeterApiController(
         return dtos
     }
 
-    @PutMapping("/api/tweeter")
+    @PutMapping(BASE_URI)
     @Transactional(readOnly = false)
     fun createOne(@RequestBody req: CreateTweetRequest): TweetDto = req
             .toRecord(id = UUID.randomUUID(), now = Instant.now())
@@ -80,16 +80,16 @@ class TweeterApiController(
             .also { logger.info { "INSERT DB ENTITY: $it" } }
             .toTweetsDto()
 
-    @PostMapping("/api/tweeter/{id}")
+    @PostMapping("$BASE_URI/{id}")
     @Transactional(readOnly = false)
     fun updateOne(@PathVariable id: UUID, @RequestBody req: UpdateTweetRequest): TweetDto = repo[id]
-                    .copy(modifiedAt = Instant.now(), message = req.message, comment = req.comment)
-                    .let(repo::update)
-                    .also { logger.info { "UPDATE DB ENTITY: $it" } }
-                    .toTweetsDto()
+            .copy(modifiedAt = Instant.now(), message = req.message, comment = req.comment)
+            .let(repo::update)
+            .also { logger.info { "UPDATE DB ENTITY: $it" } }
+            .toTweetsDto()
 
 
-    @PatchMapping("/api/tweeter/{id}")
+    @PatchMapping("$BASE_URI/{id}")
     @Transactional(readOnly = false)
     fun patchOne(
             @PathVariable id: UUID,
@@ -128,7 +128,7 @@ class TweeterApiController(
 
 
     // example: "jmesPath": "items[0:2].{id:id, createdAt:createdAt}"
-    @PostMapping("/api/tweeter/search/jmespath")
+    @PostMapping("$BASE_URI/search/jmespath")
     @ApiResponses(
             value = [
                 ApiResponse(code = 200, response = TweeterSearchResponse::class, message = "some response")
@@ -156,7 +156,7 @@ class TweeterApiController(
         return sink
     }
 
-    @PutMapping("/api/tweeter/bulk-generate/{maxRecords}")
+    @PutMapping("$BASE_URI/bulk-generate/{maxRecords}")
     @Transactional(readOnly = false)
     fun bulkGenerate(@PathVariable maxRecords: Int): Any {
         val words: List<String> = "The quick brown fox jumps over the lazy dog".split(" ")
@@ -179,7 +179,9 @@ class TweeterApiController(
         )
     }
 
-    companion object : KLogging()
+    companion object : KLogging() {
+        private const val BASE_URI = "/api/tweeter"
+    }
 }
 
 private val JSON = Jackson.defaultMapper()

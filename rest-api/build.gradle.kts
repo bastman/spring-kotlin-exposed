@@ -68,9 +68,9 @@ dependencies {
     implementation("io.micrometer:micrometer-registry-prometheus:1.3.+")
 
     // db: postgres driver & hikari pool & flyway
-    implementation("org.postgresql:postgresql:42.2.9")
-    implementation("com.zaxxer:HikariCP:3.4.1")
-    implementation("org.flywaydb:flyway-core:6.1.2") // 6.1.2 5.2.4 // Flyway 6 is only supported as of Spring Boot 2.2
+    implementation("org.postgresql:postgresql:42.2.10")
+    implementation("com.zaxxer:HikariCP:3.4.2")
+    implementation("org.flywaydb:flyway-core:6.2.2")
     // db: exposed sql client
     val exposedVersion = "0.19.3"
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
@@ -93,7 +93,7 @@ dependencies {
 
      */
     // serialization: jackson json
-    val jacksonVersion = "2.10.1" // "2.9.9"
+    val jacksonVersion = "2.10.2"
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")

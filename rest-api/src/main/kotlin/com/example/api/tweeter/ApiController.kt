@@ -97,6 +97,7 @@ class TweeterApiController(
         val patchedRecord: TweetsRecord = sourceRecord
                 .patchMessage(patch = req.message)
                 .patchComment(patch = req.comment)
+                .patchStatus(patch = req.status)
 
         val resultRecord: TweetsRecord = when (patchedRecord == sourceRecord) {
             true -> sourceRecord
@@ -194,6 +195,12 @@ private fun TweetsRecord.patchMessage(patch: Patchable<String>): TweetsRecord = 
 private fun TweetsRecord.patchComment(patch: Patchable<String?>): TweetsRecord = when (patch) {
     is Patchable.Present -> copy(comment = patch.content)
     is Patchable.Null -> copy(comment = patch.value())
+    is Patchable.Undefined -> this
+}
+
+private fun TweetsRecord.patchStatus(patch: Patchable<TweetStatus>): TweetsRecord = when (patch) {
+    is Patchable.Present -> copy(status = patch.content)
+    is Patchable.Null -> this
     is Patchable.Undefined -> this
 }
 

@@ -19,7 +19,7 @@ data class TweeterSearchRequest(
         val match: Match?,
         val filter: Filter?,
         val orderBy: List<OrderBy>?, // Set<OrderBy> may lead to inconsistent order within the set
-        val jmesPath:String?
+        val jmesPath: String?
 ) {
     @ApiModel("${SWAGGER_API_MODEL_PREFIX}_Payload_OrderBy")
     enum class OrderBy(@get:JsonValue val jsonValue: String, val field: Column<*>, val sortOrder: SortOrder) {

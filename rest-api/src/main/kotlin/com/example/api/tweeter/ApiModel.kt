@@ -18,7 +18,8 @@ data class UpdateTweetRequest(
 
 data class PatchTweetRequest(
         val message: Patchable<String>,
-        val comment: Patchable<String?>
+        val comment: Patchable<String?>,
+        val status: Patchable<TweetStatus>
 )
 
 data class TweetDto(

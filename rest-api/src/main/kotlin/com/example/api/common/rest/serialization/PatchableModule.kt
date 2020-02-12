@@ -15,6 +15,10 @@ import com.fasterxml.jackson.databind.type.ReferenceType
 import com.fasterxml.jackson.databind.util.NameTransformer
 import org.funktionale.option.Option
 
+/**
+ * see: https://stackoverflow.com/questions/55166379/deserialize-generic-type-using-referencetypedeserializer-with-jackson-spring
+ */
+
 class PatchableModule : SimpleModule() {
     override fun setupModule(context: SetupContext?) {
         super.setupModule(context)

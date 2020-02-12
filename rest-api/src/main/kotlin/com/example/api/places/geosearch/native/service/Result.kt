@@ -1,4 +1,4 @@
-package com.akelius.offerb2b.bff.api.property.geosearch.service
+package com.example.api.places.geosearch.native.service
 
 import java.util.*
 

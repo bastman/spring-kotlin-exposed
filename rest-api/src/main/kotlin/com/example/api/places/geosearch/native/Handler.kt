@@ -1,13 +1,13 @@
 package com.example.api.places.geosearch.native
 
-import com.akelius.offerb2b.bff.api.property.geosearch.service.GeoSearchServiceRequest
-import com.akelius.offerb2b.bff.api.property.geosearch.service.GeoSearchServiceResult
 import com.example.api.places.common.db.PlaceRecord
 import com.example.api.places.common.db.PlaceRepo
 import com.example.api.places.common.rest.response.toPlaceDto
 import com.example.api.places.geosearch.PlacesGeoSearchRequest
 import com.example.api.places.geosearch.PlacesGeoSearchResponse
 import com.example.api.places.geosearch.PlacesGeoSearchResponseItem
+import com.example.api.places.geosearch.native.service.GeoSearchServiceRequest
+import com.example.api.places.geosearch.native.service.GeoSearchServiceResult
 import com.example.api.places.geosearch.native.service.PlacesGeoSearchService
 import com.example.util.time.durationToNowInMillis
 import mu.KLogging
@@ -76,8 +76,7 @@ class GeoSearchNativeHandler(
                 .associateBy { it.place_id }
         val sinkItems: List<ResponseItem> = sourceItems
                 .mapNotNull { geoSearchItem: ServiceResultItem ->
-                    val placeRecord: PlaceRecord? = placeRecordsById[geoSearchItem.placeId]
-                    when (placeRecord) {
+                    when (val placeRecord: PlaceRecord? = placeRecordsById[geoSearchItem.placeId]) {
                         null -> null
                         else -> ResponseItem(
                                 place = placeRecord.toPlaceDto(),

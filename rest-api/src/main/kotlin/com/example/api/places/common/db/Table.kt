@@ -6,7 +6,8 @@ import org.jetbrains.exposed.sql.Table
 
 object PlaceTable : Table("place") {
     // pk
-    val place_id = uuid("place_id").primaryKey()
+    val place_id = uuid("place_id")
+    override val primaryKey: PrimaryKey = PrimaryKey(place_id, name = "place_pkey")
     // record meta
     val createdAt = instant("created_at")
     val modified_at = instant("modified_at")

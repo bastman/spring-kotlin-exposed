@@ -577,24 +577,28 @@ $ curl -X POST "http://localhost:8080/api/places/geosearch/dsl" -H "accept: */*"
 - krush : https://github.com/TouK/krush
         It’s based on a compile-time JPA annotation processor that generates Exposed DSL table and objects mappings for you.
 
+## Awesome tutorials: databases in javaland
+- A guide to accessing databases in Java: https://www.marcobehler.com/guides/a-guide-to-accessing-databases-in-java/
+- Spring @Transactional - what you should know: https://www.reddit.com/r/java/comments/dp49m3/spring_transaction_management_an_unconventional/
+- Don't use H2 db for testing, use docker: https://blog.philipphauer.de/dont-use-in-memory-databases-tests-h2/
 
 ## Whats wrong with orm, jpa, hibernate and in-memory h2-db these days ?
 
 There is no silver bullet. 
+
 It's born in a world of single-instance big fat application servers.
-It hardly fits into a modern world of:
+
+How does it fit into a modern world of:
 
 - functional programming: e.g. immutable threadsafe pojos / data classes 
 - CQRS and eventsourcing
 - horizontal scaling of polyglot microservices
 
-Make up your mind ...
+Some thoughts ...
 
 - How hibernate ruined Monica's career: https://www.toptal.com/java/how-hibernate-ruined-my-career
-- A guide to accessing databases in Java: https://www.marcobehler.com/guides/a-guide-to-accessing-databases-in-java/
 - Why do I hate hibernate: https://de.slideshare.net/alimenkou/why-do-i-hate-hibernate-12998784
 - ORM is an antipattern: http://seldo.com/weblog/2011/08/11/orm_is_an_antipattern
 - Opinionated JPA: https://leanpub.com/opinionatedjpa/read
 - Lightweight ORM, do it yourself: https://blog.philipphauer.de/do-it-yourself-orm-alternative-hibernate-drawbacks/
 - Don't use H2 db for testing, use docker: https://blog.philipphauer.de/dont-use-in-memory-databases-tests-h2/
-- Spring @Transactional - what you should know: https://www.reddit.com/r/java/comments/dp49m3/spring_transaction_management_an_unconventional/

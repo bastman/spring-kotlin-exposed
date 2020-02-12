@@ -44,7 +44,8 @@ playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres (jsonb + cub
     # Example: db schema 
     
     object AuthorTable : Table("author") {
-        val id = uuid("id").primaryKey()
+        val id = uuid("id")
+        override val primaryKey: PrimaryKey = PrimaryKey(id, name = "author_pkey")
         val createdAt = instant("created_at")
         val modifiedAt = instant("updated_at")
         val version = integer("version")
@@ -52,7 +53,8 @@ playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres (jsonb + cub
     }
                     
     object BookTable : Table("book") {
-        val id = uuid("id").primaryKey()
+        val id = uuid("id")
+        override val primaryKey: PrimaryKey = PrimaryKey(id, name = "book_pkey")
         val createdAt = instant("created_at")
         val modifiedAt = instant("updated_at")
         val version = integer("version")
@@ -193,14 +195,16 @@ ALTER TABLE ONLY book
 kotlin ...
 
 object AuthorTable : Table("author") {
-    val id = uuid("id").primaryKey()
+    val id = uuid("id")
+    override val primaryKey: PrimaryKey = PrimaryKey(id, name = "author_pkey")
     val createdAt = instant("created_at")
     val name = text("name")
     (...)
 }
 
 object BookTable : Table("book") {
-    val id = uuid("id").primaryKey()
+    val id = uuid("id")
+    override val primaryKey: PrimaryKey = PrimaryKey(id, name = "book_pkey")
     val createdAt = instant("created_at")
     val authorId = (uuid("author_id") references AuthorTable.id)
     val title = varchar("title", 255)
@@ -254,7 +258,8 @@ CREATE TABLE bookz (
 kotlin ...
  
 object BookzTable : UUIDCrudTable("bookz") {
-    val id = uuid("id").primaryKey()
+    val id = uuid("id")
+    override val primaryKey: PrimaryKey = PrimaryKey(id, name = "bookz_pkey")
     (...)
     val data = jsonb("data", BookzData::class.java, jacksonObjectMapper())
     (...)
@@ -431,7 +436,8 @@ CREATE INDEX place_geosearch_index ON place USING gist (ll_to_earth(latitude, lo
 kotlin ...
 
 object PlaceTable : Table("place") {
-    val place_id = uuid("place_id").primaryKey()
+    val place_id = uuid("place_id")
+    override val primaryKey: PrimaryKey = PrimaryKey(place_id, name = "place_pkey")
     (...)
     // custom
     val streetAddress = varchar(name = "street_address", length = 2048)

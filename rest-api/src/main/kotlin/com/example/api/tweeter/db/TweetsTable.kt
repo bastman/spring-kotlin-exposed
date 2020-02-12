@@ -8,7 +8,9 @@ import java.time.Instant
 import java.util.*
 
 object TweetsTable : Table("tweet") {
-    val id = uuid("id").primaryKey()
+    val id = uuid("id")
+    override val primaryKey: PrimaryKey = PrimaryKey(id, name = "tweet_pkey")
+
     val createdAt = instant("created_at")
     val modifiedAt = instant("updated_at")
     val deletedAt = instant("deleted_at").default(Instant.EPOCH)

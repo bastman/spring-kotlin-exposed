@@ -11,7 +11,8 @@ import java.util.*
 
 
 object BookzTable : UUIDCrudTable("bookz") {
-    val id = uuid("id").primaryKey()
+    val id = uuid("id")
+    override val primaryKey: PrimaryKey = PrimaryKey(id, name = "bookz_pkey")
     val createdAt = instant("created_at")
     val modifiedAt = instant("updated_at")
     val isActive = bool("is_active")
@@ -22,7 +23,7 @@ object BookzTable : UUIDCrudTable("bookz") {
 
 data class BookzRecord(
         val id: UUID, val createdAt: Instant, val modifiedAt: Instant,
-        val isActive:Boolean,
+        val isActive: Boolean,
         val data: BookzData
 )
 

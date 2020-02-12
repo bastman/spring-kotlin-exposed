@@ -8,7 +8,8 @@ import java.time.Instant
 import java.util.*
 
 object BookTable : Table("book") {
-    val id = uuid("id").primaryKey()
+    val id = uuid("id")
+    override val primaryKey: PrimaryKey = PrimaryKey(id, name = "book_pkey")
     val createdAt = instant("created_at")
     val modifiedAt = instant("updated_at")
     val version = integer("version")

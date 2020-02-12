@@ -5,18 +5,18 @@ pluginManagement {
     // see: https://github.com/ilya40umov/KotLink/blob/master/settings.gradle.kts
 
     val kotlinVersion = "1.3.61"
-    val springBootVersion = "2.2.2.RELEASE" // "2.1.11.RELEASE"
+    val springBootVersion = "2.2.4.RELEASE"
 
     plugins {
         kotlin("jvm") version kotlinVersion
         id("tanvd.kosogor") version "1.0.7"
-        id("io.gitlab.arturbosch.detekt") version "1.2.2"
-        id("org.owasp.dependencycheck") version "5.2.4"
+        id("io.gitlab.arturbosch.detekt") version "1.5.1"
+        id("org.owasp.dependencycheck") version "5.3.0"
         id("com.avast.gradle.docker-compose") version "0.10.7" // "0.9.4"
         id("com.github.ben-manes.versions") version "0.27.0"
-        id("org.jetbrains.dokka") version "0.10.0"
+        id("org.jetbrains.dokka") version "0.10.1"
         // spring
-        id("io.spring.dependency-management") version "1.0.8.RELEASE"
+        id("io.spring.dependency-management") version "1.0.9.RELEASE"
         id("org.springframework.boot") version springBootVersion
 
         // spring-kotlin

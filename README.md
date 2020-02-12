@@ -151,6 +151,7 @@ playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres (jsonb + cub
     - postgres enum data type, 
     - how to build your own spring-data-rest-like search-dsl
     - api response json post processing: jq, jsonpath ? JMESPATH.
+    - api PATCH request processing: null vs undefined
 - places api:
     - how to run geospatial queries
     - show all places within a radius of 5 km oder by distance ...
@@ -286,6 +287,8 @@ $ curl -X GET "http://localhost:8080/api/bookz-jsonb/books" -H "accept: */*"
 - postgres enum types
 - how to create your own spring-data-rest-like search dsl ?
 - jq, jsonpath, ... ? JMESPath . How to post process api responses using a json query-language ? 
+- api PATCH request processing: null vs undefined
+
 #### highlights: postgres enum types
 ```
 # Highlights: postgres enum types
@@ -401,7 +404,56 @@ $ curl -X POST "http://localhost:8080/api/tweeter/search/jmespath" -H "accept: *
 
 ```
 
+#### highlights: PATCH request processing - null vs undefined
+```
+# 3 scenarios
+PATCH {"comment":"a"}   -> req.comment = "a"
+PATCH {"comment":null}  -> req.comment = null
+PATCH {}                -> req.comment = UNDEFINED
 
+# must be handled in different ways
+req.comment = "a"       -> update db.comment="a"
+req.comment = null      -> update db.comment=null
+req.comment = UNDEFINED -> do not(!) update the "comment" column in db
+
+```
+
+```
+# how to implement ?
+
+data class PatchTweetRequest(
+        val message: Patchable<String>,
+        val comment: Patchable<String?>,
+        val status: Patchable<TweetStatus>
+)
+
+private fun TweetsRecord.patchMessage(patch: Patchable<String>): TweetsRecord = when (patch) {
+    is Patchable.Present -> copy(message = patch.content)
+    is Patchable.Null -> this
+    is Patchable.Undefined -> this
+}
+
+private fun TweetsRecord.patchComment(patch: Patchable<String?>): TweetsRecord = when (patch) {
+    is Patchable.Present -> copy(comment = patch.content)
+    is Patchable.Null -> copy(comment = null) // record.comment:String? -> accept nulls
+    is Patchable.Undefined -> this
+}
+
+private fun TweetsRecord.patchStatus(patch: Patchable<TweetStatus>): TweetsRecord = when (patch) {
+    is Patchable.Present -> copy(status = patch.content)
+    is Patchable.Null -> this
+    is Patchable.Undefined -> this
+}
+
+```
+
+```
+# some examples ...
+
+$ curl -X PATCH "http://localhost:8080/api/tweeter/343b0950-ebb3-4675-bc8f-b79ccd2b3034" -H "accept: */*" -H "Content-Type: application/json" -d "{ \"message\": \"string\", \"comment\": \"string\", \"status\": \"PUBLISHED\"}"
+$ curl -X PATCH "http://localhost:8080/api/tweeter/343b0950-ebb3-4675-bc8f-b79ccd2b3034" -H "accept: */*" -H "Content-Type: application/json" -d "{ \"comment\": \"c\"}"
+$ curl -X PATCH "http://localhost:8080/api/tweeter/343b0950-ebb3-4675-bc8f-b79ccd2b3034" -H "accept: */*" -H "Content-Type: application/json" -d "{ \"comment\": null, \"status\": \"PUBLISHED\"}"
+```
 
 ### examples api: places - how to run geospatial queries ?
 - show all places within a radius of 5 km oder by distance ...

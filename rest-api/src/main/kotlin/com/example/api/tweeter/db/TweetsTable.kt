@@ -31,8 +31,14 @@ object TweetsTable : Table("tweet") {
 enum class TweetStatus(val dbValue: String) { DRAFT("DRAFT"), PENDING("PENDING"), PUBLISHED("PUBLISHED"); }
 
 data class TweetsRecord(
-        val id: UUID, val createdAt: Instant, val modifiedAt: Instant, val deletedAt: Instant, val version: Int,
-        val message: String, val comment: String?, val status: TweetStatus
+        val id: UUID,
+        val createdAt: Instant,
+        val modifiedAt: Instant,
+        val deletedAt: Instant,
+        val version: Int,
+        val message: String,
+        val comment: String?,
+        val status: TweetStatus
 )
 
 fun TweetsTable.rowToTweetsRecord(row: ResultRow): TweetsRecord =

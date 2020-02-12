@@ -20,7 +20,6 @@ import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiResponse
 import io.swagger.annotations.ApiResponses
 import mu.KLogging
-import org.funktionale.option.Option
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
 import org.springframework.transaction.annotation.Transactional
@@ -88,37 +87,26 @@ class TweeterApiController(
             .also { logger.info { "UPDATE DB ENTITY: $it" } }
             .toTweetsDto()
 
-
     @PatchMapping("$BASE_URI/{id}")
     @Transactional(readOnly = false)
     fun patchOne(
             @PathVariable id: UUID,
             @RequestBody req: PatchTweetRequest
     ): TweetDto {
-        val record: TweetsRecord = repo[id]
-        val message: Option<String> = when (val it = req.message) {
-            is Patchable.Null -> Option.None // Option.Some<String?>(null)
-            is Patchable.Undefined -> Option.None
-            is Patchable.Present -> Option.Some(it.content)
+        val sourceRecord: TweetsRecord = repo[id]
+        val patchedRecord: TweetsRecord = sourceRecord
+                .patchMessage(patch = req.message)
+                .patchComment(patch = req.comment)
+
+        val resultRecord: TweetsRecord = when (patchedRecord == sourceRecord) {
+            true -> sourceRecord
+                    .also { logger.info { "Nothing to patch. Nothing to update: $it" } }
+            false -> patchedRecord
+                    .copy(modifiedAt = Instant.now())
+                    .also { logger.info { "DB Update ... to: $it from: $sourceRecord" } }
+                    .let(repo::update)
         }
-        val comment: Option<String> = when (val it = req.comment) {
-            is Patchable.Null -> Option.None // Option.Some<String?>(null)
-            is Patchable.Undefined -> Option.None
-            is Patchable.Present -> Option.Some(it.content)
-        }
-        return record.let {
-            when (message) {
-                is Option.Some -> it.copy(message = message.get(), modifiedAt = Instant.now())
-                is Option.None -> it
-            }
-        }.let {
-            when (comment) {
-                is Option.Some -> it.copy(comment = comment.get(), modifiedAt = Instant.now())
-                is Option.None -> it
-            }
-        }.let(repo::update)
-                .also { logger.info { "UPDATE DB ENTITY: $it" } }
-                .toTweetsDto()
+        return resultRecord.toTweetsDto()
     }
 
     @PostMapping("/api/tweeter/search")
@@ -196,6 +184,18 @@ sealed class SearchJMESPathResponse {
     data class JMESPath(val data: JsonNode) : SearchJMESPathResponse()
 }
 
+
+private fun TweetsRecord.patchMessage(patch: Patchable<String>): TweetsRecord = when (patch) {
+    is Patchable.Present -> copy(message = patch.content)
+    is Patchable.Null -> this
+    is Patchable.Undefined -> this
+}
+
+private fun TweetsRecord.patchComment(patch: Patchable<String?>): TweetsRecord = when (patch) {
+    is Patchable.Present -> copy(comment = patch.content)
+    is Patchable.Null -> copy(comment = patch.value())
+    is Patchable.Undefined -> this
+}
 
 
 

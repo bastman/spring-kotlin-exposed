@@ -6,9 +6,20 @@ import com.example.api.tweeter.db.TweetsRecord
 import java.time.Instant
 import java.util.*
 
-data class CreateTweetRequest(val message: String, val comment: String?)
-data class UpdateTweetRequest(val message: String, val comment: String?)
-data class PatchTweetRequest(val message: Patchable<String>, val comment: Patchable<String>)
+data class CreateTweetRequest(
+        val message: String,
+        val comment: String?
+)
+
+data class UpdateTweetRequest(
+        val message: String,
+        val comment: String?
+)
+
+data class PatchTweetRequest(
+        val message: Patchable<String>,
+        val comment: Patchable<String?>
+)
 
 data class TweetDto(
         val id: UUID, val createdAt: Instant, val modifiedAt: Instant, val deletedAt: Instant, val version: Int,

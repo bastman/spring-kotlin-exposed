@@ -194,7 +194,7 @@ private fun TweetsRecord.patchMessage(patch: Patchable<String>): TweetsRecord = 
 
 private fun TweetsRecord.patchComment(patch: Patchable<String?>): TweetsRecord = when (patch) {
     is Patchable.Present -> copy(comment = patch.content)
-    is Patchable.Null -> copy(comment = patch.value())
+    is Patchable.Null -> copy(comment = null) // record.comment:String? -> accept nulls
     is Patchable.Undefined -> this
 }
 

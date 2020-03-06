@@ -70,7 +70,7 @@ dependencies {
     // db: postgres driver & hikari pool & flyway
     implementation("org.postgresql:postgresql:42.2.10")
     implementation("com.zaxxer:HikariCP:3.4.2")
-    implementation("org.flywaydb:flyway-core:6.2.2")
+    implementation("org.flywaydb:flyway-core:6.3.0")
     // db: exposed sql client
     val exposedVersion = "0.21.1" //"0.19.3"
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
@@ -83,7 +83,7 @@ dependencies {
     // https://github.com/sdeleuze/geospatial-messenger/blob/master/build.gradle.kts
     // https://postgis.net/docs/reference.
     // http://www.tsusiatsoftware.net/jts/main.html
-    implementation("net.postgis:postgis-jdbc:2.3.0") {
+    implementation("net.postgis:postgis-jdbc:2.4.0") {
         exclude(module = "postgresql")
     }
     /*

@@ -634,6 +634,16 @@ $ curl -X POST "http://localhost:8080/api/places/geosearch/dsl" -H "accept: */*"
 - Spring @Transactional - what you should know: https://www.reddit.com/r/java/comments/dp49m3/spring_transaction_management_an_unconventional/
 - Don't use H2 db for testing, use docker: https://blog.philipphauer.de/dont-use-in-memory-databases-tests-h2/
 
+## postgres drivers
+
+- org.postgresql:postgresql:42.*.*
+- pgjdbc-ng: 
+    - A new JDBC driver for PostgreSQL aimed at supporting the advanced features of JDBC and Postgres
+    - https://github.com/impossibl/pgjdbc-ng
+- rdbc-pgsql: 
+    - rdbc-pgsql is a netty-based PostgreSQL rdbc driver allowing asynchronous communication
+    - https://github.com/rdbc-io/rdbc-pgsql
+
 ## Whats wrong with orm, jpa, hibernate and in-memory h2-db these days ?
 
 There is no silver bullet. 

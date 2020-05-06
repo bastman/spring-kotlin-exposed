@@ -633,6 +633,7 @@ $ curl -X POST "http://localhost:8080/api/places/geosearch/dsl" -H "accept: */*"
 - A guide to accessing databases in Java: https://www.marcobehler.com/guides/a-guide-to-accessing-databases-in-java/
 - Spring @Transactional - what you should know: https://www.reddit.com/r/java/comments/dp49m3/spring_transaction_management_an_unconventional/
 - Don't use H2 db for testing, use docker: https://blog.philipphauer.de/dont-use-in-memory-databases-tests-h2/
+- What is JDBC? : https://www.marcobehler.com/guides/jdbc
 
 ## postgres drivers
 

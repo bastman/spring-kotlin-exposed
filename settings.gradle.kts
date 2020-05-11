@@ -4,15 +4,15 @@ include("rest-api")
 pluginManagement {
     // see: https://github.com/ilya40umov/KotLink/blob/master/settings.gradle.kts
 
-    val kotlinVersion = "1.3.61"
-    val springBootVersion = "2.2.5.RELEASE"
+    val kotlinVersion = "1.3.72"
+    val springBootVersion = "2.2.7.RELEASE"
 
     plugins {
         kotlin("jvm") version kotlinVersion
         id("tanvd.kosogor") version "1.0.7"
-        id("io.gitlab.arturbosch.detekt") version "1.5.1"
-        id("org.owasp.dependencycheck") version "5.3.0"
-        id("com.avast.gradle.docker-compose") version "0.10.9"
+        id("io.gitlab.arturbosch.detekt") version "1.8.0"
+        id("org.owasp.dependencycheck") version "5.3.2.1"
+        id("com.avast.gradle.docker-compose") version "0.10.11"
         id("com.github.ben-manes.versions") version "0.28.0"
         id("org.jetbrains.dokka") version "0.10.1"
         // spring

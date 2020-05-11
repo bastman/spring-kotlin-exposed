@@ -56,7 +56,7 @@ repositories {
 dependencies {
     // kotlin
     implementation(kotlin("stdlib-jdk8"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.6")
 
     // logging
     implementation("io.github.microutils:kotlin-logging:1.7.+")
@@ -68,11 +68,11 @@ dependencies {
     implementation("io.micrometer:micrometer-registry-prometheus:1.3.+")
 
     // db: postgres driver & hikari pool & flyway
-    implementation("org.postgresql:postgresql:42.2.10")
-    implementation("com.zaxxer:HikariCP:3.4.2")
-    implementation("org.flywaydb:flyway-core:6.3.0")
+    implementation("org.postgresql:postgresql:42.2.12")
+    implementation("com.zaxxer:HikariCP:3.4.5")
+    implementation("org.flywaydb:flyway-core:6.4.1")
     // db: exposed sql client
-    val exposedVersion = "0.21.1" //"0.19.3"
+    val exposedVersion = "0.24.1" //"0.21.1"
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jodatime:$exposedVersion")
@@ -83,7 +83,7 @@ dependencies {
     // https://github.com/sdeleuze/geospatial-messenger/blob/master/build.gradle.kts
     // https://postgis.net/docs/reference.
     // http://www.tsusiatsoftware.net/jts/main.html
-    implementation("net.postgis:postgis-jdbc:2.4.0") {
+    implementation("net.postgis:postgis-jdbc:2.5.0") {
         exclude(module = "postgresql")
     }
     /*
@@ -93,7 +93,7 @@ dependencies {
 
      */
     // serialization: jackson json
-    val jacksonVersion = "2.10.3"
+    val jacksonVersion = "2.10.4"
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
@@ -127,16 +127,16 @@ dependencies {
     implementation("org.funktionale:funktionale-all:1.2")
 
     // test: junit5
-    val junitVersion ="5.5.2"
+    val junitVersion ="5.6.2"
     // see: https://stackoverflow.com/questions/54598484/gradle-5-junit-bom-and-spring-boot-incorrect-versions/54605523#54605523
     testImplementation(enforcedPlatform("org.junit:junit-bom:$junitVersion")) // JUnit 5 BOM
     testImplementation("org.junit.jupiter:junit-jupiter")
     // test: kotlin
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-    testImplementation("org.amshove.kluent:kluent:1.60")
-    testImplementation("io.mockk:mockk:1.9.+")
-    testImplementation("dev.minutest:minutest:1.10.+") // 1.4.+
+    testImplementation("org.amshove.kluent:kluent:1.61")
+    testImplementation("io.mockk:mockk:1.10.+")
+    testImplementation("dev.minutest:minutest:1.11.+") // 1.4.+
 
     // test: spring
     testImplementation("org.springframework.boot:spring-boot-starter-test") {

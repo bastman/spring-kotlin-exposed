@@ -45,6 +45,14 @@ class TweeterSearchHandler {
                 }
 
         val startedAt: Instant = Instant.now()
+
+        val a = TWEETS
+                .slice(TWEETS.columns)
+                .selectAll()
+
+        a.limit
+        a.orderBy()
+
         return TWEETS
                 .slice(TWEETS.columns)
                 .select {
@@ -58,7 +66,7 @@ class TweeterSearchHandler {
                                 false -> matchPredicates.compoundOr()
                             }
                 }
-                .limit(n = req.limit, offset = req.offset)
+                .limit(n = req.limit, offset = req.offset.toLong())
                 .orderBy(*(orderByExpressions.toTypedArray()))
                 .map { with(TWEETS) { it.toTweetsRecord() } }
                 .also {

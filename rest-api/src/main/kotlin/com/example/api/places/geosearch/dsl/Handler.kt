@@ -70,7 +70,7 @@ class GeoSearchDslHandler {
                         Pair(PLACE.createdAt, SortOrder.ASC),
                         Pair(PLACE.place_id, SortOrder.ASC)
                 )
-                .limit(n = req.payload.limit, offset = req.payload.offset)
+                .limit(n = req.payload.limit, offset = req.payload.offset.toLong())
                 .also {
                     logger.info("SEARCH (dsl): $logCtxInfo - prepare sql: ${it.toSQL()}")
                 }

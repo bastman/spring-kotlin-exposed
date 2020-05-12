@@ -58,7 +58,11 @@ private class EnumBySqlType<T : Enum<T>>(
     private fun valueToPGobject(value: Any?, index: Int): PGobject {
         val obj = PGobject()
         obj.type = sqlType()
-        obj.value = value as String
+        obj.value = when(value) {
+            null->null
+            else->value as String
+        }
+
         return obj
     }
 
@@ -71,7 +75,10 @@ private class EnumBySqlType<T : Enum<T>>(
     override fun setParameter(stmt: PreparedStatement, index: Int, value: Any?) {
         val obj = PGobject()
         obj.type = sqlType()
-        obj.value = value as String
+        obj.value = when(value) {
+            null -> null
+            else -> value as String
+        }
         stmt.setObject(index, obj)
     }
 

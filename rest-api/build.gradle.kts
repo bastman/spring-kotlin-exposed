@@ -65,7 +65,8 @@ dependencies {
     implementation("ch.qos.logback.contrib:logback-json-classic:$logbackJsonVersion")
     implementation("ch.qos.logback.contrib:logback-jackson:$logbackJsonVersion")
     // monitoring
-    implementation("io.micrometer:micrometer-registry-prometheus:1.3.+")
+    //implementation("io.micrometer:micrometer-registry-prometheus:1.3.+")
+    implementation("io.micrometer:micrometer-registry-prometheus")
 
     // db: postgres driver & hikari pool & flyway
     implementation("org.postgresql:postgresql:42.2.12")

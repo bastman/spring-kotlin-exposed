@@ -4,7 +4,7 @@ include("rest-api")
 pluginManagement {
     // see: https://github.com/ilya40umov/KotLink/blob/master/settings.gradle.kts
 
-    val kotlinVersion = "1.3.72"
+    val kotlinVersion = "1.4.10"
     val springBootVersion = "2.2.7.RELEASE"
 
     plugins {

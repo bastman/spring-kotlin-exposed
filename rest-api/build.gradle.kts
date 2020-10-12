@@ -73,7 +73,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:3.4.5")
     implementation("org.flywaydb:flyway-core:6.4.1")
     // db: exposed sql client
-    val exposedVersion = "0.24.1" //"0.21.1"
+    val exposedVersion = "0.27.1" // "0.24.1"
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jodatime:$exposedVersion")

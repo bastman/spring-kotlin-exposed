@@ -95,7 +95,7 @@ playground for spring-boot 2.*, kotlin, jetbrains-exposed, postgres (jsonb + cub
     # build db + app and start everything using docker-compose
        
     $ make -C rest-api playground.up
-    $ open http://localhost:8080/swagger-ui.html
+    $ open http://localhost:8080/swagger-ui/index.html
 ```
 
 

@@ -120,10 +120,11 @@ dependencies {
         exclude(group= "com.zaxxer", module= "HikariCP")
     }
     // swagger
-    val swaggerVersion = "2.9.2"
-    implementation("io.springfox:springfox-swagger2:$swaggerVersion")
-    implementation("io.springfox:springfox-swagger-ui:$swaggerVersion")
-
+    val swaggerVersion = "3.0.0"
+    //implementation("io.springfox:springfox-swagger2:$swaggerVersion")
+    //implementation("io.springfox:springfox-swagger-ui:$swaggerVersion")
+    implementation("io.springfox:springfox-boot-starter:$swaggerVersion")
+    compile("io.springfox:springfox-swagger-ui:$swaggerVersion")
     // fp
     implementation("org.funktionale:funktionale-all:1.2")
 

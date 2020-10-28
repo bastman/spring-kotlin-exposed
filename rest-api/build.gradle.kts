@@ -135,7 +135,7 @@ dependencies {
     // test: kotlin
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-    testImplementation("org.amshove.kluent:kluent:1.61")
+    testImplementation("org.amshove.kluent:kluent:1.63")
     testImplementation("io.mockk:mockk:1.10.+")
     testImplementation("dev.minutest:minutest:1.11.+") // 1.4.+
 

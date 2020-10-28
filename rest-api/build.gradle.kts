@@ -124,7 +124,7 @@ dependencies {
     //implementation("io.springfox:springfox-swagger2:$swaggerVersion")
     //implementation("io.springfox:springfox-swagger-ui:$swaggerVersion")
     implementation("io.springfox:springfox-boot-starter:$swaggerVersion")
-    compile("io.springfox:springfox-swagger-ui:$swaggerVersion")
+    implementation("io.springfox:springfox-swagger-ui:$swaggerVersion")
     // fp
     implementation("org.funktionale:funktionale-all:1.2")
 

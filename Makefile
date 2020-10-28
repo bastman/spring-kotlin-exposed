@@ -1,4 +1,4 @@
-GRADLE_VERSION=6.6.1
+GRADLE_VERSION=6.7
 
 print-%: ; @echo $*=$($*)
 guard-%:

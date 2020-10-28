@@ -56,7 +56,7 @@ repositories {
 dependencies {
     // kotlin
     implementation(kotlin("stdlib-jdk8"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.0")
 
     // logging
     implementation("io.github.microutils:kotlin-logging:1.7.+")

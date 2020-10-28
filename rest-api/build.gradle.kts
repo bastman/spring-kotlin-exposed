@@ -59,7 +59,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.0")
 
     // logging
-    implementation("io.github.microutils:kotlin-logging:1.7.+")
+    implementation("io.github.microutils:kotlin-logging:2.0.+")
     implementation("net.logstash.logback:logstash-logback-encoder:6.+")
     val logbackJsonVersion = "0.1.5"
     implementation("ch.qos.logback.contrib:logback-json-classic:$logbackJsonVersion")

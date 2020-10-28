@@ -13,7 +13,7 @@ pluginManagement {
         id("io.gitlab.arturbosch.detekt") version "1.8.0"
         id("org.owasp.dependencycheck") version "5.3.2.1"
         id("com.avast.gradle.docker-compose") version "0.10.11"
-        id("com.github.ben-manes.versions") version "0.28.0"
+        id("com.github.ben-manes.versions") version "0.33.0"
         id("org.jetbrains.dokka") version "0.10.1"
         // spring
         id("io.spring.dependency-management") version "1.0.10.RELEASE"

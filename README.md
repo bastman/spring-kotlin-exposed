@@ -667,3 +667,4 @@ Some thoughts ...
 - Don't use H2 db for testing, use docker: https://blog.philipphauer.de/dont-use-in-memory-databases-tests-h2/
 - Kotlin + JPA( val vs var, hibernate vs ebean): https://www.reddit.com/r/Kotlin/comments/fffgev/kotlin_jpa_val_vs_var/
 - Hibernate: How to eliminate n+1 queries: https://www.reddit.com/r/java/comments/ge0ynb/eliminate_spring_hibernate_n1_queries/
+- Hibernate: 1st-level-cache demystified: https://vladmihalcea.com/jpa-hibernate-first-level-cache/

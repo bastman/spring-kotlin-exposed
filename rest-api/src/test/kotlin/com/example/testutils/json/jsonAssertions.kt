@@ -6,7 +6,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.shouldBeEqualTo
 
 fun simpleJsonSerializer(): ObjectMapper {
     return jacksonObjectMapper()
@@ -23,7 +23,7 @@ fun simpleJsonSerializer(): ObjectMapper {
 }
 
 fun String.toNormalizedJson(): String {
-    val mapper = jacksonObjectMapper()
+    val mapper:ObjectMapper = jacksonObjectMapper()
     mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
     val decoded: Any? = mapper.readValue(this)// mapper.readTree(this)
 
@@ -33,7 +33,7 @@ fun String.toNormalizedJson(): String {
 }
 
 infix fun String.shouldEqualJson(theOther: String) =
-        this.toNormalizedJson() shouldEqual theOther.toNormalizedJson()
+        this.toNormalizedJson() shouldBeEqualTo theOther.toNormalizedJson()
 
 fun Any?.toJson(mapper: ObjectMapper = simpleJsonSerializer()): String {
     return mapper.writeValueAsString(this)

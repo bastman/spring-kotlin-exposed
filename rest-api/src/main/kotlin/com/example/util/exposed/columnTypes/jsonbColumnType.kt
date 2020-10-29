@@ -108,7 +108,7 @@ private class JsonBFunctional<T : Any>(
     override fun valueFromDB(value: Any): T {
         value as PGobject
         return try {
-            jsonDecode(value.value)
+            jsonDecode(value.value?:"null")
         } catch (e: Exception) {
             e.printStackTrace()
             throw RuntimeException("Can't parse JSON: $value")
@@ -162,7 +162,7 @@ private class JsonBTypeRef<T : Any>(
     override fun valueFromDB(value: Any): T {
         value as PGobject
         return try {
-            jsonDecode(value.value)
+            jsonDecode(value.value?:"null")
         } catch (e: Exception) {
             e.printStackTrace()
             throw RuntimeException("Can't parse JSON: $value")

@@ -25,7 +25,7 @@ class PGEarthBoxColumnType : ColumnType() {
             pgTypeGiven = value.type
             pgValueGiven = value.value
 
-            val pointsText: List<String> = patternTokenizeIntoPoints.findAll(pgValueGiven)
+            val pointsText: List<String> = patternTokenizeIntoPoints.findAll(pgValueGiven?:"")
                     .map { it.value.trim() }
                     .filter { it.isNotBlank() }
                     .toList()

@@ -80,10 +80,12 @@ class FlywayConfiguration(
             FlywayStrategyName.REPAIR -> {
                 logger.warn("flyway: ${config.strategyName} - Hope, you know what your doing ;) ...")
                 flyway.repair()
+                Unit
             }
             FlywayStrategyName.BASELINE -> {
                 logger.warn("flyway: ${config.strategyName} - Hope, you know what your doing ;) ...")
                 flyway.baseline()
+                Unit
             }
         }
     }

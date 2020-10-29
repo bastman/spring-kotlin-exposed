@@ -99,10 +99,10 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-modules-java8:$jacksonVersion")
-    implementation( "com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
-    implementation( "com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion")
-    implementation( "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
-    implementation( "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     // jmespath ... you know "jq" ;)
     implementation("io.burt:jmespath-jackson:0.5.0")
     // yavi: "If you are not a fan of Bean Validation, YAVI will be an awesome alternative."
@@ -110,14 +110,14 @@ dependencies {
 
     // spring
     implementation("org.springframework.boot:spring-boot-starter-web") {
-        exclude(group="org.springframework.boot", module = "spring-boot-starter-tomcat")
-        exclude(group="com.fasterxml.jackson.core")
+        exclude(group = "org.springframework.boot", module = "spring-boot-starter-tomcat")
+        exclude(group = "com.fasterxml.jackson.core")
     }
     implementation("org.springframework.boot:spring-boot-starter-undertow")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation ("org.springframework.boot:spring-boot-starter-jdbc") {
-        exclude(group= "com.zaxxer", module= "HikariCP")
+    implementation("org.springframework.boot:spring-boot-starter-jdbc") {
+        exclude(group = "com.zaxxer", module = "HikariCP")
     }
     // swagger
     val swaggerVersion = "3.0.0"
@@ -129,22 +129,23 @@ dependencies {
     implementation("org.funktionale:funktionale-all:1.2")
 
     // test: junit5
-    val junitVersion ="5.7.+"
+    val junitVersion = "5.7.+"
     // see: https://stackoverflow.com/questions/54598484/gradle-5-junit-bom-and-spring-boot-incorrect-versions/54605523#54605523
     testImplementation(enforcedPlatform("org.junit:junit-bom:$junitVersion")) // JUnit 5 BOM
-    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
     // test: kotlin
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+    //testImplementation("org.jetbrains.kotlin:kotlin-test")
+    //testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
     testImplementation("org.amshove.kluent:kluent:1.63")
     testImplementation("io.mockk:mockk:1.10.+")
     testImplementation("dev.minutest:minutest:1.11.+") // 1.4.+
 
     // test: spring
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
-        //exclude(module= "junit")
-        //exclude(group="com.vaadin.external.google", module="android-json")
+        exclude(group = "org.junit.jupiter", module = "junit-jupiter")
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
+        exclude(group = "org.mockito", module = "mockito-junit-jupiter")
+        exclude(group = "org.mockito", module = "mockito-core")
     }
 
     /*
@@ -188,10 +189,10 @@ tasks {
         }
         // listen to events in the test execution lifecycle
         // see: https://nwillc.wordpress.com/2019/01/08/gradle-kotlin-dsl-closures/
-        beforeTest(closureOf<TestDescriptor>{
+        beforeTest(closureOf<TestDescriptor> {
             logger.lifecycle("\t===== START TEST: ${this.className}.${this.name}")
         })
-        afterSuite(KotlinClosure2<TestDescriptor,TestResult,Unit>({descriptor, result ->
+        afterSuite(KotlinClosure2<TestDescriptor, TestResult, Unit>({ descriptor, result ->
             if (descriptor.parent == null) {
                 logger.lifecycle("Tests run: ${result.testCount}, Failures: ${result.failedTestCount}, Skipped: ${result.skippedTestCount}")
             }
@@ -200,15 +201,15 @@ tasks {
         doFirst {
             //dockerCompose.exposeAsEnvironment(project.tasks.named("test").get())
             //dockerCompose.exposeAsSystemProperties(project.tasks.named("test").get())
-            
+
             // no idea, how to port that: dockerCompose.exposeAsEnvironment(test)
             // no idea, how to port that: dockerCompose.exposeAsSystemProperties(test)
             // expose db host as env variable in a bash-compliant way ...
             dockerCompose.servicesInfos.forEach {
                 val k = it.key
                 val v = it.value
-                val envVarName="${k.replace("-","_").toUpperCase()}_HOST"
-                val envVarValue=v.host
+                val envVarName = "${k.replace("-", "_").toUpperCase()}_HOST"
+                val envVarValue = v.host
                 println("=== dockerCompose: expose env var: $envVarName=$envVarValue")
                 environment(envVarName, envVarValue)
             }
@@ -237,7 +238,7 @@ tasks {
 
 dependencyCheck {
     // see: https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration-aggregate.html
-    failOnError=false
+    failOnError = false
 }
 
 dockerCompose {
@@ -269,7 +270,7 @@ dockerCompose {
     // after version 0.9.5, docker-compose-plugin will add `--renew-anon-volumes` when forceRecreate is set to true. This command
     // line option was only added in docker-compose 1.19.0
     with(composeExecutor.version) {
-        if(major == 1 && minor < 19) {
+        if (major == 1 && minor < 19) {
             upAdditionalArgs = listOf("--force-recreate")
         } else {
             forceRecreate = true // pass "--force-recreate" when calling "docker-compose up"

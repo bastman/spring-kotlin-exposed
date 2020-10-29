@@ -129,7 +129,7 @@ dependencies {
     implementation("org.funktionale:funktionale-all:1.2")
 
     // test: junit5
-    val junitVersion ="5.6.3"
+    val junitVersion ="5.7.+"
     // see: https://stackoverflow.com/questions/54598484/gradle-5-junit-bom-and-spring-boot-incorrect-versions/54605523#54605523
     testImplementation(enforcedPlatform("org.junit:junit-bom:$junitVersion")) // JUnit 5 BOM
     testImplementation("org.junit.jupiter:junit-jupiter")

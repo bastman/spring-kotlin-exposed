@@ -71,7 +71,7 @@ dependencies {
     // db: postgres driver & hikari pool & flyway
     implementation("org.postgresql:postgresql:42.2.18") // 42.2.14
     implementation("com.zaxxer:HikariCP:3.4.5")
-    implementation("org.flywaydb:flyway-core:7.1.0") // 6.5.7
+    implementation("org.flywaydb:flyway-core:7.1.1")
     // db: exposed sql client
     val exposedVersion = "0.28.1"
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")

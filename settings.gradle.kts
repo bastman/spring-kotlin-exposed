@@ -27,6 +27,9 @@ pluginManagement {
 
         // ak-artifactory
         //id("com.jfrog.artifactory") version "4.9.6"
+
+        // kotlin-power-assert
+        id("com.bnorm.power.kotlin-power-assert") version "0.5.3"
     }
 
 

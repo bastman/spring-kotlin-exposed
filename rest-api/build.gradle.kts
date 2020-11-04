@@ -27,6 +27,9 @@ plugins {
     id("io.spring.dependency-management") apply true
     id("org.springframework.boot") apply true
     // id("com.jfrog.artifactory") apply true
+
+    // kotlin-power-asserts
+    id("com.bnorm.power.kotlin-power-assert") apply true
 }
 
 group = "com.example.restapi"
@@ -169,6 +172,7 @@ tasks {
             apiVersion = "1.3"
             languageVersion = "1.3"
             freeCompilerArgs = listOf("-Xjsr305=strict")
+            useIR = true // required by kotlin-power-assert
         }
     }
     withType<Test> {
@@ -292,4 +296,15 @@ detekt {
         xml.enabled = true // checkstyle like format mainly for integrations like Jenkins
         txt.enabled = true // similar to the console output, contains issue signature to manually edit baseline files
     }
+}
+
+// kotlin-power-assert
+configure<com.bnorm.power.PowerAssertGradleExtension> {
+    functions = listOf(
+            "kotlin.assert",
+            "kotlin.test.assertTrue",
+            "kotlin.require",
+            "com.bnorm.power.AssertScope.assert",
+            "com.bnorm.power.assert"
+    )
 }

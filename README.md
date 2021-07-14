@@ -668,3 +668,9 @@ Some thoughts ...
 - Kotlin + JPA( val vs var, hibernate vs ebean): https://www.reddit.com/r/Kotlin/comments/fffgev/kotlin_jpa_val_vs_var/
 - Hibernate: How to eliminate n+1 queries: https://www.reddit.com/r/java/comments/ge0ynb/eliminate_spring_hibernate_n1_queries/
 - Hibernate: 1st-level-cache demystified: https://vladmihalcea.com/jpa-hibernate-first-level-cache/
+- Hibernate Traps: @Transactional Integration Tests: https://www.kode-krunch.com/2021/07/hibernate-traps-transactional.html
+- Hibernate Traps: A Leaky Abstraction: https://www.kode-krunch.com/2021/06/hibernate-traps-leaky-abstraction.html
+
+if you have to use jpa/hibernate ...
+- you can combine it with QueryDSL, jooq, etc.
+- Blaze Persistence – the best way to write JPA Criteria queries ? : https://vladmihalcea.com/blaze-persistence-jpa-criteria-queries/

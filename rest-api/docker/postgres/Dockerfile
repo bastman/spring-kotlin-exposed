@@ -1,4 +1,5 @@
-FROM library/postgres:9.6.3-alpine
+# FROM library/postgres:9.6.3-alpine
+FROM postgis/postgis:9.6-3.1-alpine
 
 EXPOSE 5432
 

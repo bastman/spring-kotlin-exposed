@@ -4,6 +4,8 @@ services:
     image: local/spring-kotlin-exposed-db:latest
     ports:
       - "5432:5432"
+    environment:
+      - "POSTGRES_PASSWORD=password"
     networks:
       - spring-kotlin-exposed-local-network
     volumes:
